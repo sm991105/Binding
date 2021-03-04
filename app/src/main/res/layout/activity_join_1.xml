@@ -2,14 +2,14 @@
 <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent" android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <LinearLayout
-        android:id="@+id/login_top_bar"
+        android:id="@+id/join_1_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="18dp">
 
         <ImageView
-            android:id="@+id/login_back"
+            android:id="@+id/join_1_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="2dp"
@@ -22,63 +22,51 @@
             android:layout_marginLeft="10dp"
             android:fontFamily="@font/notosanskrbold"
             android:layout_marginTop="2dp"
-            android:text="로그인"
+            android:text="회원가입"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp" />
     </LinearLayout>
 
     <EditText
-        android:id="@+id/login_email"
-        android:layout_below="@id/login_top_bar"
+        android:id="@+id/join_1_email"
+        android:layout_below="@id/join_1_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="116dp"
+        android:layout_marginTop="186dp"
         android:layout_marginBottom="26.5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
+        android:textColor="@android:color/darker_gray"
         android:hint="@string/email_hint"/>
 
-    <EditText
-        android:id="@+id/login_password"
-        android:layout_below="@id/login_email"
+    <!-- 버튼 클릭시 이메일 형식이 아닌 경우 !-->
+    <TextView
+        android:id="@+id/join_1_bad_email"
+        android:layout_below="@id/join_1_email"
+        android:textAlignment="viewEnd"
+        android:layout_marginRight="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="24.5dp"
-        android:paddingLeft="11dp"
-        android:paddingBottom="14.5dp"
-        android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="17dp"
-        android:hint="@string/email_password"/>
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="사용 불가능한 이메일입니다"/>
 
+    <!-- 버튼 클릭시 이미 가입된 이메일인 경우 -->
     <TextView
-        android:id="@+id/login_join"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="15sp"
-        android:text="회원가입"
+        android:visibility="invisible"
+        android:id="@+id/join_1_same_email"
+        android:layout_below="@id/join_1_email"
+        android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
-        android:layout_toLeftOf="@id/login_find_pw"
-        android:layout_below="@id/login_password"/>
-
-    <TextView
-        android:id="@+id/login_find_pw"
-        android:layout_marginRight="32dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="16sp"
-        android:text="비밀번호 찾기"
-        android:layout_below="@id/login_password"
-        android:layout_alignParentRight="true"/>
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="이미 가입된 이메일입니다"/>
 
 
 </RelativeLayout>

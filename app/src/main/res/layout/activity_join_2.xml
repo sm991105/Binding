@@ -2,14 +2,14 @@
 <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent" android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <LinearLayout
-        android:id="@+id/login_top_bar"
+        android:id="@+id/join_2_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="18dp">
 
         <ImageView
-            android:id="@+id/login_back"
+            android:id="@+id/join_2_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="2dp"
@@ -22,14 +22,14 @@
             android:layout_marginLeft="10dp"
             android:fontFamily="@font/notosanskrbold"
             android:layout_marginTop="2dp"
-            android:text="로그인"
+            android:text="회원가입"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp" />
     </LinearLayout>
 
     <EditText
-        android:id="@+id/login_email"
-        android:layout_below="@id/login_top_bar"
+        android:id="@+id/join_2_password"
+        android:layout_below="@id/join_2_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="116dp"
@@ -41,11 +41,11 @@
         android:background="@null"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
-        android:hint="@string/email_hint"/>
+        android:hint="비밀번호를 입력해주세요 (8자 이상)"/>
 
     <EditText
-        android:id="@+id/login_password"
-        android:layout_below="@id/login_email"
+        android:id="@+id/join_2_password_check"
+        android:layout_below="@id/join_2_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -56,29 +56,18 @@
         android:background="@null"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
-        android:hint="@string/email_password"/>
+        android:hint="비밀번호를 한 번 더 입력해주세요"/>
 
+    <!-- 버튼 클릭시 비밀번호가 일치하지 않거나 8자 미만인 경우 -->
     <TextView
-        android:id="@+id/login_join"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="15sp"
-        android:text="회원가입"
+        android:id="@+id/join_2_wrong_pw"
+        android:layout_below="@id/join_2_password_check"
+        android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
-        android:layout_toLeftOf="@id/login_find_pw"
-        android:layout_below="@id/login_password"/>
-
-    <TextView
-        android:id="@+id/login_find_pw"
-        android:layout_marginRight="32dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="16sp"
-        android:text="비밀번호 찾기"
-        android:layout_below="@id/login_password"
-        android:layout_alignParentRight="true"/>
-
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="비밀번호가 맞지 않습니다"/>
 
 </RelativeLayout>
