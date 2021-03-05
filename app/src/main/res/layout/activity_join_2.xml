@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="18dp">
+        android:layout_marginTop="13dp">
 
         <ImageView
             android:id="@+id/join_2_back"
@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
             android:layout_marginTop="2dp"
             android:text="회원가입"
@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="116dp"
-        android:layout_marginBottom="26.5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="11dp"
@@ -43,14 +42,25 @@
         android:textSize="17dp"
         android:hint="비밀번호를 입력해주세요 (8자 이상)"/>
 
+    <ImageView
+        android:id="@+id/join_2_pw_line"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_2_password"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_thin"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
     <EditText
         android:id="@+id/join_2_password_check"
-        android:layout_below="@id/join_2_password"
+        android:layout_below="@id/join_2_pw_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="24.5dp"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
@@ -58,10 +68,50 @@
         android:textSize="17dp"
         android:hint="비밀번호를 한 번 더 입력해주세요"/>
 
+    <ImageView
+        android:id="@+id/join_2_pw_chk_line"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_2_password_check"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_thin"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+    <!-- 클릭시 밑줄이 굵어지도록 visibility 설정해주세요 -->
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/join_2_pw_line_bold"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_2_password"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_bold"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/join_2_pw_chk_line_bold"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_2_password_check"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_bold"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+
     <!-- 버튼 클릭시 비밀번호가 일치하지 않거나 8자 미만인 경우 -->
     <TextView
         android:id="@+id/join_2_wrong_pw"
-        android:layout_below="@id/join_2_password_check"
+        android:layout_below="@id/join_2_pw_chk_line"
         android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"

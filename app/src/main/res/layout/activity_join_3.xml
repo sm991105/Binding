@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="18dp">
+        android:layout_marginTop="13dp">
 
         <ImageView
             android:id="@+id/join_3_back"
@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
             android:layout_marginTop="2dp"
             android:text="회원가입"
@@ -28,12 +28,11 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/join_3_email"
+        android:id="@+id/join_3_name"
         android:layout_below="@id/join_3_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="186dp"
-        android:layout_marginBottom="26.5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="11dp"
@@ -43,11 +42,37 @@
         android:textColor="@android:color/darker_gray"
         android:hint="한글 닉네임을 입력해주세요"/>
 
+    <ImageView
+        android:id="@+id/join_3_line"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_3_name"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_thin"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+    <!-- 클릭시 밑줄이 굵어지도록 visibility 설정해주세요 -->
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/join_3_line_bold"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/join_3_name"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_bold"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
     <!-- 버튼 클릭시 이미 사용 중인 닉네임일 경우 -->
     <TextView
         android:visibility="invisible"
         android:id="@+id/join_3_same_nickname"
-        android:layout_below="@id/join_3_email"
+        android:layout_below="@id/join_3_line"
         android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"
@@ -59,7 +84,7 @@
     <!-- 버튼 클릭시 한글 닉네임이 아닐 경우 -->
     <TextView
         android:id="@+id/join_3_wrong_nickname"
-        android:layout_below="@id/join_3_email"
+        android:layout_below="@id/join_3_line"
         android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"

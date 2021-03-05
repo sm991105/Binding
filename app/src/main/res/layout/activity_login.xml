@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="18dp">
+        android:layout_marginTop="13dp">
 
         <ImageView
             android:id="@+id/login_back"
@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
             android:layout_marginTop="2dp"
             android:text="로그인"
@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="116dp"
-        android:layout_marginBottom="26.5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="11dp"
@@ -42,21 +41,72 @@
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
         android:hint="@string/email_hint"/>
+    <ImageView
+        android:id="@+id/login_email_line"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/login_email"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_thin"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
 
     <EditText
         android:id="@+id/login_password"
-        android:layout_below="@id/login_email"
+        android:layout_below="@id/login_email_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="24.5dp"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
         android:hint="@string/email_password"/>
+
+    <ImageView
+        android:id="@+id/login_pw_line"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/login_password"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_thin"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+    <!-- 클릭시 밑줄이 굵어지도록 visibility 설정해주세요 -->
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/login_email_line_bold"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/login_email"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_bold"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/login_pw_line_bold"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/login_password"
+        android:layout_height="wrap_content"
+        android:src="@drawable/line_bold"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="26.5dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"/>
+    <!-- -->
 
     <TextView
         android:id="@+id/login_join"
@@ -65,19 +115,19 @@
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="15sp"
         android:text="회원가입"
-        android:layout_marginRight="27dp"
+        android:layout_marginRight="23dp"
         android:layout_toLeftOf="@id/login_find_pw"
-        android:layout_below="@id/login_password"/>
+        android:layout_below="@id/login_pw_line"/>
 
     <TextView
         android:id="@+id/login_find_pw"
-        android:layout_marginRight="32dp"
+        android:layout_marginRight="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="16sp"
         android:text="비밀번호 찾기"
-        android:layout_below="@id/login_password"
+        android:layout_below="@id/login_pw_line"
         android:layout_alignParentRight="true"/>
 
 

@@ -2,4 +2,32 @@
 <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent"
     android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/logo_side_2"/>
+
+    <ImageView
+        android:id="@+id/splash_text_logo"
+        android:layout_width="155dp"
+        android:layout_height="46dp"
+        android:src="@drawable/logo_text_2"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="197dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+
+    <ImageView
+        android:id="@+id/splash_next"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/button_arrow" />
+
 </RelativeLayout>
