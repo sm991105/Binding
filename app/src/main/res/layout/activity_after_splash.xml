@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent"
     android:background="@color/colorPrimary"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    tools:context=".src.splash.SplashActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -28,6 +30,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="80dp"
-        android:src="@drawable/button_arrow" />
+        android:src="@drawable/button_arrow"/>
 
 </RelativeLayout>
