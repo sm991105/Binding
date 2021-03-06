@@ -2,14 +2,14 @@
 <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent" android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <LinearLayout
-        android:id="@+id/join_2_top_bar"
+        android:id="@+id/join_3_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="13dp">
 
         <ImageView
-            android:id="@+id/join_2_back"
+            android:id="@+id/join_3_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="2dp"
@@ -28,50 +28,25 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/join_2_password"
-        android:layout_below="@id/join_2_top_bar"
+        android:id="@+id/join_3_name"
+        android:layout_below="@id/join_3_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="116dp"
+        android:layout_marginTop="186dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
-        android:hint="비밀번호를 입력해주세요 (8자 이상)"/>
+        android:textColor="@android:color/darker_gray"
+        android:hint="한글 닉네임을 입력해주세요"
+        android:inputType="text"/>
 
     <ImageView
-        android:id="@+id/join_2_pw_line"
+        android:id="@+id/join_3_line"
         android:layout_width="match_parent"
-        android:layout_below="@+id/join_2_password"
-        android:layout_height="wrap_content"
-        android:src="@drawable/line_thin"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="26.5dp"
-        android:layout_marginTop="-10dp"
-        android:adjustViewBounds="true"/>
-
-    <EditText
-        android:id="@+id/join_2_password_check"
-        android:layout_below="@id/join_2_pw_line"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:paddingLeft="11dp"
-        android:paddingBottom="14.5dp"
-        android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
-        android:textSize="17dp"
-        android:hint="비밀번호를 한 번 더 입력해주세요"/>
-
-    <ImageView
-        android:id="@+id/join_2_pw_chk_line"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/join_2_password_check"
+        android:layout_below="@+id/join_3_name"
         android:layout_height="wrap_content"
         android:src="@drawable/line_thin"
         android:layout_marginLeft="20dp"
@@ -83,9 +58,9 @@
     <!-- 클릭시 밑줄이 굵어지도록 visibility 설정해주세요 -->
     <ImageView
         android:visibility="invisible"
-        android:id="@+id/join_2_pw_line_bold"
+        android:id="@+id/join_3_line_bold"
         android:layout_width="match_parent"
-        android:layout_below="@+id/join_2_password"
+        android:layout_below="@+id/join_3_name"
         android:layout_height="wrap_content"
         android:src="@drawable/line_bold"
         android:layout_marginLeft="20dp"
@@ -94,30 +69,39 @@
         android:layout_marginTop="-10dp"
         android:adjustViewBounds="true"/>
 
-    <ImageView
-        android:visibility="invisible"
-        android:id="@+id/join_2_pw_chk_line_bold"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/join_2_password_check"
-        android:layout_height="wrap_content"
-        android:src="@drawable/line_bold"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="26.5dp"
-        android:layout_marginTop="-10dp"
-        android:adjustViewBounds="true"/>
-
-
-    <!-- 버튼 클릭시 비밀번호가 일치하지 않거나 8자 미만인 경우 -->
+    <!-- 버튼 클릭시 이미 사용 중인 닉네임일 경우 -->
     <TextView
-        android:id="@+id/join_2_wrong_pw"
-        android:layout_below="@id/join_2_pw_chk_line"
+        android:visibility="invisible"
+        android:id="@+id/join_3_same_nickname"
+        android:layout_below="@id/join_3_line"
         android:textAlignment="viewEnd"
         android:layout_marginRight="27dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="13dp"
         android:textColor="@color/colorSecondary"
-        android:text="비밀번호가 맞지 않습니다"/>
+        android:text="이미 사용 중인 닉네임입니다"/>
+
+    <!-- 버튼 클릭시 한글 닉네임이 아닐 경우 -->
+    <TextView
+        android:id="@+id/join_3_wrong_nickname"
+        android:layout_below="@id/join_3_line"
+        android:textAlignment="viewEnd"
+        android:layout_marginRight="27dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="닉네임 형식이 맞지 않습니다"/>
+
+    <ImageView
+        android:id="@+id/join_3_next"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/button_arrow"/>
 
 </RelativeLayout>
