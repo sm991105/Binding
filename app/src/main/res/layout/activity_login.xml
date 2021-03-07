@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent"
     android:background="@color/colorPrimary"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context=".src.login.LoginActivity">
     <LinearLayout
@@ -70,7 +69,8 @@
         android:background="@null"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
-        android:hint="@string/email_password"/>
+        android:hint="@string/email_password"
+        android:inputType="textPassword"/>
 
     <ImageView
         android:id="@+id/login_pw_line"
@@ -134,5 +134,26 @@
         android:layout_below="@id/login_pw_line"
         android:layout_alignParentRight="true"/>
 
+    <!-- 버튼 클릭시 로그인 정보가 틀릴 경우-->
+    <TextView
+        android:id="@+id/login_wrong_info"
+        android:layout_below="@id/login_find_pw"
+        android:textAlignment="viewEnd"
+        android:layout_marginRight="27dp"
+        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="가입되지 않은 이메일이거나 잘못된 비밀번호입니다"/>
 
+    <ImageView
+        android:id="@+id/login_next"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/button_arrow"/>
 </RelativeLayout>
