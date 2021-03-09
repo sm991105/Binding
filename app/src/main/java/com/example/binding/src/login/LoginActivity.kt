@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.example.binding.R
 import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseActivity
-import com.example.binding.config.BaseResponse
 import com.example.binding.databinding.ActivityLoginBinding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.login.models.LoginResponse

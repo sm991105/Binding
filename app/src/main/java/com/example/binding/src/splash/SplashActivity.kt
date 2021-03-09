@@ -43,9 +43,10 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
             else{
                 val mainIntent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
+                overridePendingTransition(R.anim.none, R.anim.none_to_left)
                 finish()
             }
-        }, 2000)
+        }, 1500)
 
         binding.splashNext.setOnClickListener(onNextClick)
     }
@@ -54,6 +55,7 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
     private val onNextClick = View.OnClickListener {
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivity(loginIntent)
+        overridePendingTransition(R.anim.none, R.anim.none_to_left)
         finish()
     }
 
