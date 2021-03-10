@@ -4,6 +4,9 @@ import android.os.Bundle
 import com.example.binding.R
 import com.example.binding.config.BaseActivity
 import com.example.binding.databinding.ActivityMainBinding
+import com.example.binding.src.main.home.HomeFragment
+import com.example.binding.src.main.menu.MenuFragment
+import com.example.binding.src.main.my_page.MyPageFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
@@ -14,7 +17,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page
 
         // 탭을 선택했을 때 프래그먼트 화면 전환
-        /*binding.mainBtmNav.setOnNavigationItemSelectedListener(
+        binding.mainBtmNav.setOnNavigationItemSelectedListener(
             BottomNavigationView.OnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.menu_main_btm_nav_home -> {
@@ -36,6 +39,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
                 }
                 false
-            })*/
+            })
     }
 }
