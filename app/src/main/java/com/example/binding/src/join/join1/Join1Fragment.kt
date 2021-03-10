@@ -112,7 +112,6 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
             }
         }
     }
-
     // 서버와 통신 성공
     override fun onGetCheckEmailSuccess(response: BaseResponse, email: String) {
         Log.d("로그", "onGetCheckEmailFailure() called, response: $response")
