@@ -11,6 +11,7 @@ import com.example.binding.databinding.ActivityLoginBinding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.login.models.LoginResponse
 import com.example.binding.src.main.MainActivity
+import com.example.binding.util.JoinDialog
 
 class LoginActivity: BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),
 LoginActivityView{
@@ -54,6 +55,7 @@ LoginActivityView{
 
         // 로그인 API 호출
         LoginService(this).tryPostLogin(email, pwd)
+        // JoinDialog(this, true).show()
     }
 
     // 회원가입을 클릭하면 JoinActivity(회원가입 첫번째 프래그먼트)로 이동한다

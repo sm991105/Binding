@@ -3,4 +3,8 @@
     <string name="email_hint">이메일을 입력해주세요</string>
     <string name="email_password">비밀번호를 입력해주세요</string>
     <string name="manage_email">sm991105@gmail.com</string>
+
+    <!-- dialog_join.xml -->
+    <string name="dialog_txt_done">회원가입이 완료되었습니다.</string>
+    <string name="dialog_txt_login">로그인하기</string>
 </resources>
