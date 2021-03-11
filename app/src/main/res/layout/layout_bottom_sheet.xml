@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_sheet_background">
+
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/notosanskrbold"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="17dp"
+        android:text="지역선택"/>
+    
+    <ImageView
+        android:id="@+id/bottom_sheet_cancel"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/cancel"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="25dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bottom_sheet_title"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:weightSum="5">
+
+        <LinearLayout
+            android:id="@+id/bottom_sheet_big_location"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            
+            <Button
+                android:layout_width="93dp"
+                android:layout_height="50dp"
+                android:text="서울"
+                android:textSize="14dp"
+                android:fontFamily="@font/notosanskrregular"
+                android:textColor="@drawable/button_click_text_color"
+                android:background="@drawable/button_click_background_color"/>
+
+            <Button
+                android:layout_width="93dp"
+                android:layout_height="50dp"
+                android:text="경기도"
+                android:textSize="14dp"
+                android:layout_marginTop="10dp"/>
+            <Button
+                android:layout_width="93dp"
+                android:layout_height="50dp"
+                android:text="인천"
+                android:textSize="14dp"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_sheet_small_location"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" 
+            android:orientation="vertical">
+            <ListView
+                android:id="@+id/bottom_sheet_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+            </ListView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

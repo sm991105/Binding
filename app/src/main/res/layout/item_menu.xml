@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="41dp"
+    android:background="@color/colorPrimary">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/item_menu_photo"
+        android:layout_width="78dp"
+        android:layout_height="78dp"
+        android:src="@drawable/jangu"
+        app:riv_corner_radius="20dip"
+        app:riv_border_width="0dip"
+        android:layout_marginBottom="30dp"
+        android:scaleType="centerCrop"
+        />
+
+
+    <TextView
+        android:id="@+id/item_menu_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:textColor="#343434"
+        android:text="뭐가있조"
+        android:layout_marginLeft="20dp"
+        android:fontFamily="@font/notosanskrbold"
+        android:layout_toRightOf="@id/item_menu_photo"/>
+
+    <TextViewg
+        android:id="@+id/item_menu_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:textColor="#979797"
+        android:text="뭐가있조 뭐가있조 뭐가있조 뭐가있조 뭐가있조 뭐조"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="11dp"
+        android:fontFamily="@font/notosanskrregular"
+        android:layout_toRightOf="@id/item_menu_photo"
+        android:layout_below="@id/item_menu_title"/>
+
+
+</RelativeLayout>
