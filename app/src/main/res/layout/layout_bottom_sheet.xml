@@ -47,7 +47,8 @@
                 android:textSize="14dp"
                 android:fontFamily="@font/notosanskrregular"
                 android:textColor="@drawable/button_click_text_color"
-                android:background="@drawable/button_click_background_color"/>
+                android:drawable="@drawable/button_click_background_color"
+                style="?attr/borderlessButtonStyle"/>
 
             <Button
                 android:layout_width="93dp"

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.binding.R
 import com.example.binding.config.BaseFragment
 import com.example.binding.databinding.FragmentMenuBinding
+import com.example.binding.src.main.menu.btm_sheet.BottomSheetLayout
 import com.example.binding.src.main.menu.models.GetStoresResponse
 import com.example.binding.src.main.menu.models.StoresResult
 
@@ -32,6 +33,16 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
         // 임시로 1페이지 10개만 가져온다
         MenuService(this).tryGetAllStores(0, 10)
 
+        // 지역 선택 버튼 클릭
+        binding.menuLocation.setOnClickListener(onClickLocation)
+
+    }
+
+    // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다
+    private val onClickLocation = View.OnClickListener {
+        val btmSheet = BottomSheetLayout()
+        val fragmentManager = childFragmentManager
+        btmSheet.show(fragmentManager, "Location")
     }
 
     override fun onGetAllStoresSuccess(response: GetStoresResponse) {
