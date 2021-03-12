@@ -17,5 +17,6 @@
         android:layout_alignParentBottom="true"
         app:menu="@menu/menu_main_btm_nav"
         app:labelVisibilityMode="unlabeled"
+        app:itemBackground="@color/colorPrimary"
         app:itemRippleColor="@null"/>
 </RelativeLayout>

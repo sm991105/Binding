@@ -3,13 +3,10 @@
     <string name="email_hint">이메일을 입력해주세요</string>
     <string name="email_password">비밀번호를 입력해주세요</string>
     <string name="manage_email">sm991105@gmail.com</string>
-<<<<<<< HEAD
     <string name="bookvill">\@cafe_bookvilla</string>
     <string name="bookvill_text">인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.</string>
-=======
 
     <!-- dialog_join.xml -->
     <string name="dialog_txt_done">회원가입이 완료되었습니다.</string>
     <string name="dialog_txt_login">로그인하기</string>
->>>>>>> 4050067d788453aaae4b1fd5b823ded2025dc6be
 </resources>

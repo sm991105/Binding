@@ -12,9 +12,9 @@
         android:layout_width="78dp"
         android:layout_height="78dp"
         android:src="@drawable/jangu"
-        app:riv_corner_radius="20dip"
+        app:riv_corner_radius="15dip"
         app:riv_border_width="0dip"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:scaleType="centerCrop"
         />
 
@@ -26,6 +26,7 @@
         android:textSize="14dp"
         android:textColor="#343434"
         android:text="뭐가있조"
+        android:layout_marginTop="-5dp"
         android:layout_marginLeft="20dp"
         android:fontFamily="@font/notosanskrbold"
         android:layout_toRightOf="@id/item_menu_photo"/>
@@ -38,7 +39,7 @@
         android:textColor="#979797"
         android:text="뭐가있조 뭐가있조 뭐가있조 뭐가있조 뭐가있조 뭐조"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="-10dp"
         android:fontFamily="@font/notosanskrregular"
         android:layout_toRightOf="@id/item_menu_photo"
         android:layout_below="@id/item_menu_title"/>
