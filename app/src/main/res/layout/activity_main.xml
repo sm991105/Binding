@@ -16,6 +16,6 @@
         android:background="@color/colorPrimary"
         android:layout_alignParentBottom="true"
         app:menu="@menu/menu_main_btm_nav"
-        app:itemIconTint="@null"
-        app:labelVisibilityMode="unlabeled"/>
+        app:labelVisibilityMode="unlabeled"
+        app:itemRippleColor="@null"/>
 </RelativeLayout>

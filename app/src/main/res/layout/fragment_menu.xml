@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary">
 
     <RelativeLayout
@@ -42,11 +43,12 @@
 
     <!-- Connect item_menu.xml -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/home_recycler"
+        android:id="@+id/menu_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/menu_view"
-        android:paddingTop="20dp" />
+        android:paddingTop="20dp"
+        tools:listitem="@layout/item_menu"/>
 
 
 </RelativeLayout>

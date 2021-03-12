@@ -30,7 +30,7 @@
         android:fontFamily="@font/notosanskrbold"
         android:layout_toRightOf="@id/item_menu_photo"/>
 
-    <TextViewg
+    <TextView
         android:id="@+id/item_menu_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

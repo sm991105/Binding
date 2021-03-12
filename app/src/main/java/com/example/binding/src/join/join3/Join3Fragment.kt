@@ -1,5 +1,6 @@
 package com.example.binding.src.join.join3
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import com.example.binding.databinding.FragmentJoin3Binding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.join.join3.models.PostJoinBody
 import com.example.binding.src.login.LoginActivity
+import com.example.binding.util.JoinDialog
 import java.util.regex.Pattern
 
 class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
@@ -25,7 +27,8 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
     // private val regExp =  "^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣\\s_0-9]).{2,8}$"
 
     // 한글(자음+모음)만 허용하는 식, 2~8자
-    private val regExp = "^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,8}$"
+    // private val regExp = "^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,8}$"
+    private val regExp = "^(?=.*[가-힣]).{2,8}$"
     // 입력받은 닉네임 저장 변수
     lateinit var nickname: String
     // 넘겨받은 이메일 주소, 비밀번호, 비밀번호 확인 임시 값
@@ -115,7 +118,9 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
                 Log.d("로그", "회원가입 성공 - message: ${response.message}")
 
                 isHere = false
-                (activity!! as JoinActivity).moveToLogin(response.isSuccess)
+                // 회원가입 완료 화면을 띄운다
+                val mJoinDialog = JoinDialog(activity as Context, response.isSuccess)
+                mJoinDialog.show()
             }
 
             // 닉네임 형식 오류
