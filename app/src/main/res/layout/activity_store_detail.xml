@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".src.splash.SplashActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/store_detail_cover"
+                android:layout_width="match_parent"
+                android:layout_height="215dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/jangu" />
+            
+            <ImageView
+                android:id="@+id/store_detail_bookmark_empty"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bookmark_empty"
+                android:layout_below="@id/store_detail_cover"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"/>
+
+            <!-- 클릭시 색깔 채워지도록 설정해주세요 -->
+            <ImageView
+                android:visibility="invisible"
+                android:id="@+id/store_detail_bookmark_filled"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bookmark_filled"
+                android:layout_below="@id/store_detail_cover"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="166dp"
+                android:fontFamily="@font/notosanskrbold"
+                android:text="뭐가있조"
+                android:textColor="#ffffff"
+                android:textSize="20dp" />
+
+            <LinearLayout
+                android:id="@+id/store_detail_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/store_detail_cover"
+                android:layout_marginTop="20dp">
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/location" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/store_detail_cover"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="9dp"
+                    android:text="경기 수원시 팔달구 권광로188번길 2층 부크빌라"
+                    android:textColor="#494949"
+                    android:textSize="12dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/store_detail_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/store_detail_location"
+                android:layout_marginTop="8dp">
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/time" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/store_detail_cover"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="9dp"
+                    android:text="매일 14:00 ~ 21:00"
+                    android:textColor="#494949"
+                    android:textSize="12dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/store_detail_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/store_detail_time"
+                android:layout_marginTop="8dp">
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/home" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/store_detail_cover"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="9dp"
+                    android:text="@string/bookvill"
+                    android:textColor="#494949"
+                    android:textSize="12dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/store_detail_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/store_detail_home"
+                android:layout_marginTop="8dp">
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/phone" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/store_detail_cover"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="9dp"
+                    android:text="010-2779-4199"
+                    android:textColor="#494949"
+                    android:textSize="12dp"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/store_detail_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/store_detail_phone"
+                android:layout_marginTop="18.5dp"
+                android:background="#dadada" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/bookvill_text"
+                android:layout_margin="20dp"
+                android:textSize="15dp"
+                android:lineSpacingExtra="2dp"
+                android:textColor="@color/ColorPrimaryLight"
+                android:layout_below="@id/store_detail_view"/>
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>
