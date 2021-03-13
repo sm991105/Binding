@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:textColor="@drawable/button_click_text_color"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:fontFamily="@font/notosanskrregular"
     android:gravity="center"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"

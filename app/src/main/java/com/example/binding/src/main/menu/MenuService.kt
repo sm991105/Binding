@@ -32,4 +32,26 @@ class MenuService(val view: MenuFragmentView) {
                 }
             })
     }
+
+
+    // 특정 지역 서점들 API
+    fun tryGetLocationStores(page: Int, limit: Int, locationFilter: ArrayList<String>){
+
+        val menuRetrofitInterface = ApplicationClass.sRetrofit.create(
+            MenuRetrofitInterface::class.java)
+
+        menuRetrofitInterface.getLocationStores(page, limit, locationFilter)
+            .enqueue(object : Callback<GetStoresResponse> {
+
+                override fun onResponse(call: Call<GetStoresResponse>,
+                                        response: Response<GetStoresResponse>
+                ) {
+                    view.onGetLocationStoresSuccess(response.body() as GetStoresResponse)
+                }
+
+                override fun onFailure(call: Call<GetStoresResponse>, t: Throwable) {
+                    view.onGetLocationStoresFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
 }
