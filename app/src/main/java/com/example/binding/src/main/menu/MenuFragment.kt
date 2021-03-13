@@ -3,6 +3,7 @@ package com.example.binding.src.main.menu
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +13,7 @@ import com.example.binding.databinding.FragmentMenuBinding
 import com.example.binding.src.main.menu.btm_sheet.BottomSheetLayout
 import com.example.binding.src.main.menu.models.GetStoresResponse
 import com.example.binding.src.main.menu.models.StoresResult
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class MenuFragment: BaseFragment<FragmentMenuBinding>(
     FragmentMenuBinding::bind,

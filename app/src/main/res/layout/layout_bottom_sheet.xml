@@ -38,58 +38,35 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/bottom_sheet_title"
         android:layout_above="@id/bottom_sheet_button"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
         android:weightSum="5">
 
-        <LinearLayout
-            android:id="@+id/bottom_sheet_big_location"
+        <ListView
+            android:id="@+id/bottom_sheet_big_list"
             android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            
-            <Button
-                android:layout_width="93dp"
-                android:layout_height="50dp"
-                android:text="서울"
-                android:textSize="14dp"
-                android:padding="10dp"
-                android:fontFamily="@font/notosanskrregular"
-                android:textColor="@drawable/button_click_text_color"
-                android:drawable="@drawable/button_click_background_color"
-                style="?attr/borderlessButtonStyle"/>
-            <Button
-                android:layout_width="93dp"
-                android:layout_height="50dp"
-                android:text="경기"
-                android:textSize="14dp"
-                android:fontFamily="@font/notosanskrregular"
-                android:textColor="@drawable/button_click_text_color"
-                android:drawable="@drawable/button_click_background_color"
-                style="?attr/borderlessButtonStyle"/>
-            <Button
-                android:layout_width="93dp"
-                android:layout_height="50dp"
-                android:text="인천"
-                android:textSize="14dp"
-                android:fontFamily="@font/notosanskrregular"
-                android:textColor="@drawable/button_click_text_color"
-                android:drawable="@drawable/button_click_background_color"
-                style="?attr/borderlessButtonStyle"/>
-        </LinearLayout>
+            android:layout_marginStart="25dp"
+            android:scrollbars="none"
+            android:choiceMode="singleChoice"
+            android:listSelector="@android:color/transparent"/>
+
 
         <LinearLayout
             android:id="@+id/bottom_sheet_small_location"
             android:layout_weight="3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" 
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25dp"
             android:orientation="vertical">
             <ListView
-                android:id="@+id/bottom_sheet_list"
+                android:id="@+id/bottom_sheet_small_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none">
+                android:scrollbars="none"
+                android:choiceMode="multipleChoice"
+                android:divider="@color/colorPrimaryGrey"
+                android:dividerHeight="1dp"
+                android:listSelector="@android:color/transparent">
             </ListView>
         </LinearLayout>
 
@@ -107,5 +84,4 @@
         android:fontFamily="@font/notosanskrbold"
         android:textColor="#ffffff"
         android:textSize="17dp" />
-
 </RelativeLayout>

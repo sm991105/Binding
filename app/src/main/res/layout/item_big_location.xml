@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_big_location"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textColor="@drawable/button_click_text_color"
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:gravity="center"
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:background="@drawable/button_click_background_color"
+    android:minHeight="?android:attr/listPreferredItemHeight" />
