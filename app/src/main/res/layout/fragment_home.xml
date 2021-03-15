@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
         android:id="@+id/home_top_bar"
@@ -55,6 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/home_top_bar"
+        android:layout_marginBottom="10dp"
         android:background="#dadada" />
 
     <!--정렬 탭입니다. down 화살표 누르면 보여지고, 하나 선택하면 사라지도록 visibility 설정해주세요. -->
@@ -108,6 +110,17 @@
         android:id="@+id/home_recycler"
         android:layout_below="@id/home_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_book"/>
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/red_btn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"/>
+
 
 </RelativeLayout>
