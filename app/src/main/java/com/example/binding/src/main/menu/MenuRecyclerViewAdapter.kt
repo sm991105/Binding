@@ -3,6 +3,7 @@ package com.example.binding.src.main.menu
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,10 +60,15 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
 
             item.setOnClickListener{
                 val fragmentManager = menuFragment.childFragmentManager
-
+                val storeDetailFragment = StoreDetailFragment()
+                val idxBundle = Bundle()
+                idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
+                storeDetailFragment.arguments = idxBundle
+                fragmentManager.beginTransaction()
+                    .replace(R.id.menu_root, storeDetailFragment)
+                    .commitAllowingStateLoss()
             }
         }
-
     }
 
 

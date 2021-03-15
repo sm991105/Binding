@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 
 data class BookStoreResult (
     @SerializedName("images") val images: ArrayList<BookStoreImages>,
-    @SerializedName("bookStoreInfo") val bookStoreInfo: BookStoreInfo
+    @SerializedName("bookStoreInfo") val bookStoreInfo: ArrayList<BookStoreInfo>
 )

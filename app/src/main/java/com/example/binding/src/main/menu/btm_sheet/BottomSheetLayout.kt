@@ -68,13 +68,8 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
     }
 
     private val onClickSelect = View.OnClickListener {
-        val smallListView = binding.bottomSheetSmallList
+        // val smallListView = binding.bottomSheetSmallList
 
-        // 지역을 선택하고 버튼을 누르면 동작
-        if(selectedLocation != null){
-            selectedLocations[0] = selectedLocation!!
-            menuFragmentView.changeStores(selectedLocations)
-        }
         /*// 각 리스트 아이템이 선택되었는지, 반복문을 사용하여 확인 가능
         val checkedItems: SparseBooleanArray = smallListView.checkedItemPositions
         for(i in 0 until smallListView.count){
@@ -86,6 +81,12 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
         // Log.d("로그", "onClickSelect() called, selectedLocations: $selectedLocations")
 
         // menuFragmentView.changeStores(selectedLocations)
+
+        // 지역을 선택하고 버튼을 누르면 동작
+        if(selectedLocation != null){
+            selectedLocations[0] = selectedLocation!!
+            menuFragmentView.changeStores(selectedLocations)
+        }
         this.dismiss()
     }
     private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
