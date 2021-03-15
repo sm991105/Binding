@@ -1,0 +1,212 @@
+Index: app/src/main/res/layout/layout_bottom_sheet.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@drawable/bottom_sheet_background\">\r\n\r\n    <TextView\r\n        android:id=\"@+id/bottom_sheet_title\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:gravity=\"center\"\r\n        android:layout_marginTop=\"40dp\"\r\n        android:fontFamily=\"@font/notosanskrbold\"\r\n        android:textColor=\"@color/colorPrimaryDark\"\r\n        android:textSize=\"17dp\"\r\n        android:text=\"지역선택\"/>\r\n    \r\n    <ImageView\r\n        android:id=\"@+id/bottom_sheet_cancel\"\r\n        android:layout_width=\"25dp\"\r\n        android:layout_height=\"25dp\"\r\n        android:src=\"@drawable/cancel\"\r\n        android:layout_alignParentRight=\"true\"\r\n        android:layout_marginTop=\"40dp\"\r\n        android:layout_marginRight=\"25dp\" />\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/bottom_sheet_title\"\r\n        android:layout_marginTop=\"45dp\"\r\n        android:layout_marginLeft=\"25dp\"\r\n        android:layout_marginRight=\"25dp\"\r\n        android:weightSum=\"5\">\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/bottom_sheet_big_location\"\r\n            android:layout_weight=\"2\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"vertical\">\r\n            \r\n            <Button\r\n                android:layout_width=\"93dp\"\r\n                android:layout_height=\"50dp\"\r\n                android:text=\"서울\"\r\n                android:textSize=\"14dp\"\r\n                android:fontFamily=\"@font/notosanskrregular\"\r\n                android:textColor=\"@drawable/button_click_text_color\"\r\n                android:drawable=\"@drawable/button_click_background_color\"\r\n                style=\"?attr/borderlessButtonStyle\"/>\r\n\r\n            <Button\r\n                android:layout_width=\"93dp\"\r\n                android:layout_height=\"50dp\"\r\n                android:text=\"경기도\"\r\n                android:textSize=\"14dp\"\r\n                android:layout_marginTop=\"10dp\"/>\r\n            <Button\r\n                android:layout_width=\"93dp\"\r\n                android:layout_height=\"50dp\"\r\n                android:text=\"인천\"\r\n                android:textSize=\"14dp\"\r\n                android:layout_marginTop=\"10dp\"/>\r\n        </LinearLayout>\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/bottom_sheet_small_location\"\r\n            android:layout_weight=\"3\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\" \r\n            android:orientation=\"vertical\">\r\n            <ListView\r\n                android:id=\"@+id/bottom_sheet_list\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:scrollbars=\"none\">\r\n            </ListView>\r\n        </LinearLayout>\r\n\r\n    </LinearLayout>\r\n\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/layout_bottom_sheet.xml	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
++++ app/src/main/res/layout/layout_bottom_sheet.xml	(date 1615553050647)
+@@ -6,9 +6,10 @@
+ 
+     <TextView
+         android:id="@+id/bottom_sheet_title"
+-        android:layout_width="match_parent"
++        android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:gravity="center"
++        android:layout_centerHorizontal="true"
+         android:layout_marginTop="40dp"
+         android:fontFamily="@font/notosanskrbold"
+         android:textColor="@color/colorPrimaryDark"
+@@ -20,9 +21,11 @@
+         android:layout_width="25dp"
+         android:layout_height="25dp"
+         android:src="@drawable/cancel"
++        android:layout_alignTop="@id/bottom_sheet_title"
++        android:layout_alignBottom="@id/bottom_sheet_title"
+         android:layout_alignParentRight="true"
+-        android:layout_marginTop="40dp"
+-        android:layout_marginRight="25dp" />
++        android:layout_marginRight="25dp"
++        android:layout_marginBottom="4dp"/>
+ 
+     <LinearLayout
+         android:layout_width="match_parent"
+@@ -33,36 +36,15 @@
+         android:layout_marginRight="25dp"
+         android:weightSum="5">
+ 
+-        <LinearLayout
++        <ListView
+             android:id="@+id/bottom_sheet_big_location"
+             android:layout_weight="2"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+-            android:orientation="vertical">
+-            
+-            <Button
+-                android:layout_width="93dp"
+-                android:layout_height="50dp"
+-                android:text="서울"
+-                android:textSize="14dp"
+-                android:fontFamily="@font/notosanskrregular"
+-                android:textColor="@drawable/button_click_text_color"
+-                android:drawable="@drawable/button_click_background_color"
+-                style="?attr/borderlessButtonStyle"/>
++            android:scrollbars="none"
++            android:choiceMode="singleChoice"
++            android:listSelector="@drawable/button_click_background_color"/>
+ 
+-            <Button
+-                android:layout_width="93dp"
+-                android:layout_height="50dp"
+-                android:text="경기도"
+-                android:textSize="14dp"
+-                android:layout_marginTop="10dp"/>
+-            <Button
+-                android:layout_width="93dp"
+-                android:layout_height="50dp"
+-                android:text="인천"
+-                android:textSize="14dp"
+-                android:layout_marginTop="10dp"/>
+-        </LinearLayout>
+ 
+         <LinearLayout
+             android:id="@+id/bottom_sheet_small_location"
+@@ -74,7 +56,8 @@
+                 android:id="@+id/bottom_sheet_list"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+-                android:scrollbars="none">
++                android:scrollbars="none"
++                android:choiceMode="multipleChoice">
+             </ListView>
+         </LinearLayout>
+ 
+Index: app/src/main/res/drawable/button_click_background_color.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<selector xmlns:android=\"http://schemas.android.com/apk/res/android\">\r\n    <item android:state_pressed=\"true\" android:drawable=\"@drawable/button_background\"/>\r\n    <item android:state_focused=\"true\" android:color=\"@drawable/button_background\"/>\r\n    <item android:color=\"@android:color/white\"/>\r\n</selector>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/drawable/button_click_background_color.xml	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
++++ app/src/main/res/drawable/button_click_background_color.xml	(date 1615550358617)
+@@ -1,6 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <selector xmlns:android="http://schemas.android.com/apk/res/android">
+     <item android:state_pressed="true" android:drawable="@drawable/button_background"/>
+-    <item android:state_focused="true" android:color="@drawable/button_background"/>
+-    <item android:color="@android:color/white"/>
++    <item android:state_focused="true" android:drawable="@drawable/button_background"/>
+ </selector>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.menu.btm_sheet\r\n\r\nimport android.app.Dialog\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.Toast\r\nimport com.example.binding.R\r\nimport com.example.binding.databinding.LayoutBottomSheetBinding\r\nimport com.google.android.material.bottomsheet.BottomSheetDialog\r\nimport com.google.android.material.bottomsheet.BottomSheetDialogFragment\r\n\r\nclass BottomSheetLayout(): BottomSheetDialogFragment() {\r\n    private var _binding: LayoutBottomSheetBinding? = null\r\n    private val binding get() = _binding!!\r\n\r\n    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {\r\n        val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog\r\n\r\n        val view = View.inflate(context, R.layout.layout_bottom_sheet, null)\r\n        btmSheetDialog.setContentView(view)\r\n\r\n\r\n        val btmSheetContainer = btmSheetDialog.findViewById<View>(R.id.design_bottom_sheet)\r\n        val params = btmSheetContainer?.layoutParams\r\n        val screenHeight = activity!!.resources.displayMetrics.heightPixels\r\n        // status bar height\r\n        params?.height = (screenHeight * 0.66).toInt()\r\n        // params?.height = BottomSheetBehavior.PEEK_HEIGHT_AUTO\r\n        btmSheetContainer?.layoutParams = params\r\n\r\n        return btmSheetDialog\r\n    }\r\n\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        _binding = LayoutBottomSheetBinding.inflate(inflater, container, false)\r\n        return binding.root\r\n    }\r\n\r\n    override fun onDestroyView() {\r\n        super.onDestroyView()\r\n        _binding = null\r\n    }\r\n\r\n    fun showCustomToast(message: String) {\r\n        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
++++ app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt	(date 1615553050636)
+@@ -2,30 +2,44 @@
+ 
+ import android.app.Dialog
+ import android.os.Bundle
++import android.util.Log
+ import android.view.LayoutInflater
+ import android.view.View
+ import android.view.ViewGroup
+-import android.widget.Toast
++import android.widget.*
+ import com.example.binding.R
+ import com.example.binding.databinding.LayoutBottomSheetBinding
+ import com.google.android.material.bottomsheet.BottomSheetDialog
+ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
++import java.util.*
+ 
+ class BottomSheetLayout(): BottomSheetDialogFragment() {
+     private var _binding: LayoutBottomSheetBinding? = null
+     private val binding get() = _binding!!
++    lateinit var bigLocationList: ArrayList<String>
++    lateinit var bigAdapter: ArrayAdapter<String>
+ 
+     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+         val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+ 
+         val view = View.inflate(context, R.layout.layout_bottom_sheet, null)
++
++        // 큰 지역(시) 리스트 뷰
++        val bigLocationListView = view.findViewById<ListView>(R.id.bottom_sheet_big_location)
++
++        // 첫번째 지역 선택 리스트뷰 어댑터
++        bigLocationList = arrayListOf("서울", "경기도", "인천")
++        bigAdapter = ArrayAdapter(parentFragment?.context!!,
++            R.layout.item_big_location,bigLocationList
++        )
++        bigLocationListView.adapter = bigAdapter
++        bigLocationListView.onItemClickListener = onBigClick
+         btmSheetDialog.setContentView(view)
+ 
+-
++        // 바텀시트 크기 설정
+         val btmSheetContainer = btmSheetDialog.findViewById<View>(R.id.design_bottom_sheet)
+         val params = btmSheetContainer?.layoutParams
+         val screenHeight = activity!!.resources.displayMetrics.heightPixels
+-        // status bar height
+         params?.height = (screenHeight * 0.66).toInt()
+         // params?.height = BottomSheetBehavior.PEEK_HEIGHT_AUTO
+         btmSheetContainer?.layoutParams = params
+@@ -33,6 +47,11 @@
+         return btmSheetDialog
+     }
+ 
++    private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
++        val location = (view as TextView).text.toString()
++        Log.d("로그", "location: $location")
++    }
++
+ 
+     override fun onCreateView(
+         inflater: LayoutInflater,
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05_오전_1_51_[Default_Changelist]/shelved.patch
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05_오전_1_51_[Default_Changelist]/shelved.patch	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
++++ .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05_오전_1_51_[Default_Changelist]/shelved.patch	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
+@@ -1,24 +0,0 @@
+-Index: .idea/gradle.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"PLATFORM\" />\r\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"1.8\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n        <option name=\"resolveModulePerSourceSet\" value=\"false\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+---- .idea/gradle.xml	(revision 4ffc25b728d41ce76723380c5a1547859479eb4f)
+-+++ .idea/gradle.xml	(date 1614876681376)
+-@@ -1,5 +1,6 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-+  <component name="GradleMigrationSettings" migrationVersion="1" />
+-   <component name="GradleSettings">
+-     <option name="linkedExternalProjectsSettings">
+-       <GradleProjectSettings>
+-@@ -14,6 +15,7 @@
+-           </set>
+-         </option>
+-         <option name="resolveModulePerSourceSet" value="false" />
+-+        <option name="useQualifiedModuleNames" value="true" />
+-       </GradleProjectSettings>
+-     </option>
+-   </component>
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05__1_51__Default_Changelist_.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05__1_51__Default_Changelist_.xml	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
++++ .idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05__1_51__Default_Changelist_.xml	(revision 4050067d788453aaae4b1fd5b823ded2025dc6be)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_2021-03-05_오전_1_51_[Default_Changelist]" date="1614876709899" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2021-03-05_오전_1_51_[Default_Changelist]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2021-03-05 오전 1:51 [Default Changelist]" />
+-</changelist>
+\ No newline at end of file

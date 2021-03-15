@@ -6,4 +6,6 @@
     <color name="ColorPrimaryLight">#979797</color>
     <color name="colorSecondary">#FF603D</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorPrimaryGrey">#dadada</color>
+    <color name="colorPrimaryGray60">#979797</color>
 </resources>

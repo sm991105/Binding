@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 서울 서점 -->
+    <string-array name="Seoul">
+        <item>강남구</item>
+        <item>강동구</item>
+        <item>강북구</item>
+        <item>강서구</item>
+        <item>관악구</item>
+        <item>광진구</item>
+        <item>구로구</item>
+        <item>금천구</item>
+        <item>노원구</item>
+        <item>도봉구</item>
+        <item>동대문구</item>
+        <item>동작구</item>
+        <item>마포구</item>
+        <item>서대문구</item>
+        <item>서초구</item>
+        <item>성동구</item>
+        <item>성북구</item>
+        <item>송파구</item>
+        <item>양천구</item>
+        <item>영등포구</item>
+        <item>용산구</item>
+        <item>은평구</item>
+        <item>종로구</item>
+        <item>중구</item>
+        <item>중랑구</item>
+    </string-array>
+
+    <!-- 경기도 서점-->
+    <string-array name="Gyeonggi">
+        <item>가평군</item>
+        <item>고양시</item>
+        <item>과천시</item>
+        <item>광명시</item>
+        <item>광주시</item>
+        <item>구리시</item>
+        <item>군포시</item>
+        <item>김포시</item>
+        <item>남양주시</item>
+        <item>동두천시</item>
+        <item>부천시</item>
+        <item>성남시</item>
+        <item>수원시</item>
+        <item>시흥시</item>
+        <item>안산시</item>
+        <item>안성시</item>
+        <item>안양시</item>
+        <item>양주시</item>
+        <item>양평군</item>
+        <item>여주시</item>
+        <item>연천군</item>
+        <item>오산시</item>
+        <item>용인시</item>
+        <item>의왕시</item>
+        <item>의정부시</item>
+        <item>이천시</item>
+        <item>파주시</item>
+        <item>평택시</item>
+        <item>포천시</item>
+        <item>하남시</item>
+        <item>화성시</item>
+    </string-array>
+
+    <!-- 인천 서점 -->
+    <string-array name="Incheon">
+        <item>강화군</item>
+        <item>계양구</item>
+        <item>남동구</item>
+        <item>동구</item>
+        <item>미추홀구</item>
+        <item>부평구</item>
+        <item>서구</item>
+        <item>연수구</item>
+        <item>웅진군</item>
+    </string-array>
+</resources>

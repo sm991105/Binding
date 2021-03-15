@@ -1,7 +1,9 @@
 package com.example.binding.src.main.menu
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,8 @@ import com.example.binding.R
 import com.example.binding.src.main.home.HomeRecyclerViewAdapter
 import com.example.binding.src.main.home.models.GetBooksResponse
 import com.example.binding.src.main.menu.models.StoresResult
+import com.example.binding.src.main.menu.store_detail.StoreDetailFragment
+import com.example.binding.src.main.my_page.MyPageFragment
 import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.item_menu.view.*
 
@@ -40,9 +44,10 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
     }
 
     inner class StoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-         private val photo: RoundedImageView = itemView.item_menu_photo
-         private val title: TextView = itemView.item_menu_title
-         private val address: TextView = itemView.item_menu_address
+        private val item: View = itemView
+        private val photo: RoundedImageView = itemView.item_menu_photo
+        private val title: TextView = itemView.item_menu_title
+        private val address: TextView = itemView.item_menu_address
 
         fun bindValue(store: StoresResult){
             Glide.with(menuFragment)
@@ -52,8 +57,20 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
 
             title.text = store.storeName
             address.text = store.location
+
+            item.setOnClickListener{
+                val fragmentManager = menuFragment.childFragmentManager
+                val storeDetailFragment = StoreDetailFragment()
+                val idxBundle = Bundle()
+                idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
+                storeDetailFragment.arguments = idxBundle
+                fragmentManager.beginTransaction()
+                    .replace(R.id.menu_root, storeDetailFragment)
+                    .commitAllowingStateLoss()
+            }
         }
     }
+
 
     fun updateList(newList: ArrayList<StoresResult>){
         storeList = newList
