@@ -23,7 +23,8 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
     lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터
     lateinit var smallLocationList: ArrayList<String> // 두번째 지역(구) 리스트뷰 데이터
     lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터
-    lateinit var selectedLocations: ArrayList<String>
+    private var selectedLocation: String? = null             // 최종 선택된 지역
+    lateinit var selectedLocations: ArrayList<String> // 여러 지역 선택할 때 사용 가능
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -59,23 +60,32 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
         binding.bottomSheetSmallList.adapter = smallAdapter
         binding.bottomSheetSmallList.onItemClickListener = onSmallClick
 
+        selectedLocations = arrayListOf("강동구") // 여러 지역 선택할 때 사용 가능
         // 선택완료 버튼
-        selectedLocations = ArrayList()
+
         binding.bottomSheetButton.setOnClickListener(onClickSelect)
 
     }
 
     private val onClickSelect = View.OnClickListener {
         val smallListView = binding.bottomSheetSmallList
+
+        // 지역을 선택하고 버튼을 누르면 동작
+        if(selectedLocation != null){
+            selectedLocations[0] = selectedLocation!!
+            menuFragmentView.changeStores(selectedLocations)
+        }
+        /*// 각 리스트 아이템이 선택되었는지, 반복문을 사용하여 확인 가능
         val checkedItems: SparseBooleanArray = smallListView.checkedItemPositions
         for(i in 0 until smallListView.count){
             if(checkedItems.get(i)){
                 selectedLocations.add(smallLocationList[i])
             }
-        }
-        Log.d("로그", "onClickSelect() called, selectedLocations: $selectedLocations")
+        }*/
 
-        menuFragmentView.changeStores(selectedLocations)
+        // Log.d("로그", "onClickSelect() called, selectedLocations: $selectedLocations")
+
+        // menuFragmentView.changeStores(selectedLocations)
         this.dismiss()
     }
     private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
@@ -104,6 +114,12 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
     private val onSmallClick = AdapterView.OnItemClickListener { parent, view, position, id ->
         val location = (view as TextView).text.toString()
         Log.d("로그", "location2: $location")
+
+        selectedLocation = if(view.isActivated) {
+            location
+        }else{
+            null
+        }
     }
 
 

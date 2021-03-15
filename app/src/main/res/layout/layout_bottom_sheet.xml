@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:choiceMode="multipleChoice"
+                android:choiceMode="singleChoice"
                 android:divider="@color/colorPrimaryGrey"
                 android:dividerHeight="1dp"
                 android:listSelector="@android:color/transparent">

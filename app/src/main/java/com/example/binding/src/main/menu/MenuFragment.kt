@@ -32,7 +32,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
             , LinearLayoutManager.VERTICAL, false
         )
 
-        // 임시로 1페이지 10개만 가져온다
+        // 임시로 1페이지 15개만 가져온다
         MenuService(this).tryGetAllStores(0, 15)
 
         // 지역 선택 버튼 클릭
@@ -91,7 +91,6 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
                 // 서점 데이터 전달
                 menuRecyclerAdapter.updateList(storeList)
-
 
             }
 
