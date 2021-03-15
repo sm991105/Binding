@@ -19,8 +19,8 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
     private var _binding: LayoutBottomSheetBinding? = null
     private val binding get() = _binding!!
 
-    lateinit var bigLocationList: ArrayList<String> // 첫번째 지역(시/도) 리스트뷰 데이터
-    lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터
+    private lateinit var bigLocationList: ArrayList<String> // 첫번째 지역(시/도) 리스트뷰 데이터
+    private lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터
     lateinit var smallLocationList: ArrayList<String> // 두번째 지역(구) 리스트뷰 데이터
     lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터
     private var selectedLocation: String? = null             // 최종 선택된 지역
@@ -52,6 +52,7 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
         bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location,bigLocationList)
         binding.bottomSheetBigList.adapter = bigAdapter
         binding.bottomSheetBigList.onItemClickListener = onBigClick
+        (binding.bottomSheetBigList.getChildAt(0)).isActivated = true
 
         // 두번째 지역 선택 리스트뷰 설정
         smallLocationList = arrayListOf()
@@ -64,6 +65,10 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
         // 선택완료 버튼
 
         binding.bottomSheetButton.setOnClickListener(onClickSelect)
+
+        binding.bottomSheetCancel.setOnClickListener {
+            this.dismiss()
+        }
 
     }
 
@@ -94,6 +99,10 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
         Log.d("로그", "location1: $location")
 
         // 선택한 지역에 맞게 2번째 리스트뷰 업데이트
+        updateSmallListView(location)
+    }
+
+    private fun updateSmallListView(location: String){
         when(location){
             "서울" -> smallLocationList.let{
                 it.clear()
@@ -103,7 +112,7 @@ class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDial
                 smallLocationList.let{
                     it.clear()
                     it.addAll(resources.getStringArray(R.array.Gyeonggi))
-            }
+                }
             "인천" -> smallLocationList.let{
                 it.clear()
                 it.addAll(resources.getStringArray(R.array.Incheon))

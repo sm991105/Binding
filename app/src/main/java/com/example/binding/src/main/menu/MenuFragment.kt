@@ -32,6 +32,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
             , LinearLayoutManager.VERTICAL, false
         )
 
+        showLoadingDialog(context!!)
         // 임시로 1페이지 15개만 가져온다
         MenuService(this).tryGetAllStores(0, 15)
 
@@ -49,6 +50,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
     override fun onGetAllStoresSuccess(response: GetStoresResponse) {
         Log.d("로그", "onGetAllStoresSuccess() called, response: $response")
+        dismissLoadingDialog()
 
         when(response.code){
             // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다
@@ -73,12 +75,14 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
     override fun onGetAllStoresFailure(message: String) {
         Log.d("로그", "onGetAllStoresFailure() called, message: $message")
+        dismissLoadingDialog()
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
 
     override fun onGetLocationStoresSuccess(response: GetStoresResponse) {
         Log.d("로그", "onGetLocationStoresSuccess() called, response: $response")
+        dismissLoadingDialog()
 
         when(response.code){
             // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다
@@ -104,11 +108,13 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
     override fun onGetLocationStoresFailure(message: String) {
         Log.d("로그", "onGetLocationStoresFailure() called, message: $message")
+        dismissLoadingDialog()
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
 
     override fun changeStores(LocationList: ArrayList<String>) {
+        showLoadingDialog(context!!)
         MenuService(this).tryGetLocationStores(0, 15, LocationList)
     }
 
