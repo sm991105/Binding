@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.example.binding.R
 import com.example.binding.config.BaseFragment
@@ -46,10 +47,23 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
             (activity!! as JoinActivity).moveToLogin(false)
         }
 
+        // 엔터 -> next 버튼 클릭
+        binding.join1Email.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.join1Next.performClick()
+                true
+            }
+            false
+        }
+
         binding.join1Email.onFocusChangeListener = onFocusChange
 
         /*// 입력하는 동안 이메일 형식 검사
         binding.join1Email.addTextChangedListener(emailWatcher)*/
+
+
 
     }
 
@@ -75,7 +89,7 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
         }
     }
 
-    // 정규식으로 핸드폰번호 형식 검사하는 함수
+    // 정규식으로 이메일 형식 검사하는 함수
     fun isValidEmail(emailAddress: String):Boolean {
         var returnValue = false
 

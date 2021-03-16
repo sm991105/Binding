@@ -43,7 +43,8 @@
         android:background="@null"
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
-        android:hint="@string/email_hint"/>
+        android:hint="@string/email_hint"
+        android:inputType="textEmailAddress"/>
     <ImageView
         android:id="@+id/login_email_line"
         android:layout_width="match_parent"
@@ -70,7 +71,8 @@
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="17dp"
         android:hint="@string/email_password"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:maxLines="1"/>
 
     <ImageView
         android:id="@+id/login_pw_line"

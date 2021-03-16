@@ -1,15 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!--Status Bar 배경색
+        <!--Status Bar 배경색-->
         <item name="android:statusBarColor">@color/colorPrimary</item>
-        Status Bar 글자색깔
-        <item name="android:windowLightStatusBar">true</item> -->
+        <!--Status Bar 글자색깔-->
+        <item name="android:windowLightStatusBar">true</item>
 
         <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
         <item name="android:buttonStyle">@style/customButtonFontStyle</item>
@@ -19,16 +20,8 @@
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
 
-    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name = "bottomSheetStyle">@style/BottomSheetStyle</item>
-    </style>
-
-    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bottom_sheet_background</item>
-    </style>
-
-    <!-- 상태바 투명 -->
     <style name="StoreDetailTheme" parent="AppTheme">
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>

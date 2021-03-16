@@ -1,21 +1,17 @@
 package com.example.binding.src.join.join3
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.example.binding.R
-import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseFragment
 import com.example.binding.config.BaseResponse
-import com.example.binding.databinding.FragmentJoin1Binding
-import com.example.binding.databinding.FragmentJoin2Binding
 import com.example.binding.databinding.FragmentJoin3Binding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.join.join3.models.PostJoinBody
-import com.example.binding.src.login.LoginActivity
-import com.example.binding.util.JoinDialog
+import com.example.binding.src.join.done.JoinDoneDialog
 import java.util.regex.Pattern
 
 class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
@@ -53,9 +49,19 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
         pwd = arguments?.getString("pwd","12345678a").toString()
         pwdChk = arguments?.getString("pwdChk","12345678a").toString()
 
-
         // 다음 버튼 클릭 -> 닉네임 형식이 올바르면 중복 닉네임 api 호출
         binding.join3Next.setOnClickListener(onClickNext)
+
+        // 엔터키 -> 다음 버튼
+        binding.join3Name.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.join3Next.performClick()
+                true
+            }
+            false
+        }
 
         // 에러 메세지들을 감춘다.
         binding.join3WrongNickname.visibility = View.INVISIBLE
@@ -119,8 +125,9 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
 
                 isHere = false
                 // 회원가입 완료 화면을 띄운다
-                val mJoinDialog = JoinDialog(activity as Context, response.isSuccess)
-                mJoinDialog.show()
+                val mJoinDialog = JoinDoneDialog(activity as Context, response.isSuccess)
+                val fragmentManager = childFragmentManager
+                mJoinDialog.show(fragmentManager, "join_done")
             }
 
             // 닉네임 형식 오류

@@ -1,5 +1,6 @@
 package com.example.binding.src.main.menu.store_detail
 
+import com.example.binding.config.BaseResponse
 import com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse
 
 interface StoreDetailFragmentView {
@@ -8,5 +9,10 @@ interface StoreDetailFragmentView {
     fun onGetBookStoreSuccess(response: GetBookStoreResponse)
 
     fun onGetBookStoreFailure(message: String)
+
+    // 북마크 수정 API 콜백 함수
+    fun onPatchBookmarkSuccess(response: BaseResponse)
+
+    fun onPatchBookmarkFailure(message: String)
 
 }
