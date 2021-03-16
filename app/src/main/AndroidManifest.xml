@@ -22,6 +22,7 @@
         </activity>
 
         <activity android:name=".src.main.MainActivity">
+
         </activity>
 
         <!-- 로그인 화면-->

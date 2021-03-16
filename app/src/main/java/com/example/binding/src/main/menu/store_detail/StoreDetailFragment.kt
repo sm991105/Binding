@@ -5,21 +5,22 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.WindowManager
+import android.view.*
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.binding.R
 import com.example.binding.config.ApplicationClass
-import com.example.binding.config.BaseFragment
 import com.example.binding.config.BaseResponse
 import com.example.binding.databinding.FragmentStoreDetailBinding
 import com.example.binding.src.main.menu.store_detail.models.BookStoreImages
 import com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse
+import com.example.binding.util.LoadingDialog
 
-class StoreDetailFragment: BaseFragment<FragmentStoreDetailBinding>(
-    FragmentStoreDetailBinding::bind,
-    R.layout.fragment_store_detail
-), StoreDetailFragmentView{
+class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
+    private var _binding: FragmentStoreDetailBinding? = null
+    private val binding get() = _binding!!
+    lateinit var mLoadingDialog: LoadingDialog
 
     private val sp = ApplicationClass.sSharedPreferences
     private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스
@@ -27,15 +28,21 @@ class StoreDetailFragment: BaseFragment<FragmentStoreDetailBinding>(
     private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트
     private var isBookMarked = 0    // 1이면 마크, 0이면 노마크
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // 프래그먼트용 테마 적용
+        val contextThemeWrapper = ContextThemeWrapper(activity, R.style.StoreDetailTheme)
+        val mInflater = inflater.cloneInContext(contextThemeWrapper)
+        _binding = FragmentStoreDetailBinding.inflate(mInflater, container, false)
+        return binding.root
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // 상태바 영역까지 확장
-        val mWindow = activity?.window
-        mWindow?.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
         bookStoreIdx = arguments?.getInt("bookStoreIdx", 0)!!
 
@@ -142,5 +149,25 @@ class StoreDetailFragment: BaseFragment<FragmentStoreDetailBinding>(
         dismissLoadingDialog()
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun showCustomToast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLoadingDialog(context: Context) {
+        mLoadingDialog = LoadingDialog(context)
+        mLoadingDialog.show()
+    }
+
+    private fun dismissLoadingDialog() {
+        if (mLoadingDialog.isShowing) {
+            mLoadingDialog.dismiss()
+        }
     }
 }

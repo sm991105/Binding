@@ -14,7 +14,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         super.onCreate(savedInstanceState)
 
         // 처음 화면이 켜졌을 때 활성화될 하단 버튼 - 실제 화면이 아닌 버튼에만 적용
-        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page
+        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_menu
         // 아이콘 틴트는 셀렉터로 적용
         binding.mainBtmNav.itemIconTintList = null
 

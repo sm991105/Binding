@@ -19,4 +19,9 @@
         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
+
+    <style name="StoreDetailTheme" parent="AppTheme">
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
 </resources>

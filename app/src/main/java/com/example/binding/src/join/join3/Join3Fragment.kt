@@ -1,21 +1,16 @@
 package com.example.binding.src.join.join3
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.example.binding.R
-import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseFragment
 import com.example.binding.config.BaseResponse
-import com.example.binding.databinding.FragmentJoin1Binding
-import com.example.binding.databinding.FragmentJoin2Binding
 import com.example.binding.databinding.FragmentJoin3Binding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.join.join3.models.PostJoinBody
-import com.example.binding.src.login.LoginActivity
-import com.example.binding.util.JoinDialog
+import com.example.binding.src.join.done.JoinDoneDialog
 import java.util.regex.Pattern
 
 class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
@@ -119,8 +114,9 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
 
                 isHere = false
                 // 회원가입 완료 화면을 띄운다
-                val mJoinDialog = JoinDialog(activity as Context, response.isSuccess)
-                mJoinDialog.show()
+                val mJoinDialog = JoinDoneDialog(activity as Context, response.isSuccess)
+                val fragmentManager = childFragmentManager
+                mJoinDialog.show(fragmentManager, "join_done")
             }
 
             // 닉네임 형식 오류

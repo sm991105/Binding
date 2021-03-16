@@ -15,5 +15,14 @@ interface MenuFragmentView {
     fun onGetLocationStoresFailure(message: String)
 
     // 바텀시트에서 지역 선택을 완료했을 때 실행할 콜백함수
-    fun changeStores(LocationList: ArrayList<String>)
+    fun updateLocationStores(LocationList: ArrayList<String>)
+
+    // 전체 지역 선택
+    fun getAllStores()
+
+    // 지역 이름 변경
+    fun updateLocationTxt(location: String)
+
+    // 지역 pos 변경
+    fun updateLocationPos(bigPosition: Int, smallPosition: Int)
 }

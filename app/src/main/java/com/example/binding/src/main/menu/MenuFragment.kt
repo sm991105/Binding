@@ -3,28 +3,42 @@ package com.example.binding.src.main.menu
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.binding.R
+import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseFragment
 import com.example.binding.databinding.FragmentMenuBinding
 import com.example.binding.src.main.menu.btm_sheet.BottomSheetLayout
 import com.example.binding.src.main.menu.models.GetStoresResponse
 import com.example.binding.src.main.menu.models.StoresResult
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class MenuFragment: BaseFragment<FragmentMenuBinding>(
     FragmentMenuBinding::bind,
     R.layout.fragment_menu
 ), MenuFragmentView{
 
+    private val sp = ApplicationClass.sSharedPreferences
+
     private lateinit var storeList: ArrayList<StoresResult>
     private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter
+    private var bigPos = -1      // 큰 지역 리스트뷰 선택된  pos
+    private var smallPos = -1    // 작은 지역 리스트뷰 선택된  pos
+    private var selectedLoction: String? = null   // 선택된 지역
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 이전에 선택했던 지역 pos 값, text 값
+        sp.let{
+            bigPos = it.getInt("bigPos", -1)
+            smallPos = it.getInt("smallPos", -1)
+            selectedLoction = it.getString("selectedLocation", null)
+            if(selectedLoction != null){
+                binding.menuLocation.text = selectedLoction
+            }
+
+        }
 
         menuRecyclerAdapter = MenuRecyclerViewAdapter(this)
         binding.menuRecycler.adapter = menuRecyclerAdapter
@@ -32,18 +46,41 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
             , LinearLayoutManager.VERTICAL, false
         )
 
-        showLoadingDialog(context!!)
-        // 임시로 1페이지 15개만 가져온다
-        MenuService(this).tryGetAllStores(0, 15)
+        if(selectedLoction == null){
+            // 임시로 1페이지 30개만 가져온다
+            showLoadingDialog(context!!)
+            MenuService(this).tryGetAllStores(0, 30)
+        }else{
+            updateLocationStores(arrayListOf(selectedLoction!!))
+        }
 
         // 지역 선택 버튼 클릭
         binding.menuLocation.setOnClickListener(onClickLocation)
 
+        // binding.menuRecycler.addOnScrollListener(onRecyclerScroll)
+
     }
+
+    /*private val onRecyclerScroll = object: RecyclerView.OnScrollListener(){
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+        }
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+        }
+    }*/
 
     // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다
     private val onClickLocation = View.OnClickListener {
         val btmSheet = BottomSheetLayout(this)
+
+        // 지금 선택되어있는 지역 pos 값 전달
+        val posBundle = Bundle()
+        posBundle.putInt("bigPos", bigPos)
+        posBundle.putInt("smallPos", smallPos)
+        btmSheet.arguments = posBundle
+
         val fragmentManager = childFragmentManager
         btmSheet.show(fragmentManager, "Location")
     }
@@ -113,9 +150,32 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
 
-    override fun changeStores(LocationList: ArrayList<String>) {
+    // 바텀시트에서 선택 -> 지역 서점 가져오기
+    override fun updateLocationStores(LocationList: ArrayList<String>) {
         showLoadingDialog(context!!)
         MenuService(this).tryGetLocationStores(0, 15, LocationList)
     }
 
+    // 바텀시트에서 선택 -> 전체 서점 가져오기
+    override fun getAllStores() {
+        showLoadingDialog(context!!)
+        MenuService(this).tryGetAllStores(0, 15)
+    }
+
+    // 선택한 지역으로 TEXT 값 변경
+    override fun updateLocationTxt(location: String) {
+        binding.menuLocation.text = location
+        selectedLoction = location
+        sp.edit().putString("selectedLocation", selectedLoction).apply()
+    }
+
+    // 선택한 BottomSheetLayout의 리스트뷰의 pos 값으로 업데이트
+    override fun updateLocationPos(bigPosition: Int, smallPosition: Int) {
+        bigPos = bigPosition
+        smallPos = smallPosition
+        sp.edit().let{
+            it.putInt("bigPos", bigPos)
+            it.putInt("smallPos", smallPos)
+        }.apply()
+    }
 }

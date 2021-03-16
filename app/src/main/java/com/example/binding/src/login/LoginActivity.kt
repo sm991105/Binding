@@ -3,15 +3,14 @@ package com.example.binding.src.login
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
-import com.example.binding.R
 import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseActivity
 import com.example.binding.databinding.ActivityLoginBinding
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.login.models.LoginResponse
 import com.example.binding.src.main.MainActivity
-import com.example.binding.util.JoinDialog
 
 class LoginActivity: BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),
 LoginActivityView{
@@ -46,6 +45,16 @@ LoginActivityView{
         // 각 입력칸이 포커싱되면 밑줄이 굵어진다
         binding.loginEmail.onFocusChangeListener = onFocusEmail
         binding.loginPassword.onFocusChangeListener = onFocusPwd
+
+        // 엔터키 방지
+        binding.loginEmail.setOnKeyListener { v, keyCode, event ->
+            when(keyCode){
+               KeyEvent.KEYCODE_ENTER -> {
+                   true
+               }
+                else -> {true}
+            }
+        }
     }
 
     // 로그인(다음) 버튼 클릭

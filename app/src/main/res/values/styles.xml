@@ -27,4 +27,8 @@
         <item name="android:background">@drawable/bottom_sheet_background</item>
     </style>
 
+    <!-- 상태바 투명 -->
+    <style name="StoreDetailTheme" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
 </resources>
