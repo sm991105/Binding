@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/background_post"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+
+    <RelativeLayout
+        android:id="@+id/item_post_info"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="8dp">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/item_post_photo"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="23dp"
+            android:layout_marginBottom="20dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/jangu"
+            app:riv_border_width="0dip"
+            app:riv_corner_radius="50dip" />
+
+
+        <TextView
+            android:id="@+id/item_post_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="14dp"
+            android:layout_toRightOf="@id/item_post_photo"
+            android:fontFamily="@font/notosanskrbold"
+            android:text="뭐가있조"
+            android:textColor="#343434"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/item_post_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="14dp"
+            android:layout_toRightOf="@id/item_post_nickname"
+            android:text="2020.02.07"
+            android:textColor="@color/ColorPrimaryLight"
+            android:textSize="10dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/item_post_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_post_info"
+        android:layout_marginBottom="15dp"
+        android:justificationMode="inter_word"
+        android:text="@string/post_text"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="13dp" />
+
+    <ImageView
+        android:id="@+id/item_post_bookmark_empty"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/bookmark_empty"
+        android:layout_alignParentRight="true"/>
+
+    <!-- 채워진 북마크입니다 -->
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/item_post_bookmark_filled"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/bookmark_filled"
+        android:layout_alignParentRight="true"/>
+
+
+
+    <RelativeLayout
+        android:id="@+id/item_post_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_post_text">
+
+        <TextView
+            android:id="@+id/item_post_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="신고"
+            android:layout_alignParentRight="true"
+            android:textColor="#4d4d4d"
+            android:textSize="10sp" />
+
+        <!-- 자기가 쓴 글일 경우 -->
+        <TextView
+            android:visibility="invisible"
+            android:id="@+id/item_post_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@id/item_post_delete"
+            android:text="수정"
+            android:textAlignment="viewEnd"
+            android:textColor="#4d4d4d"
+            android:textSize="10sp" />
+
+        <TextView
+            android:visibility="invisible"
+            android:id="@+id/item_post_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="삭제"
+            android:layout_alignParentRight="true"
+            android:textAlignment="viewEnd"
+            android:textColor="#4d4d4d"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

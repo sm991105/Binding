@@ -137,6 +137,7 @@
                 android:layout_margin="20dp"
                 android:textSize="15dp"
                 android:lineSpacingExtra="2dp"
+                android:justificationMode="inter_word"
                 android:textColor="@color/ColorPrimaryLight"
                 android:layout_below="@id/store_detail_view"/>
         </RelativeLayout>
