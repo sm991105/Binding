@@ -46,8 +46,8 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
             , LinearLayoutManager.VERTICAL, false
         )
 
-        if(selectedLoction == null){
-            // 임시로 1페이지 30개만 가져온다
+        if(smallPos == -1){
+            // 임시로 1페이지 30개만 가져온다, 전체 서점
             showLoadingDialog(context!!)
             MenuService(this).tryGetAllStores(0, 30)
         }else{

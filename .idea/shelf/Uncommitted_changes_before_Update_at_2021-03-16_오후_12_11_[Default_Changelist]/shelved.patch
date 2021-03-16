@@ -1,0 +1,896 @@
+Index: app/src/main/java/com/example/binding/util/JoinDialog.kt
+===================================================================
+--- app/src/main/java/com/example/binding/util/JoinDialog.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/util/JoinDialog.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
+@@ -1,38 +0,0 @@
+-package com.example.binding.util
+-
+-import android.app.Dialog
+-import android.content.Context
+-import android.content.Intent
+-import android.graphics.drawable.ColorDrawable
+-import android.os.Bundle
+-import android.view.Window
+-import com.example.binding.databinding.DialogJoinBinding
+-import com.example.binding.src.join.JoinActivity
+-import com.example.binding.src.login.LoginActivity
+-
+-class JoinDialog(context: Context, private val isSuccess: Boolean) : Dialog(context) {
+-    private lateinit var binding: DialogJoinBinding
+-    override fun onCreate(savedInstanceState: Bundle?) {
+-        super.onCreate(savedInstanceState)
+-        requestWindowFeature(Window.FEATURE_NO_TITLE)
+-        binding = DialogJoinBinding.inflate(layoutInflater)
+-        setContentView(binding.root)
+-        setCanceledOnTouchOutside(false)
+-        setCancelable(false)
+-        window!!.setBackgroundDrawable(ColorDrawable())
+-        window!!.setDimAmount(0.2f)
+-
+-        // 로그인 화면으로 돌아간다
+-        binding.dialogBtnLogin.setOnClickListener {
+-            val loginIntent = Intent(ownerActivity, LoginActivity::class.java)
+-            (ownerActivity as JoinActivity).let{
+-                it.moveToLogin(isSuccess)
+-                it.finish()
+-            }
+-        }
+-    }
+-
+-    override fun show() {
+-        if(!this.isShowing) super.show()
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/res/values-v23/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n\r\n    <style name=\"AppTheme\" parent=\"Theme.AppCompat.Light.NoActionBar\">\r\n        <!-- Customize your theme here. -->\r\n        <item name=\"colorPrimary\">@color/colorPrimary</item>\r\n        <item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\r\n        <item name=\"colorAccent\">@color/colorAccent</item>\r\n\r\n        <!--Status Bar 배경색-->\r\n        <item name=\"android:statusBarColor\">@color/colorPrimary</item>\r\n        <!--Status Bar 글자색깔-->\r\n        <item name=\"android:windowLightStatusBar\">true</item>\r\n\r\n        <item name=\"android:textViewStyle\">@style/customTextViewFontStyle</item>\r\n        <item name=\"android:buttonStyle\">@style/customButtonFontStyle</item>\r\n        <item name=\"android:editTextStyle\">@style/customEditTextFontStyle</item>\r\n        <item name=\"android:radioButtonStyle\">@style/customRadioButtonFontStyle</item>\r\n        <item name=\"android:checkboxStyle\">@style/customCheckboxFontStyle</item>\r\n        <item name=\"bottomSheetDialogTheme\">@style/BottomSheetDialogTheme</item>\r\n    </style>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values-v23/styles.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/values-v23/styles.xml	(date 1615830961716)
+@@ -19,4 +19,9 @@
+         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
+         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
+     </style>
++
++    <style name="StoreDetailTheme" parent="AppTheme">
++        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
++        <item name="android:windowTranslucentStatus">true</item>
++    </style>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/main/menu/MenuFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.menu\r\n\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport android.widget.ArrayAdapter\r\nimport android.widget.LinearLayout\r\nimport android.widget.TextView\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.example.binding.R\r\nimport com.example.binding.config.BaseFragment\r\nimport com.example.binding.databinding.FragmentMenuBinding\r\nimport com.example.binding.src.main.menu.btm_sheet.BottomSheetLayout\r\nimport com.example.binding.src.main.menu.models.GetStoresResponse\r\nimport com.example.binding.src.main.menu.models.StoresResult\r\nimport com.google.android.material.bottomsheet.BottomSheetDialog\r\n\r\nclass MenuFragment: BaseFragment<FragmentMenuBinding>(\r\n    FragmentMenuBinding::bind,\r\n    R.layout.fragment_menu\r\n), MenuFragmentView{\r\n\r\n    private lateinit var storeList: ArrayList<StoresResult>\r\n    private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        menuRecyclerAdapter = MenuRecyclerViewAdapter(this)\r\n        binding.menuRecycler.adapter = menuRecyclerAdapter\r\n        binding.menuRecycler.layoutManager = LinearLayoutManager(activity\r\n            , LinearLayoutManager.VERTICAL, false\r\n        )\r\n\r\n        showLoadingDialog(context!!)\r\n        // 임시로 1페이지 15개만 가져온다\r\n        MenuService(this).tryGetAllStores(0, 15)\r\n\r\n        // 지역 선택 버튼 클릭\r\n        binding.menuLocation.setOnClickListener(onClickLocation)\r\n\r\n    }\r\n\r\n    // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다\r\n    private val onClickLocation = View.OnClickListener {\r\n        val btmSheet = BottomSheetLayout(this)\r\n        val fragmentManager = childFragmentManager\r\n        btmSheet.show(fragmentManager, \"Location\")\r\n    }\r\n\r\n    override fun onGetAllStoresSuccess(response: GetStoresResponse) {\r\n        Log.d(\"로그\", \"onGetAllStoresSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다\r\n            1000 -> {\r\n                val result = response.result\r\n                Log.d(\"로그\", \"전체 서점 조회 성공 - result: $result\")\r\n\r\n                storeList = ArrayList()\r\n                storeList = result\r\n\r\n                // 서점 데이터 전달\r\n                menuRecyclerAdapter.updateList(storeList)\r\n            }\r\n\r\n            else -> {\r\n                Log.d(\"로그\", \"전체 서점 조회 실패 - message: ${response.message}\")\r\n\r\n                response.message?.let{showCustomToast(it)}\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onGetAllStoresFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetAllStoresFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    override fun onGetLocationStoresSuccess(response: GetStoresResponse) {\r\n        Log.d(\"로그\", \"onGetLocationStoresSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다\r\n            1000 -> {\r\n                val result = response.result\r\n                Log.d(\"로그\", \"지역 서점 조회 성공 - result: $result\")\r\n\r\n                storeList = ArrayList()\r\n                storeList = result\r\n\r\n                // 서점 데이터 전달\r\n                menuRecyclerAdapter.updateList(storeList)\r\n\r\n            }\r\n\r\n            else -> {\r\n                Log.d(\"로그\", \"지역 서점 조회 실패 - message: ${response.message}\")\r\n\r\n                response.message?.let{showCustomToast(it)}\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onGetLocationStoresFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetLocationStoresFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    override fun changeStores(LocationList: ArrayList<String>) {\r\n        showLoadingDialog(context!!)\r\n        MenuService(this).tryGetLocationStores(0, 15, LocationList)\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/menu/MenuFragment.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/menu/MenuFragment.kt	(date 1615864062170)
+@@ -3,47 +3,84 @@
+ import android.os.Bundle
+ import android.util.Log
+ import android.view.View
+-import android.widget.ArrayAdapter
+-import android.widget.LinearLayout
+-import android.widget.TextView
+ import androidx.recyclerview.widget.LinearLayoutManager
++import androidx.recyclerview.widget.RecyclerView
+ import com.example.binding.R
++import com.example.binding.config.ApplicationClass
+ import com.example.binding.config.BaseFragment
+ import com.example.binding.databinding.FragmentMenuBinding
+ import com.example.binding.src.main.menu.btm_sheet.BottomSheetLayout
+ import com.example.binding.src.main.menu.models.GetStoresResponse
+ import com.example.binding.src.main.menu.models.StoresResult
+-import com.google.android.material.bottomsheet.BottomSheetDialog
+ 
+ class MenuFragment: BaseFragment<FragmentMenuBinding>(
+     FragmentMenuBinding::bind,
+     R.layout.fragment_menu
+ ), MenuFragmentView{
+ 
++    private val sp = ApplicationClass.sSharedPreferences
++
+     private lateinit var storeList: ArrayList<StoresResult>
+     private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter
++    private var bigPos = -1      // 큰 지역 리스트뷰 선택된  pos
++    private var smallPos = -1    // 작은 지역 리스트뷰 선택된  pos
++    private var selectedLoction: String? = null   // 선택된 지역
+ 
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
++        // 이전에 선택했던 지역 pos 값, text 값
++        sp.let{
++            bigPos = it.getInt("bigPos", -1)
++            smallPos = it.getInt("smallPos", -1)
++            selectedLoction = it.getString("selectedLocation", null)
++            if(selectedLoction != null){
++                binding.menuLocation.text = selectedLoction
++            }
++
++        }
++
+         menuRecyclerAdapter = MenuRecyclerViewAdapter(this)
+         binding.menuRecycler.adapter = menuRecyclerAdapter
+         binding.menuRecycler.layoutManager = LinearLayoutManager(activity
+             , LinearLayoutManager.VERTICAL, false
+         )
+ 
+-        showLoadingDialog(context!!)
+-        // 임시로 1페이지 15개만 가져온다
+-        MenuService(this).tryGetAllStores(0, 15)
++        if(selectedLoction == null){
++            // 임시로 1페이지 30개만 가져온다
++            showLoadingDialog(context!!)
++            MenuService(this).tryGetAllStores(0, 30)
++        }else{
++            updateLocationStores(arrayListOf(selectedLoction!!))
++        }
+ 
+         // 지역 선택 버튼 클릭
+         binding.menuLocation.setOnClickListener(onClickLocation)
+ 
++        // binding.menuRecycler.addOnScrollListener(onRecyclerScroll)
++
+     }
++
++    /*private val onRecyclerScroll = object: RecyclerView.OnScrollListener(){
++        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
++            super.onScrollStateChanged(recyclerView, newState)
++        }
++
++        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
++            super.onScrolled(recyclerView, dx, dy)
++        }
++    }*/
+ 
+     // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다
+     private val onClickLocation = View.OnClickListener {
+         val btmSheet = BottomSheetLayout(this)
++
++        // 지금 선택되어있는 지역 pos 값 전달
++        val posBundle = Bundle()
++        posBundle.putInt("bigPos", bigPos)
++        posBundle.putInt("smallPos", smallPos)
++        btmSheet.arguments = posBundle
++
+         val fragmentManager = childFragmentManager
+         btmSheet.show(fragmentManager, "Location")
+     }
+@@ -113,9 +150,32 @@
+         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+     }
+ 
+-    override fun changeStores(LocationList: ArrayList<String>) {
++    // 바텀시트에서 선택 -> 지역 서점 가져오기
++    override fun updateLocationStores(LocationList: ArrayList<String>) {
+         showLoadingDialog(context!!)
+         MenuService(this).tryGetLocationStores(0, 15, LocationList)
+     }
+ 
++    // 바텀시트에서 선택 -> 전체 서점 가져오기
++    override fun getAllStores() {
++        showLoadingDialog(context!!)
++        MenuService(this).tryGetAllStores(0, 15)
++    }
++
++    // 선택한 지역으로 TEXT 값 변경
++    override fun updateLocationTxt(location: String) {
++        binding.menuLocation.text = location
++        selectedLoction = location
++        sp.edit().putString("selectedLocation", selectedLoction).apply()
++    }
++
++    // 선택한 BottomSheetLayout의 리스트뷰의 pos 값으로 업데이트
++    override fun updateLocationPos(bigPosition: Int, smallPosition: Int) {
++        bigPos = bigPosition
++        smallPos = smallPosition
++        sp.edit().let{
++            it.putInt("bigPos", bigPos)
++            it.putInt("smallPos", smallPos)
++        }.apply()
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_store_detail.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@color/colorPrimary\"\r\n    tools:context=\".src.splash.SplashActivity\">\r\n\r\n    <ScrollView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\">\r\n\r\n        <RelativeLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\">\r\n\r\n            <ImageView\r\n                android:id=\"@+id/store_detail_cover\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"215dp\"\r\n                android:scaleType=\"centerCrop\"\r\n                android:src=\"@drawable/jangu\" />\r\n            \r\n            <ImageView\r\n                android:id=\"@+id/store_detail_bookmark_empty\"\r\n                android:layout_width=\"40dp\"\r\n                android:layout_height=\"40dp\"\r\n                android:src=\"@drawable/bookmark_empty\"\r\n                android:layout_below=\"@id/store_detail_cover\"\r\n                android:layout_alignParentRight=\"true\"\r\n                android:layout_marginRight=\"20dp\"/>\r\n\r\n            <!-- 클릭시 색깔 채워지도록 설정해주세요 -->\r\n            <ImageView\r\n                android:visibility=\"invisible\"\r\n                android:id=\"@+id/store_detail_bookmark_filled\"\r\n                android:layout_width=\"40dp\"\r\n                android:layout_height=\"40dp\"\r\n                android:src=\"@drawable/bookmark_filled\"\r\n                android:layout_below=\"@id/store_detail_cover\"\r\n                android:layout_alignParentRight=\"true\"\r\n                android:layout_marginRight=\"20dp\"/>\r\n\r\n            <TextView\r\n                android:id=\"@+id/store_detail_store_name\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginLeft=\"20dp\"\r\n                android:layout_marginTop=\"150dp\"\r\n                android:fontFamily=\"@font/notosanskrbold\"\r\n                android:text=\"뭐가있조\"\r\n                android:textColor=\"#ffffff\"\r\n                android:textSize=\"20dp\" />\r\n\r\n            <LinearLayout\r\n                android:id=\"@+id/store_detail_location\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_below=\"@id/store_detail_cover\"\r\n                android:layout_marginTop=\"20dp\">\r\n                <ImageView\r\n                    android:layout_width=\"15dp\"\r\n                    android:layout_height=\"15dp\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"20dp\"\r\n                    android:src=\"@drawable/location\" />\r\n                <TextView\r\n                    android:id=\"@+id/store_detail_location_txt\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_below=\"@id/store_detail_cover\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"9dp\"\r\n                    android:text=\"경기 수원시 팔달구 권광로188번길 2층 부크빌라\"\r\n                    android:textColor=\"#494949\"\r\n                    android:textSize=\"12dp\"/>\r\n            </LinearLayout>\r\n<<<<<<< HEAD:app/src/main/res/layout/activity_store_detail.xml\r\n\r\n=======\r\n            <LinearLayout\r\n                android:id=\"@+id/store_detail_time\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_below=\"@id/store_detail_location\"\r\n                android:layout_marginTop=\"8dp\">\r\n                <ImageView\r\n                    android:layout_width=\"15dp\"\r\n                    android:layout_height=\"15dp\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"20dp\"\r\n                    android:src=\"@drawable/time\" />\r\n                <TextView\r\n                    android:id=\"@+id/store_detail_time_txt\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_below=\"@id/store_detail_cover\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"9dp\"\r\n                    android:text=\"매일 14:00 ~ 21:00\"\r\n                    android:textColor=\"#494949\"\r\n                    android:textSize=\"12dp\"/>\r\n            </LinearLayout>\r\n>>>>>>> c7ebe06ce00649a31f952d0e431e061b4d88ac8b:app/src/main/res/layout/fragment_store_detail.xml\r\n            <LinearLayout\r\n                android:id=\"@+id/store_detail_home\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_below=\"@id/store_detail_location\">\r\n                <ImageView\r\n                    android:layout_width=\"15dp\"\r\n                    android:layout_height=\"15dp\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"20dp\"\r\n                    android:src=\"@drawable/home\" />\r\n                <TextView\r\n                    android:id=\"@+id/store_detail_web_address\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_below=\"@id/store_detail_cover\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"9dp\"\r\n                    android:text=\"@string/bookvill\"\r\n                    android:textColor=\"#494949\"\r\n                    android:textSize=\"12dp\"/>\r\n            </LinearLayout>\r\n            <LinearLayout\r\n                android:id=\"@+id/store_detail_phone\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_below=\"@id/store_detail_home\">\r\n                <ImageView\r\n                    android:layout_width=\"15dp\"\r\n                    android:layout_height=\"15dp\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"20dp\"\r\n                    android:src=\"@drawable/phone\" />\r\n                <TextView\r\n                    android:id=\"@+id/store_detail_phone_txt\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_below=\"@id/store_detail_cover\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:layout_marginLeft=\"9dp\"\r\n                    android:text=\"010-2779-4199\"\r\n                    android:textColor=\"#494949\"\r\n                    android:textSize=\"12dp\"/>\r\n            </LinearLayout>\r\n\r\n            <View\r\n                android:id=\"@+id/store_detail_view\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"1dp\"\r\n                android:layout_below=\"@id/store_detail_phone\"\r\n                android:layout_marginTop=\"18.5dp\"\r\n                android:background=\"#dadada\" />\r\n\r\n            <TextView\r\n                android:id=\"@+id/store_detail_Info\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"@string/bookvill_text\"\r\n                android:layout_margin=\"20dp\"\r\n                android:textSize=\"15dp\"\r\n                android:lineSpacingExtra=\"2dp\"\r\n                android:textColor=\"@color/ColorPrimaryLight\"\r\n                android:layout_below=\"@id/store_detail_view\"/>\r\n        </RelativeLayout>\r\n\r\n    </ScrollView>\r\n\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_store_detail.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/layout/fragment_store_detail.xml	(date 1615831327981)
+@@ -4,6 +4,7 @@
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="@color/colorPrimary"
++    android:fitsSystemWindows="true"
+     tools:context=".src.splash.SplashActivity">
+ 
+     <ScrollView
+@@ -32,7 +33,7 @@
+ 
+             <!-- 클릭시 색깔 채워지도록 설정해주세요 -->
+             <ImageView
+-                android:visibility="invisible"
++                android:visibility="gone"
+                 android:id="@+id/store_detail_bookmark_filled"
+                 android:layout_width="40dp"
+                 android:layout_height="40dp"
+@@ -75,33 +76,6 @@
+                     android:textColor="#494949"
+                     android:textSize="12dp"/>
+             </LinearLayout>
+-<<<<<<< HEAD:app/src/main/res/layout/activity_store_detail.xml
+-
+-=======
+-            <LinearLayout
+-                android:id="@+id/store_detail_time"
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:layout_below="@id/store_detail_location"
+-                android:layout_marginTop="8dp">
+-                <ImageView
+-                    android:layout_width="15dp"
+-                    android:layout_height="15dp"
+-                    android:layout_gravity="center_vertical"
+-                    android:layout_marginLeft="20dp"
+-                    android:src="@drawable/time" />
+-                <TextView
+-                    android:id="@+id/store_detail_time_txt"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="wrap_content"
+-                    android:layout_below="@id/store_detail_cover"
+-                    android:layout_gravity="center_vertical"
+-                    android:layout_marginLeft="9dp"
+-                    android:text="매일 14:00 ~ 21:00"
+-                    android:textColor="#494949"
+-                    android:textSize="12dp"/>
+-            </LinearLayout>
+->>>>>>> c7ebe06ce00649a31f952d0e431e061b4d88ac8b:app/src/main/res/layout/fragment_store_detail.xml
+             <LinearLayout
+                 android:id="@+id/store_detail_home"
+                 android:layout_width="match_parent"
+@@ -166,8 +140,5 @@
+                 android:textColor="@color/ColorPrimaryLight"
+                 android:layout_below="@id/store_detail_view"/>
+         </RelativeLayout>
+-
+     </ScrollView>
+-
+-
+ </RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/main/menu/MenuFragmentView.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.menu\r\n\r\nimport com.example.binding.src.main.menu.models.GetStoresResponse\r\n\r\ninterface MenuFragmentView {\r\n\r\n    // 전체 서점 API 콜백 함수\r\n    fun onGetAllStoresSuccess(response: GetStoresResponse)\r\n\r\n    fun onGetAllStoresFailure(message: String)\r\n\r\n    // 지역 서점 API 콜백 함수\r\n    fun onGetLocationStoresSuccess(response: GetStoresResponse)\r\n\r\n    fun onGetLocationStoresFailure(message: String)\r\n\r\n    // 바텀시트에서 지역 선택을 완료했을 때 실행할 콜백함수\r\n    fun changeStores(LocationList: ArrayList<String>)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/menu/MenuFragmentView.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/menu/MenuFragmentView.kt	(date 1615830038263)
+@@ -15,5 +15,14 @@
+     fun onGetLocationStoresFailure(message: String)
+ 
+     // 바텀시트에서 지역 선택을 완료했을 때 실행할 콜백함수
+-    fun changeStores(LocationList: ArrayList<String>)
++    fun updateLocationStores(LocationList: ArrayList<String>)
++
++    // 전체 지역 선택
++    fun getAllStores()
++
++    // 지역 이름 변경
++    fun updateLocationTxt(location: String)
++
++    // 지역 pos 변경
++    fun updateLocationPos(bigPosition: Int, smallPosition: Int)
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_login.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout android:layout_height=\"match_parent\" android:layout_width=\"match_parent\"\r\n    android:background=\"@color/colorPrimary\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    tools:context=\".src.login.LoginActivity\">\r\n    <LinearLayout\r\n        android:id=\"@+id/login_top_bar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginLeft=\"16dp\"\r\n        android:layout_marginTop=\"13dp\">\r\n\r\n        <ImageView\r\n            android:id=\"@+id/login_back\"\r\n            android:layout_width=\"24dp\"\r\n            android:layout_height=\"24dp\"\r\n            android:layout_marginTop=\"2dp\"\r\n            android:layout_gravity=\"center_vertical\"\r\n            android:src=\"@drawable/icon_left\" />\r\n\r\n        <TextView\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginLeft=\"5dp\"\r\n            android:fontFamily=\"@font/notosanskrbold\"\r\n            android:layout_marginTop=\"2dp\"\r\n            android:text=\"로그인\"\r\n            android:textColor=\"@color/colorPrimaryDark\"\r\n            android:textSize=\"16sp\" />\r\n    </LinearLayout>\r\n\r\n    <EditText\r\n        android:id=\"@+id/login_email\"\r\n        android:layout_below=\"@id/login_top_bar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"116dp\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:paddingLeft=\"11dp\"\r\n        android:paddingBottom=\"14.5dp\"\r\n        android:background=\"@null\"\r\n        android:textColor=\"@color/ColorPrimaryLight\"\r\n        android:textSize=\"17dp\"\r\n        android:hint=\"@string/email_hint\"/>\r\n    <ImageView\r\n        android:id=\"@+id/login_email_line\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_below=\"@+id/login_email\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:src=\"@drawable/line_thin\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_marginBottom=\"26.5dp\"\r\n        android:layout_marginTop=\"-10dp\"\r\n        android:adjustViewBounds=\"true\"/>\r\n\r\n\r\n    <EditText\r\n        android:id=\"@+id/login_password\"\r\n        android:layout_below=\"@id/login_email_line\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:paddingLeft=\"11dp\"\r\n        android:paddingBottom=\"14.5dp\"\r\n        android:background=\"@null\"\r\n        android:textColor=\"@color/ColorPrimaryLight\"\r\n        android:textSize=\"17dp\"\r\n        android:hint=\"@string/email_password\"\r\n        android:inputType=\"textPassword\"/>\r\n\r\n    <ImageView\r\n        android:id=\"@+id/login_pw_line\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_below=\"@+id/login_password\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:src=\"@drawable/line_thin\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_marginBottom=\"26.5dp\"\r\n        android:layout_marginTop=\"-10dp\"\r\n        android:adjustViewBounds=\"true\"/>\r\n\r\n    <!-- 클릭시 밑줄이 굵어지도록 visibility 설정해주세요 -->\r\n    <ImageView\r\n        android:visibility=\"invisible\"\r\n        android:id=\"@+id/login_email_line_bold\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_below=\"@+id/login_email\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:src=\"@drawable/line_bold\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_marginBottom=\"26.5dp\"\r\n        android:layout_marginTop=\"-10dp\"\r\n        android:adjustViewBounds=\"true\"/>\r\n\r\n    <ImageView\r\n        android:visibility=\"invisible\"\r\n        android:id=\"@+id/login_pw_line_bold\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_below=\"@+id/login_password\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:src=\"@drawable/line_bold\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_marginBottom=\"26.5dp\"\r\n        android:layout_marginTop=\"-10dp\"\r\n        android:adjustViewBounds=\"true\"/>\r\n    <!-- -->\r\n\r\n    <TextView\r\n        android:id=\"@+id/login_join\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:textColor=\"@color/ColorPrimaryLight\"\r\n        android:textSize=\"15sp\"\r\n        android:text=\"회원가입\"\r\n        android:layout_marginRight=\"23dp\"\r\n        android:layout_toLeftOf=\"@id/login_find_pw\"\r\n        android:layout_below=\"@id/login_pw_line\"/>\r\n\r\n    <TextView\r\n        android:id=\"@+id/login_find_pw\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:textColor=\"@color/ColorPrimaryLight\"\r\n        android:textSize=\"16sp\"\r\n        android:text=\"비밀번호 찾기\"\r\n        android:layout_below=\"@id/login_pw_line\"\r\n        android:layout_alignParentRight=\"true\"/>\r\n\r\n    <!-- 버튼 클릭시 로그인 정보가 틀릴 경우-->\r\n    <TextView\r\n        android:id=\"@+id/login_wrong_info\"\r\n        android:layout_below=\"@id/login_find_pw\"\r\n        android:textAlignment=\"viewEnd\"\r\n        android:layout_marginRight=\"27dp\"\r\n        android:layout_marginTop=\"24dp\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:textSize=\"13dp\"\r\n        android:textColor=\"@color/colorSecondary\"\r\n        android:text=\"가입되지 않은 이메일이거나 잘못된 비밀번호입니다\"/>\r\n\r\n    <ImageView\r\n        android:id=\"@+id/login_next\"\r\n        android:layout_width=\"70dp\"\r\n        android:layout_height=\"70dp\"\r\n        android:layout_alignParentRight=\"true\"\r\n        android:layout_alignParentBottom=\"true\"\r\n        android:layout_marginRight=\"30dp\"\r\n        android:layout_marginBottom=\"80dp\"\r\n        android:src=\"@drawable/button_arrow\"/>\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_login.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/layout/activity_login.xml	(date 1615840862786)
+@@ -43,7 +43,9 @@
+         android:background="@null"
+         android:textColor="@color/ColorPrimaryLight"
+         android:textSize="17dp"
+-        android:hint="@string/email_hint"/>
++        android:hint="@string/email_hint"
++
++        android:nextFocusDown="@id/login_password"/>
+     <ImageView
+         android:id="@+id/login_email_line"
+         android:layout_width="match_parent"
+@@ -70,7 +72,8 @@
+         android:textColor="@color/ColorPrimaryLight"
+         android:textSize="17dp"
+         android:hint="@string/email_password"
+-        android:inputType="textPassword"/>
++        android:inputType="textPassword"
++        android:maxLines="1"/>
+ 
+     <ImageView
+         android:id="@+id/login_pw_line"
+Index: app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.menu.btm_sheet\r\n\r\nimport android.app.Dialog\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.util.SparseBooleanArray\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.*\r\nimport com.example.binding.R\r\nimport com.example.binding.databinding.LayoutBottomSheetBinding\r\nimport com.example.binding.src.main.menu.MenuFragmentView\r\nimport com.google.android.material.bottomsheet.BottomSheetDialog\r\nimport com.google.android.material.bottomsheet.BottomSheetDialogFragment\r\nimport java.util.*\r\n\r\nclass BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDialogFragment() {\r\n    private var _binding: LayoutBottomSheetBinding? = null\r\n    private val binding get() = _binding!!\r\n\r\n    private lateinit var bigLocationList: ArrayList<String> // 첫번째 지역(시/도) 리스트뷰 데이터\r\n    private lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터\r\n    lateinit var smallLocationList: ArrayList<String> // 두번째 지역(구) 리스트뷰 데이터\r\n    lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터\r\n    private var selectedLocation: String? = null             // 최종 선택된 지역\r\n    lateinit var selectedLocations: ArrayList<String> // 여러 지역 선택할 때 사용 가능\r\n\r\n    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {\r\n        val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog\r\n\r\n        // 커스텀 다이얼로그 뷰 생성,적용\r\n        val view = View.inflate(context, R.layout.layout_bottom_sheet, null)\r\n        btmSheetDialog.setContentView(view)\r\n\r\n        // 바텀시트 크기 설정\r\n        val btmSheetContainer = btmSheetDialog.findViewById<View>(R.id.design_bottom_sheet)\r\n        val params = btmSheetContainer?.layoutParams\r\n        val screenHeight = activity!!.resources.displayMetrics.heightPixels\r\n        params?.height = (screenHeight * 0.66).toInt()\r\n        // params?.height = BottomSheetBehavior.PEEK_HEIGHT_AUTO\r\n        btmSheetContainer?.layoutParams = params\r\n\r\n        return btmSheetDialog\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        // 첫번째 지역 선택 리스트뷰 설정\r\n        bigLocationList = arrayListOf(\"서울\", \"경기도\", \"인천\")\r\n        bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location,bigLocationList)\r\n        binding.bottomSheetBigList.adapter = bigAdapter\r\n        binding.bottomSheetBigList.onItemClickListener = onBigClick\r\n        (binding.bottomSheetBigList.getChildAt(0)).isActivated = true\r\n\r\n        // 두번째 지역 선택 리스트뷰 설정\r\n        smallLocationList = arrayListOf()\r\n        smallLocationList.addAll(resources.getStringArray(R.array.Seoul))\r\n        smallAdapter = ArrayAdapter(context!!, R.layout.item_small_location, smallLocationList)\r\n        binding.bottomSheetSmallList.adapter = smallAdapter\r\n        binding.bottomSheetSmallList.onItemClickListener = onSmallClick\r\n\r\n        selectedLocations = arrayListOf(\"강동구\") // 여러 지역 선택할 때 사용 가능\r\n        // 선택완료 버튼\r\n\r\n        binding.bottomSheetButton.setOnClickListener(onClickSelect)\r\n\r\n        binding.bottomSheetCancel.setOnClickListener {\r\n            this.dismiss()\r\n        }\r\n\r\n    }\r\n\r\n    private val onClickSelect = View.OnClickListener {\r\n        // val smallListView = binding.bottomSheetSmallList\r\n\r\n        /*// 각 리스트 아이템이 선택되었는지, 반복문을 사용하여 확인 가능\r\n        val checkedItems: SparseBooleanArray = smallListView.checkedItemPositions\r\n        for(i in 0 until smallListView.count){\r\n            if(checkedItems.get(i)){\r\n                selectedLocations.add(smallLocationList[i])\r\n            }\r\n        }*/\r\n\r\n        // Log.d(\"로그\", \"onClickSelect() called, selectedLocations: $selectedLocations\")\r\n\r\n        // menuFragmentView.changeStores(selectedLocations)\r\n\r\n        // 지역을 선택하고 버튼을 누르면 동작\r\n        if(selectedLocation != null){\r\n            selectedLocations[0] = selectedLocation!!\r\n            menuFragmentView.changeStores(selectedLocations)\r\n        }\r\n        this.dismiss()\r\n    }\r\n    private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->\r\n        val location = (view as TextView).text.toString()\r\n        Log.d(\"로그\", \"location1: $location\")\r\n\r\n        // 선택한 지역에 맞게 2번째 리스트뷰 업데이트\r\n        updateSmallListView(location)\r\n    }\r\n\r\n    private fun updateSmallListView(location: String){\r\n        when(location){\r\n            \"서울\" -> smallLocationList.let{\r\n                it.clear()\r\n                it.addAll(resources.getStringArray(R.array.Seoul))\r\n            }\r\n            \"경기도\" ->\r\n                smallLocationList.let{\r\n                    it.clear()\r\n                    it.addAll(resources.getStringArray(R.array.Gyeonggi))\r\n                }\r\n            \"인천\" -> smallLocationList.let{\r\n                it.clear()\r\n                it.addAll(resources.getStringArray(R.array.Incheon))\r\n            }\r\n        }\r\n        smallAdapter.notifyDataSetChanged()\r\n    }\r\n\r\n    private val onSmallClick = AdapterView.OnItemClickListener { parent, view, position, id ->\r\n        val location = (view as TextView).text.toString()\r\n        Log.d(\"로그\", \"location2: $location\")\r\n\r\n        selectedLocation = if(view.isActivated) {\r\n            location\r\n        }else{\r\n            null\r\n        }\r\n    }\r\n\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        _binding = LayoutBottomSheetBinding.inflate(inflater, container, false)\r\n\r\n        return binding.root\r\n    }\r\n\r\n    override fun onDestroyView() {\r\n        super.onDestroyView()\r\n        _binding = null\r\n    }\r\n\r\n    fun showCustomToast(message: String) {\r\n        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/menu/btm_sheet/BottomSheetLayout.kt	(date 1615832932883)
+@@ -3,7 +3,6 @@
+ import android.app.Dialog
+ import android.os.Bundle
+ import android.util.Log
+-import android.util.SparseBooleanArray
+ import android.view.LayoutInflater
+ import android.view.View
+ import android.view.ViewGroup
+@@ -15,7 +14,7 @@
+ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+ import java.util.*
+ 
+-class BottomSheetLayout(val menuFragmentView: MenuFragmentView): BottomSheetDialogFragment() {
++class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomSheetDialogFragment() {
+     private var _binding: LayoutBottomSheetBinding? = null
+     private val binding get() = _binding!!
+ 
+@@ -25,6 +24,8 @@
+     lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터
+     private var selectedLocation: String? = null             // 최종 선택된 지역
+     lateinit var selectedLocations: ArrayList<String> // 여러 지역 선택할 때 사용 가능
++    private var bigPos = -1     // 큰 지역 pos
++    private var smallPos = -1    // 작은 지역 pos
+ 
+     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+         val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+@@ -47,29 +48,46 @@
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
++        // default 선택 지역 위한 pos 값들
++        arguments?.let {
++            bigPos = it.getInt("bigPos")
++            smallPos = it.getInt("smallPos")
++        }
++
+         // 첫번째 지역 선택 리스트뷰 설정
+         bigLocationList = arrayListOf("서울", "경기도", "인천")
+         bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location,bigLocationList)
+         binding.bottomSheetBigList.adapter = bigAdapter
+         binding.bottomSheetBigList.onItemClickListener = onBigClick
+-        (binding.bottomSheetBigList.getChildAt(0)).isActivated = true
++        if(bigPos != -1){
++            binding.bottomSheetBigList.setItemChecked(bigPos, true)     // default 값
++        }
++
+ 
+         // 두번째 지역 선택 리스트뷰 설정
+         smallLocationList = arrayListOf()
+-        smallLocationList.addAll(resources.getStringArray(R.array.Seoul))
+         smallAdapter = ArrayAdapter(context!!, R.layout.item_small_location, smallLocationList)
+         binding.bottomSheetSmallList.adapter = smallAdapter
++        // 이전에 선택했던 게 있으면 그 상태로 돌아가고, 없으면 서울을 보여준다
++        if(bigPos != -1){
++            updateSmallListView(bigPos)
++        } else{
++            smallLocationList.addAll(resources.getStringArray(R.array.Seoul))
++        }
+         binding.bottomSheetSmallList.onItemClickListener = onSmallClick
++        if(smallPos != -1){
++            binding.bottomSheetSmallList.setItemChecked(smallPos, true)
++        }
++
+ 
+         selectedLocations = arrayListOf("강동구") // 여러 지역 선택할 때 사용 가능
+         // 선택완료 버튼
+-
+         binding.bottomSheetButton.setOnClickListener(onClickSelect)
+ 
++        // x버튼 클릭
+         binding.bottomSheetCancel.setOnClickListener {
+             this.dismiss()
+         }
+-
+     }
+ 
+     private val onClickSelect = View.OnClickListener {
+@@ -90,7 +108,13 @@
+         // 지역을 선택하고 버튼을 누르면 동작
+         if(selectedLocation != null){
+             selectedLocations[0] = selectedLocation!!
+-            menuFragmentView.changeStores(selectedLocations)
++            menuFragmentView.let{
++                it.updateLocationStores(selectedLocations)
++                it.updateLocationTxt(selectedLocations[0])
++                it.updateLocationPos(bigPos, smallPos)
++            }
++        }else{
++            // menuFragmentView.st
+         }
+         this.dismiss()
+     }
+@@ -98,22 +122,27 @@
+         val location = (view as TextView).text.toString()
+         Log.d("로그", "location1: $location")
+ 
++        if(view.isActivated){
++            bigPos = position
++        }else{
++            bigPos = -1
++        }
+         // 선택한 지역에 맞게 2번째 리스트뷰 업데이트
+-        updateSmallListView(location)
++        updateSmallListView(position)
+     }
+ 
+-    private fun updateSmallListView(location: String){
+-        when(location){
+-            "서울" -> smallLocationList.let{
++    private fun updateSmallListView(bigPos: Int){
++        when(bigPos){
++            0 -> smallLocationList.let{
+                 it.clear()
+                 it.addAll(resources.getStringArray(R.array.Seoul))
+             }
+-            "경기도" ->
++            1 ->
+                 smallLocationList.let{
+                     it.clear()
+                     it.addAll(resources.getStringArray(R.array.Gyeonggi))
+                 }
+-            "인천" -> smallLocationList.let{
++            2 -> smallLocationList.let{
+                 it.clear()
+                 it.addAll(resources.getStringArray(R.array.Incheon))
+             }
+@@ -125,10 +154,12 @@
+         val location = (view as TextView).text.toString()
+         Log.d("로그", "location2: $location")
+ 
+-        selectedLocation = if(view.isActivated) {
+-            location
++       if(view.isActivated) {
++           selectedLocation = location
++           smallPos = position
+         }else{
+-            null
++           selectedLocation = null
++           smallPos = -1
+         }
+     }
+ 
+Index: app/src/main/res/layout/dialog_join.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:layout_marginHorizontal=\"20dp\"\r\n    android:background=\"@drawable/background_dialog_30dp\">\r\n\r\n    <TextView\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"25dp\"\r\n        android:gravity=\"center\"\r\n        android:text=\"@string/dialog_txt_done\"\r\n        android:textSize=\"17sp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"0.28\"\r\n        app:layout_constraintWidth_percent=\"0.625\" />\r\n\r\n    <androidx.appcompat.widget.AppCompatButton\r\n        android:id=\"@+id/dialog_btn_login\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"50dp\"\r\n        android:background=\"@drawable/background_btn_20dp\"\r\n        android:text=\"@string/dialog_txt_login\"\r\n        android:textColor=\"@color/colorWhite\"\r\n        android:textSize=\"17sp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"0.65\"\r\n        app:layout_constraintWidth_percent=\"0.84\"/>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+===================================================================
+--- app/src/main/res/layout/dialog_join.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/layout/dialog_join_done.xml	(date 1615837402315)
+@@ -1,39 +1,33 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    xmlns:app="http://schemas.android.com/apk/res-auto"
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+-    android:layout_marginHorizontal="20dp"
+-    android:background="@drawable/background_dialog_30dp">
++    android:paddingHorizontal="25dp"
++    android:background="@drawable/background_dialog_30dp"
++    android:orientation="vertical">
+ 
+     <TextView
+-        android:layout_width="0dp"
+-        android:layout_height="25dp"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_gravity="center_horizontal"
++        android:layout_marginTop="60dp"
+         android:gravity="center"
++        android:fontFamily="@font/notosanskrbold"
+         android:text="@string/dialog_txt_done"
+         android:textSize="17sp"
+         android:textStyle="bold"
+-        app:layout_constraintBottom_toBottomOf="parent"
+-        app:layout_constraintEnd_toEndOf="parent"
+-        app:layout_constraintStart_toStartOf="parent"
+-        app:layout_constraintTop_toTopOf="parent"
+-        app:layout_constraintVertical_bias="0.28"
+-        app:layout_constraintWidth_percent="0.625" />
++        android:textColor="@color/colorPrimaryDark"/>
+ 
+     <androidx.appcompat.widget.AppCompatButton
+         android:id="@+id/dialog_btn_login"
+-        android:layout_width="0dp"
++        android:layout_width="match_parent"
+         android:layout_height="50dp"
++        android:layout_marginTop="54dp"
++        android:layout_marginBottom="25dp"
+         android:background="@drawable/background_btn_20dp"
+         android:text="@string/dialog_txt_login"
+         android:textColor="@color/colorWhite"
+         android:textSize="17sp"
+-        android:textStyle="bold"
+-        app:layout_constraintBottom_toBottomOf="parent"
+-        app:layout_constraintEnd_toEndOf="parent"
+-        app:layout_constraintStart_toStartOf="parent"
+-        app:layout_constraintTop_toTopOf="parent"
+-        app:layout_constraintVertical_bias="0.65"
+-        app:layout_constraintWidth_percent="0.84"/>
++        android:textStyle="bold" />
+ 
+-</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/main/menu/store_detail/StoreDetailFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.menu.store_detail\r\n\r\nimport android.content.Context\r\nimport android.graphics.Color\r\nimport android.graphics.PorterDuff\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport android.view.WindowManager\r\nimport com.bumptech.glide.Glide\r\nimport com.example.binding.R\r\nimport com.example.binding.config.ApplicationClass\r\nimport com.example.binding.config.BaseFragment\r\nimport com.example.binding.config.BaseResponse\r\nimport com.example.binding.databinding.FragmentStoreDetailBinding\r\nimport com.example.binding.src.main.menu.store_detail.models.BookStoreImages\r\nimport com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse\r\n\r\nclass StoreDetailFragment: BaseFragment<FragmentStoreDetailBinding>(\r\n    FragmentStoreDetailBinding::bind,\r\n    R.layout.fragment_store_detail\r\n), StoreDetailFragmentView{\r\n\r\n    private val sp = ApplicationClass.sSharedPreferences\r\n    private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스\r\n\r\n    private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트\r\n    private var isBookMarked = 0    // 1이면 마크, 0이면 노마크\r\n\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        // 상태바 영역까지 확장\r\n        val mWindow = activity?.window\r\n        mWindow?.setFlags(\r\n            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,\r\n            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)\r\n\r\n        bookStoreIdx = arguments?.getInt(\"bookStoreIdx\", 0)!!\r\n\r\n        imagesList = ArrayList()\r\n\r\n        showLoadingDialog(context!!)\r\n        StoreDetailService(this).tryGetBookStore(bookStoreIdx)\r\n\r\n        // 북마크 ON\r\n        binding.storeDetailBookmarkEmpty.setOnClickListener {\r\n            showLoadingDialog(context!!)\r\n\r\n            // 북마크 수정 API 호출\r\n            StoreDetailService(this).tryPatchBookmark(bookStoreIdx)\r\n        }\r\n\r\n        // 북마크 해제\r\n        binding.storeDetailBookmarkFilled.setOnClickListener {\r\n            showLoadingDialog(context!!)\r\n\r\n            // 북마크 수정 API 호출\r\n            StoreDetailService(this).tryPatchBookmark(bookStoreIdx)\r\n        }\r\n    }\r\n\r\n\r\n    override fun onGetBookStoreSuccess(response: GetBookStoreResponse) {\r\n        Log.d(\"로그\", \"onGetBookStoreSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            1000 -> {\r\n                Log.d(\"로그\", \"서점 상세 조회 성공, code: ${response.code} , \" +\r\n                        \"message: ${response.message}\")\r\n\r\n                val result = response.result\r\n\r\n                val bookStoreInfo = result.bookStoreInfo[0]\r\n                imagesList = result.images\r\n\r\n                // 첫 사진을 대표사진으로 설정\r\n                Glide.with(this)\r\n                    .load(imagesList[0].imageUrl)\r\n                    .placeholder(R.drawable.icon_app)\r\n                    .error(R.drawable.icon_app)\r\n                    .into(binding.storeDetailCover)\r\n\r\n                // 텍스트와 겹치는 사진을 약간 어둡게 처리\r\n                binding.storeDetailCover.setColorFilter(Color.parseColor(\"#BDBDBD\"),\r\n                PorterDuff.Mode.MULTIPLY)\r\n\r\n                // 이미지 제외한 모든 정보 입력\r\n                bookStoreInfo.let{\r\n                    binding.storeDetailStoreName.text = it.storeName\r\n                    isBookMarked = it.isBookMark\r\n                    if(isBookMarked == 1){\r\n                        binding.storeDetailBookmarkFilled.visibility = View.VISIBLE\r\n                        binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE\r\n                    }else{\r\n                        binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE\r\n                        binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE\r\n                    }\r\n                    binding.storeDetailLocationTxt.text = it.location\r\n                    binding.storeDetailWebAddress.text = it.siteAddress\r\n                    binding.storeDetailPhoneTxt.text = it.phoneNumber\r\n                    binding.storeDetailInfo.text = it.storeInfo\r\n                }\r\n            }\r\n            else -> Log.d(\"로그\", \"서점 상세 조회 실패, code: ${response.code} , \" +\r\n                        \"message: ${response.message}\")\r\n        }\r\n\r\n    }\r\n\r\n    // 북마크 수정 API 콜백\r\n\r\n    override fun onGetBookStoreFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetBookStoreFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n\r\n    override fun onPatchBookmarkSuccess(response: BaseResponse) {\r\n        Log.d(\"로그\", \"onPatchBookmarkSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            in 1000..1001 -> {\r\n                isBookMarked = 1\r\n                binding.storeDetailBookmarkFilled.visibility = View.VISIBLE\r\n            }\r\n            1002 -> {\r\n                isBookMarked = 0\r\n                binding.storeDetailBookmarkFilled.visibility = View.GONE\r\n            }\r\n            else -> Log.d(\"로그\", \"북마크 수정 실패, message: ${response.message}\")\r\n        }\r\n    }\r\n\r\n    override fun onPatchBookmarkFailure(message: String) {\r\n        Log.d(\"로그\", \"onPatchBookmarkFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/menu/store_detail/StoreDetailFragment.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/menu/store_detail/StoreDetailFragment.kt	(date 1615831822536)
+@@ -5,21 +5,22 @@
+ import android.graphics.PorterDuff
+ import android.os.Bundle
+ import android.util.Log
+-import android.view.View
+-import android.view.WindowManager
++import android.view.*
++import android.widget.Toast
++import androidx.fragment.app.Fragment
+ import com.bumptech.glide.Glide
+ import com.example.binding.R
+ import com.example.binding.config.ApplicationClass
+-import com.example.binding.config.BaseFragment
+ import com.example.binding.config.BaseResponse
+ import com.example.binding.databinding.FragmentStoreDetailBinding
+ import com.example.binding.src.main.menu.store_detail.models.BookStoreImages
+ import com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse
++import com.example.binding.util.LoadingDialog
+ 
+-class StoreDetailFragment: BaseFragment<FragmentStoreDetailBinding>(
+-    FragmentStoreDetailBinding::bind,
+-    R.layout.fragment_store_detail
+-), StoreDetailFragmentView{
++class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
++    private var _binding: FragmentStoreDetailBinding? = null
++    private val binding get() = _binding!!
++    lateinit var mLoadingDialog: LoadingDialog
+ 
+     private val sp = ApplicationClass.sSharedPreferences
+     private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스
+@@ -27,16 +28,22 @@
+     private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트
+     private var isBookMarked = 0    // 1이면 마크, 0이면 노마크
+ 
++    override fun onCreateView(
++        inflater: LayoutInflater,
++        container: ViewGroup?,
++        savedInstanceState: Bundle?
++    ): View? {
++        // 프래그먼트용 테마 적용
++        val contextThemeWrapper = ContextThemeWrapper(activity, R.style.StoreDetailTheme)
++        val mInflater = inflater.cloneInContext(contextThemeWrapper)
++        _binding = FragmentStoreDetailBinding.inflate(mInflater, container, false)
++        return binding.root
++    }
++
+ 
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
+-        // 상태바 영역까지 확장
+-        val mWindow = activity?.window
+-        mWindow?.setFlags(
+-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+-
+         bookStoreIdx = arguments?.getInt("bookStoreIdx", 0)!!
+ 
+         imagesList = ArrayList()
+@@ -143,4 +150,24 @@
+ 
+         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+     }
++
++    override fun onDestroyView() {
++        super.onDestroyView()
++        _binding = null
++    }
++
++    private fun showCustomToast(message: String) {
++        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
++    }
++
++    private fun showLoadingDialog(context: Context) {
++        mLoadingDialog = LoadingDialog(context)
++        mLoadingDialog.show()
++    }
++
++    private fun dismissLoadingDialog() {
++        if (mLoadingDialog.isShowing) {
++            mLoadingDialog.dismiss()
++        }
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/login/LoginActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.login\r\n\r\nimport android.content.Intent\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport com.example.binding.R\r\nimport com.example.binding.config.ApplicationClass\r\nimport com.example.binding.config.BaseActivity\r\nimport com.example.binding.databinding.ActivityLoginBinding\r\nimport com.example.binding.src.join.JoinActivity\r\nimport com.example.binding.src.login.models.LoginResponse\r\nimport com.example.binding.src.main.MainActivity\r\nimport com.example.binding.util.JoinDialog\r\n\r\nclass LoginActivity: BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),\r\nLoginActivityView{\r\n\r\n    // 다른 화면으로 넘어가는 과정에서 binding이 풀려서 생기는 에러를 막기 위한 플래그\r\n    private var isHere = true\r\n\r\n    private val sp = ApplicationClass.sSharedPreferences\r\n\r\n    private lateinit var email: String\r\n    private lateinit var pwd: String\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        isHere = true\r\n\r\n        // 에러문구를 감춘다\r\n       binding.loginWrongInfo.visibility = View.INVISIBLE\r\n\r\n        // 회원가입 버튼 클릭\r\n        binding.loginJoin.setOnClickListener(onClickJoin)\r\n\r\n        // 로그인(다음) 버튼 클릭\r\n        binding.loginNext.setOnClickListener(onClickNext)\r\n\r\n        // 뒤로가기 버튼 클릭 -> 종료\r\n        binding.loginBack.setOnClickListener{\r\n            finish()\r\n        }\r\n\r\n        // 각 입력칸이 포커싱되면 밑줄이 굵어진다\r\n        binding.loginEmail.onFocusChangeListener = onFocusEmail\r\n        binding.loginPassword.onFocusChangeListener = onFocusPwd\r\n    }\r\n\r\n    // 로그인(다음) 버튼 클릭\r\n    private val onClickNext = View.OnClickListener {\r\n        email = binding.loginEmail.text.toString()\r\n        pwd = binding.loginPassword.text.toString()\r\n\r\n        // 로그인 API 호출\r\n        LoginService(this).tryPostLogin(email, pwd)\r\n        // JoinDialog(this, true).show()\r\n    }\r\n\r\n    // 회원가입을 클릭하면 JoinActivity(회원가입 첫번째 프래그먼트)로 이동한다\r\n    private val onClickJoin = View.OnClickListener{\r\n        val joinIntent = Intent(this, JoinActivity::class.java)\r\n        isHere = false\r\n        startActivity(joinIntent)\r\n        finish()\r\n    }\r\n\r\n    // 이메일 입력 칸 포커스 -> 밑줄이 굵어진다\r\n    private val onFocusEmail = View.OnFocusChangeListener { v, hasFocus ->\r\n        when(hasFocus ){\r\n            true -> binding.loginEmailLineBold.visibility = View.VISIBLE\r\n            false ->\r\n                if(isHere){\r\n                    binding.loginEmailLineBold.visibility = View.INVISIBLE\r\n                }\r\n        }\r\n    }\r\n\r\n    // 비밀번호 입력 칸 포커스 -> 밑줄이 굵어진다\r\n    private val onFocusPwd = View.OnFocusChangeListener { v, hasFocus ->\r\n        when(hasFocus){\r\n            true -> binding.loginPwLineBold.visibility = View.VISIBLE\r\n            false ->\r\n                if(isHere){\r\n                    binding.loginPwLineBold.visibility = View.INVISIBLE\r\n                }\r\n        }\r\n    }\r\n\r\n    // 로그인 API 통신 성공\r\n    override fun onPostLoginSuccess(response: LoginResponse) {\r\n        Log.d(\"로그\", \"onPostLoginSuccess() called, response: $response\")\r\n\r\n        when(response.code){\r\n\r\n            // 로그인 성공 -> jwt 저장하고 메인 화면으로 이동\r\n            1000 -> {\r\n                Log.d(\"로그\", \"로그인 성공, jwt: ${response.jwt}\")\r\n\r\n                // jwt 저장\r\n                sp.edit().putString(ApplicationClass.X_ACCESS_TOKEN, response.jwt).apply()\r\n\r\n                val mainIntent = Intent(this, MainActivity::class.java)\r\n                isHere = false\r\n                startActivity(mainIntent)\r\n                finish()\r\n            }\r\n\r\n            // 로그인 실패 -> 에러 문구\r\n            else -> {\r\n                Log.d(\"로그\",\"로그인 실패, msg: ${response.message}\")\r\n\r\n                binding.loginWrongInfo.visibility = View.VISIBLE\r\n            }\r\n        }\r\n    }\r\n\r\n    // 로그인 API 통신 실패\r\n    override fun onPostLoginFailure(message: String) {\r\n        Log.d(\"로그\", \"onPostLoginFailure() called, message: $message\")\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/login/LoginActivity.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/login/LoginActivity.kt	(date 1615841345193)
+@@ -3,15 +3,14 @@
+ import android.content.Intent
+ import android.os.Bundle
+ import android.util.Log
++import android.view.KeyEvent
+ import android.view.View
+-import com.example.binding.R
+ import com.example.binding.config.ApplicationClass
+ import com.example.binding.config.BaseActivity
+ import com.example.binding.databinding.ActivityLoginBinding
+ import com.example.binding.src.join.JoinActivity
+ import com.example.binding.src.login.models.LoginResponse
+ import com.example.binding.src.main.MainActivity
+-import com.example.binding.util.JoinDialog
+ 
+ class LoginActivity: BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),
+ LoginActivityView{
+@@ -46,6 +45,16 @@
+         // 각 입력칸이 포커싱되면 밑줄이 굵어진다
+         binding.loginEmail.onFocusChangeListener = onFocusEmail
+         binding.loginPassword.onFocusChangeListener = onFocusPwd
++
++        // 엔터키 방지
++        binding.loginEmail.setOnKeyListener { v, keyCode, event ->
++            when(keyCode){
++               KeyEvent.KEYCODE_ENTER -> {
++                   true
++               }
++                else -> {true}
++            }
++        }
+     }
+ 
+     // 로그인(다음) 버튼 클릭
+Index: app/src/main/java/com/example/binding/src/join/join3/Join3Fragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.join.join3\r\n\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport com.example.binding.R\r\nimport com.example.binding.config.ApplicationClass\r\nimport com.example.binding.config.BaseFragment\r\nimport com.example.binding.config.BaseResponse\r\nimport com.example.binding.databinding.FragmentJoin1Binding\r\nimport com.example.binding.databinding.FragmentJoin2Binding\r\nimport com.example.binding.databinding.FragmentJoin3Binding\r\nimport com.example.binding.src.join.JoinActivity\r\nimport com.example.binding.src.join.join3.models.PostJoinBody\r\nimport com.example.binding.src.login.LoginActivity\r\nimport com.example.binding.util.JoinDialog\r\nimport java.util.regex.Pattern\r\n\r\nclass Join3Fragment: BaseFragment<FragmentJoin3Binding>(\r\n    FragmentJoin3Binding::bind,\r\n    R.layout.fragment_join_3\r\n), Join3FragmentView {\r\n\r\n    // 한글(자음+모음+공백+언더바+숫자)만 허용하는 정규표현식, 2~8자\r\n    // private val regExp =  \"^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣\\\\s_0-9]).{2,8}$\"\r\n\r\n    // 한글(자음+모음)만 허용하는 식, 2~8자\r\n    // private val regExp = \"^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,8}$\"\r\n    private val regExp = \"^(?=.*[가-힣]).{2,8}$\"\r\n    // 입력받은 닉네임 저장 변수\r\n    lateinit var nickname: String\r\n    // 넘겨받은 이메일 주소, 비밀번호, 비밀번호 확인 임시 값\r\n    /*private var email = \"temp_ghdtkdgh5@naver.com\"\r\n    private var pwd = \"12345678a\"\r\n    private var pwdChk = \"12345678a\"*/\r\n\r\n    private var isHere = true\r\n\r\n    // 넘겨받은 이메일 주소, 비밀번호, 비밀번호 확인\r\n    lateinit var email: String\r\n    lateinit var pwd: String\r\n    lateinit var pwdChk: String\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        isHere = true\r\n\r\n        // 넘겨받은 이메일 주소, 비밀번호, 비밀번호 확인\r\n        email = arguments?.getString(\"email\",\"temp_ghdtkdgh5@naver.com\").toString()\r\n        pwd = arguments?.getString(\"pwd\",\"12345678a\").toString()\r\n        pwdChk = arguments?.getString(\"pwdChk\",\"12345678a\").toString()\r\n\r\n\r\n        // 다음 버튼 클릭 -> 닉네임 형식이 올바르면 중복 닉네임 api 호출\r\n        binding.join3Next.setOnClickListener(onClickNext)\r\n\r\n        // 에러 메세지들을 감춘다.\r\n        binding.join3WrongNickname.visibility = View.INVISIBLE\r\n        binding.join3SameNickname.visibility = View.INVISIBLE\r\n\r\n        // 뒤로가기 버튼 -> 로그인 화면으로 돌아간다\r\n        binding.join3Back.setOnClickListener{\r\n            (activity!! as JoinActivity).moveToLogin(false)\r\n        }\r\n    }\r\n\r\n    private val onClickNext = View.OnClickListener {\r\n\r\n        // 입력 받은 닉네임\r\n        nickname = binding.join3Name.text.toString()\r\n\r\n        // 닉네임 형식이 올바르지 않으면 에러 메시지를 보여준다\r\n        if(!isValidNickname(nickname)){\r\n            Log.d(\"로그\",\"nickname: $nickname , isValid: ${isValidNickname(nickname)}\")\r\n\r\n            binding.join3SameNickname.visibility = View.INVISIBLE\r\n            binding.join3WrongNickname.visibility = View.VISIBLE\r\n        }\r\n        // 형식이 올바르면 중복 닉네임 검사 + 회원가입 api 호출\r\n        else{\r\n            val joinBody = PostJoinBody(email, pwd, pwdChk, nickname)\r\n            Log.d(\"로그\",\"회원가입 api 호출 - postJoinBody: $joinBody\")\r\n            Join3Service(this).tryPostJoin(joinBody)\r\n        }\r\n    }\r\n\r\n    // 정규식으로 한글 닉네임 형식 검사\r\n    private fun isValidNickname(nickname: String):Boolean {\r\n        var returnValue = false\r\n\r\n        try\r\n        {\r\n            val p = Pattern.compile(regExp)\r\n            val m = p.matcher(nickname)\r\n\r\n            if (m.matches()) {\r\n                returnValue = true\r\n            }\r\n\r\n            return returnValue\r\n        }\r\n        catch (e: Exception) {\r\n            return false\r\n        }\r\n    }\r\n\r\n    // 회원가입 api 통신 성공\r\n    override fun onPostJoinSuccess(response: BaseResponse) {\r\n        Log.d(\"로그\", \"onPostJoinSuccess() called, response: $response\")\r\n\r\n        when(response.code){\r\n\r\n            // 회원가입에 성공 -> 로그인 액티비티로 돌아간다\r\n            1000 -> {\r\n                Log.d(\"로그\", \"회원가입 성공 - message: ${response.message}\")\r\n\r\n                isHere = false\r\n                // 회원가입 완료 화면을 띄운다\r\n                val mJoinDialog = JoinDialog(activity as Context, response.isSuccess)\r\n                mJoinDialog.show()\r\n            }\r\n\r\n            // 닉네임 형식 오류\r\n            in 2007..2009 -> {\r\n                Log.d(\"로그\", \"회원가입 실패 - message: ${response.message},\" +\r\n                        \" code: ${response.code}\")\r\n\r\n                binding.join3WrongNickname.visibility = View.VISIBLE\r\n                binding.join3SameNickname.visibility = View.INVISIBLE\r\n            }\r\n\r\n            // 이미 사용중인 닉네임\r\n            3001 -> {\r\n                Log.d(\"로그\", \"회원가입 실패 - message: ${response.message},\" +\r\n                        \" code: ${response.code}\")\r\n\r\n                binding.join3WrongNickname.visibility = View.INVISIBLE\r\n                binding.join3SameNickname.visibility = View.VISIBLE\r\n            }\r\n\r\n            // 회원가입 실패\r\n            else -> {\r\n                Log.d(\"로그\", \"회원가입 실패 - message: ${response.message},\" +\r\n                        \" code: ${response.code}\")\r\n\r\n                binding.join3SameNickname.visibility = View.INVISIBLE\r\n            }\r\n        }\r\n    }\r\n\r\n    // 회원가입 api 통신 실패\r\n    override fun onPostJoinFailure(message: String) {\r\n        Log.d(\"로그\", \"onPostJoinFailure() called, message: $message\")\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/join/join3/Join3Fragment.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/join/join3/Join3Fragment.kt	(date 1615864263856)
+@@ -1,21 +1,16 @@
+ package com.example.binding.src.join.join3
+ 
+ import android.content.Context
+-import android.content.Intent
+ import android.os.Bundle
+ import android.util.Log
+ import android.view.View
+ import com.example.binding.R
+-import com.example.binding.config.ApplicationClass
+ import com.example.binding.config.BaseFragment
+ import com.example.binding.config.BaseResponse
+-import com.example.binding.databinding.FragmentJoin1Binding
+-import com.example.binding.databinding.FragmentJoin2Binding
+ import com.example.binding.databinding.FragmentJoin3Binding
+ import com.example.binding.src.join.JoinActivity
+ import com.example.binding.src.join.join3.models.PostJoinBody
+-import com.example.binding.src.login.LoginActivity
+-import com.example.binding.util.JoinDialog
++import com.example.binding.src.join.done.JoinDoneDialog
+ import java.util.regex.Pattern
+ 
+ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
+@@ -119,8 +114,9 @@
+ 
+                 isHere = false
+                 // 회원가입 완료 화면을 띄운다
+-                val mJoinDialog = JoinDialog(activity as Context, response.isSuccess)
+-                mJoinDialog.show()
++                val mJoinDialog = JoinDoneDialog(activity as Context, response.isSuccess)
++                val fragmentManager = childFragmentManager
++                mJoinDialog.show(fragmentManager, "join_done")
+             }
+ 
+             // 닉네임 형식 오류
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">Binding</string>\r\n    <string name=\"email_hint\">이메일을 입력해주세요</string>\r\n    <string name=\"email_password\">비밀번호를 입력해주세요</string>\r\n    <string name=\"manage_email\">sm991105@gmail.com</string>\r\n    <string name=\"bookvill\">Instagram</string>\r\n    <string name=\"bookvill_text\">인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\\n\\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\\n\\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\\n\\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.</string>\r\n\r\n    <!-- dialog_join.xml -->\r\n    <string name=\"dialog_txt_done\">회원가입이 완료되었습니다.</string>\r\n    <string name=\"dialog_txt_login\">로그인하기</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/values/strings.xml	(date 1615832932901)
+@@ -6,7 +6,7 @@
+     <string name="bookvill">Instagram</string>
+     <string name="bookvill_text">인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\n\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\n\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.\n\n인계동 나혜석거리에 위치한 빈티지 북카페 입니다 :) 편안한 좌식 자리가 마련되어 있으며, 차분한 분위기를 위해 노키즈존으로 운영됩니다.</string>
+ 
+-    <!-- dialog_join.xml -->
++    <!-- dialog_join_done.xml -->
+     <string name="dialog_txt_done">회원가입이 완료되었습니다.</string>
+     <string name="dialog_txt_login">로그인하기</string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/splash/SplashActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.splash\r\n\r\nimport android.content.Intent\r\nimport android.os.Bundle\r\nimport android.os.Handler\r\nimport android.os.Looper\r\nimport android.view.View\r\nimport android.view.animation.AnimationUtils\r\nimport com.example.binding.R\r\nimport com.example.binding.config.ApplicationClass\r\nimport com.example.binding.config.BaseActivity\r\nimport com.example.binding.databinding.ActivityAfterSplashBinding\r\nimport com.example.binding.src.login.LoginActivity\r\nimport com.example.binding.src.main.MainActivity\r\n\r\nclass SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSplashBinding::inflate) {\r\n\r\n    private val sp = ApplicationClass.sSharedPreferences\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        val jwt = sp.getString(ApplicationClass.X_ACCESS_TOKEN, null)\r\n\r\n        // 임시 로그아웃 설정\r\n        // logOut()\r\n\r\n        // 처음에 next 버튼을 안보이게 한다\r\n        binding.splashNext.visibility = View.GONE\r\n\r\n        // 점점 안보이던 버튼을 선명하게 해주는 애니메이션\r\n        val animation = AnimationUtils.loadAnimation(applicationContext, R.anim.splash_alpha)\r\n\r\n        // {}초 후, 애니메이션 적용\r\n        Handler(Looper.getMainLooper()).postDelayed({\r\n\r\n            // 로그인이 안되어 있으면 넥스트 버튼을 띄운다\r\n            if(jwt == null){\r\n                binding.splashNext.startAnimation(animation)\r\n                binding.splashNext.visibility = View.VISIBLE\r\n            }\r\n            // 로그인 되어있으면 메인 화면으로 넘어간다\r\n            else{\r\n                val mainIntent = Intent(this, MainActivity::class.java)\r\n                startActivity(mainIntent)\r\n                overridePendingTransition(R.anim.none, R.anim.none_to_left)\r\n                finish()\r\n            }\r\n        }, 1500)\r\n\r\n        binding.splashNext.setOnClickListener(onNextClick)\r\n    }\r\n\r\n    // 다음 아이콘을 클릭하면 로그인 화면으로 이동한다.\r\n    private val onNextClick = View.OnClickListener {\r\n        val loginIntent = Intent(this, LoginActivity::class.java)\r\n        startActivity(loginIntent)\r\n        overridePendingTransition(R.anim.none, R.anim.none_to_left)\r\n        finish()\r\n    }\r\n\r\n    // 임시 로그아웃 함수\r\n    fun logOut(){\r\n        sp.edit().putString(ApplicationClass.X_ACCESS_TOKEN, null).apply()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/splash/SplashActivity.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/splash/SplashActivity.kt	(date 1615833037876)
+@@ -23,7 +23,7 @@
+         val jwt = sp.getString(ApplicationClass.X_ACCESS_TOKEN, null)
+ 
+         // 임시 로그아웃 설정
+-        // logOut()
++        logOut()
+ 
+         // 처음에 next 버튼을 안보이게 한다
+         binding.splashNext.visibility = View.GONE
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <!-- Base application theme. -->\r\n    <style name=\"AppTheme\" parent=\"Theme.AppCompat.Light.NoActionBar\">\r\n        <!-- Customize your theme here. -->\r\n        <item name=\"colorPrimary\">@color/colorPrimary</item>\r\n        <item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\r\n        <item name=\"colorAccent\">@color/colorAccent</item>\r\n\r\n        <!--Status Bar 배경색\r\n        <item name=\"android:statusBarColor\">@color/colorPrimary</item>\r\n        Status Bar 글자색깔\r\n        <item name=\"android:windowLightStatusBar\">true</item> -->\r\n\r\n        <item name=\"android:textViewStyle\">@style/customTextViewFontStyle</item>\r\n        <item name=\"android:buttonStyle\">@style/customButtonFontStyle</item>\r\n        <item name=\"android:editTextStyle\">@style/customEditTextFontStyle</item>\r\n        <item name=\"android:radioButtonStyle\">@style/customRadioButtonFontStyle</item>\r\n        <item name=\"android:checkboxStyle\">@style/customCheckboxFontStyle</item>\r\n        <item name=\"bottomSheetDialogTheme\">@style/BottomSheetDialogTheme</item>\r\n    </style>\r\n\r\n    <style name=\"BottomSheetDialogTheme\" parent=\"Theme.Design.Light.BottomSheetDialog\">\r\n        <item name = \"bottomSheetStyle\">@style/BottomSheetStyle</item>\r\n    </style>\r\n\r\n    <style name=\"BottomSheetStyle\" parent=\"Widget.Design.BottomSheet.Modal\">\r\n        <item name=\"android:background\">@drawable/bottom_sheet_background</item>\r\n    </style>\r\n\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/styles.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/res/values/styles.xml	(date 1615831891401)
+@@ -27,4 +27,8 @@
+         <item name="android:background">@drawable/bottom_sheet_background</item>
+     </style>
+ 
++    <!-- 상태바 투명 -->
++    <style name="StoreDetailTheme" parent="AppTheme">
++        <item name="android:windowTranslucentStatus">true</item>
++    </style>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/join/done/JoinDoneDialog.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/join/done/JoinDoneDialog.kt	(date 1615864263918)
++++ app/src/main/java/com/example/binding/src/join/done/JoinDoneDialog.kt	(date 1615864263918)
+@@ -0,0 +1,57 @@
++package com.example.binding.src.join.done
++
++import android.app.AlertDialog
++import android.app.Dialog
++import android.content.Context
++import android.graphics.Color
++import android.graphics.drawable.ColorDrawable
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import android.widget.Button
++import androidx.fragment.app.DialogFragment
++import com.example.binding.R
++import com.example.binding.databinding.DialogJoinDoneBinding
++import com.example.binding.src.join.JoinActivity
++
++
++class JoinDoneDialog(context: Context, private val isSuccess: Boolean) : DialogFragment() {
++    private var _binding: DialogJoinDoneBinding? = null
++    private val binding get() = _binding!!
++
++    override fun onCreateView(
++        inflater: LayoutInflater,
++        container: ViewGroup?,
++        savedInstanceState: Bundle?
++    ): View {
++        _binding = DialogJoinDoneBinding.inflate(inflater, container, false)
++
++        val dialog = dialog;
++        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
++        dialog?.setCanceledOnTouchOutside(false);
++
++        return binding.root
++    }
++
++    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
++        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
++        val view: View = activity!!.layoutInflater.inflate(R.layout.dialog_join_done, null)
++        builder.setView(view)
++        val dialog = builder.create()
++
++        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
++        dialog?.setCanceledOnTouchOutside(false)
++
++        // 로그인하러 가기 버튼
++        val btn = view.findViewById<Button>(R.id.dialog_btn_login)
++        btn.setOnClickListener {
++            (activity as JoinActivity).let{
++                it.moveToLogin(isSuccess)
++                it.finish()
++            }
++        }
++
++        return dialog
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/binding/src/main/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main\r\n\r\nimport android.os.Bundle\r\nimport com.example.binding.R\r\nimport com.example.binding.config.BaseActivity\r\nimport com.example.binding.databinding.ActivityMainBinding\r\nimport com.example.binding.src.main.home.HomeFragment\r\nimport com.example.binding.src.main.menu.MenuFragment\r\nimport com.example.binding.src.main.my_page.MyPageFragment\r\nimport com.google.android.material.bottomnavigation.BottomNavigationView\r\n\r\nclass MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        // 처음 화면이 켜졌을 때 활성화될 하단 버튼 - 실제 화면이 아닌 버튼에만 적용\r\n        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page\r\n        // 아이콘 틴트는 셀렉터로 적용\r\n        binding.mainBtmNav.itemIconTintList = null\r\n\r\n        // 탭을 선택했을 때 프래그먼트 화면 전환\r\n        binding.mainBtmNav.setOnNavigationItemSelectedListener(\r\n            BottomNavigationView.OnNavigationItemSelectedListener { item ->\r\n                when (item.itemId) {\r\n                    R.id.menu_main_btm_nav_home -> {\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, HomeFragment())\r\n                            .commitAllowingStateLoss()\r\n                        return@OnNavigationItemSelectedListener true\r\n                    }\r\n                    R.id.menu_main_btm_nav_menu -> {\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, MenuFragment())\r\n                            .commitAllowingStateLoss()\r\n                        return@OnNavigationItemSelectedListener true\r\n                    }\r\n                    R.id.menu_main_btm_nav_my_page -> {\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, MyPageFragment())\r\n                            .commitAllowingStateLoss()\r\n                    }\r\n                }\r\n                false\r\n            })\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/MainActivity.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/MainActivity.kt	(date 1615864263962)
+@@ -14,7 +14,7 @@
+         super.onCreate(savedInstanceState)
+ 
+         // 처음 화면이 켜졌을 때 활성화될 하단 버튼 - 실제 화면이 아닌 버튼에만 적용
+-        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page
++        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_menu
+         // 아이콘 틴트는 셀렉터로 적용
+         binding.mainBtmNav.itemIconTintList = null
+ 
+Index: app/src/main/java/com/example/binding/src/main/home/HomeFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.binding.src.main.home\r\n\r\nimport android.os.Bundle\r\nimport android.view.View\r\nimport com.example.binding.R\r\nimport com.example.binding.config.BaseFragment\r\nimport com.example.binding.databinding.FragmentHomeBinding\r\nimport com.example.binding.databinding.FragmentJoin2Binding\r\n\r\nclass HomeFragment: BaseFragment<FragmentHomeBinding>(\r\n    FragmentHomeBinding::bind,\r\n    R.layout.fragment_home\r\n){\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/binding/src/main/home/HomeFragment.kt	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/java/com/example/binding/src/main/home/HomeFragment.kt	(date 1615832235372)
+@@ -14,6 +14,5 @@
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
+-
+     }
+ }
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    package=\"com.example.binding\">\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\r\n\r\n    <application\r\n        android:name=\".config.ApplicationClass\"\r\n        android:allowBackup=\"true\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/AppTheme\">\r\n\r\n        <!-- 스플래시 화면 -->\r\n        <activity android:name=\".src.splash.SplashActivity\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <activity android:name=\".src.main.MainActivity\">\r\n        </activity>\r\n\r\n        <!-- 로그인 화면-->\r\n        <activity android:name=\".src.login.LoginActivity\"/>\r\n\r\n        <!-- 회원가입 화면-->\r\n        <activity android:name=\".src.join.JoinActivity\"/>\r\n\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 5d3af685d0b66279b17cd995600f3443dbb606ca)
++++ app/src/main/AndroidManifest.xml	(date 1615839769415)
+@@ -22,6 +22,7 @@
+         </activity>
+ 
+         <activity android:name=".src.main.MainActivity">
++
+         </activity>
+ 
+         <!-- 로그인 화면-->

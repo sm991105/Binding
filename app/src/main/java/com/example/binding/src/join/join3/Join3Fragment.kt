@@ -3,6 +3,7 @@ package com.example.binding.src.join.join3
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.example.binding.R
 import com.example.binding.config.BaseFragment
@@ -48,9 +49,19 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
         pwd = arguments?.getString("pwd","12345678a").toString()
         pwdChk = arguments?.getString("pwdChk","12345678a").toString()
 
-
         // 다음 버튼 클릭 -> 닉네임 형식이 올바르면 중복 닉네임 api 호출
         binding.join3Next.setOnClickListener(onClickNext)
+
+        // 엔터키 -> 다음 버튼
+        binding.join3Name.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.join3Next.performClick()
+                true
+            }
+            false
+        }
 
         // 에러 메세지들을 감춘다.
         binding.join3WrongNickname.visibility = View.INVISIBLE

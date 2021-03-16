@@ -1,8 +1,11 @@
 package com.example.binding.src.main.menu.store_detail
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -16,6 +19,7 @@ import com.example.binding.databinding.FragmentStoreDetailBinding
 import com.example.binding.src.main.menu.store_detail.models.BookStoreImages
 import com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse
 import com.example.binding.util.LoadingDialog
+
 
 class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
     private var _binding: FragmentStoreDetailBinding? = null
@@ -66,8 +70,31 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
             // 북마크 수정 API 호출
             StoreDetailService(this).tryPatchBookmark(bookStoreIdx)
         }
+
+        binding.storeDetailWebContainer.setOnClickListener(onClickWebAddress)
     }
 
+    // 서점 인스타 홈페이지 띄우기 - web으로 띄우기
+    private val onClickWebAddress = View.OnClickListener {
+
+        //특정 페이지만 띄울때 사용
+        val instagramPageID = String.format("${binding.storeDetailWebAddress.text}/")
+        var instagramPostID = "" //게시글을 까지 보여주고싶다면 이변수를 활용
+        // 만약 특정페이지 url이 있다면 게시글 url값을 초기화
+        if (instagramPageID != "") instagramPostID = ""
+
+        // val uri: Uri = Uri.parse("http://instagram.com/_u/$instagramPostID$instagramPageID")
+        val uri: Uri = Uri.parse("$instagramPostID$instagramPageID")
+        val instagramIntent = Intent(Intent.ACTION_VIEW, uri)
+
+        // instagramIntent.setPackage("com.instagram.android")
+
+        try {
+            startActivity(instagramIntent)
+        } catch (e: ActivityNotFoundException) {
+            startActivity(instagramIntent)
+        }
+    }
 
     override fun onGetBookStoreSuccess(response: GetBookStoreResponse) {
         Log.d("로그", "onGetBookStoreSuccess() called, response: $response")
@@ -75,8 +102,10 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
 
         when(response.code){
             1000 -> {
-                Log.d("로그", "서점 상세 조회 성공, code: ${response.code} , " +
-                        "message: ${response.message}")
+                Log.d(
+                    "로그", "서점 상세 조회 성공, code: ${response.code} , " +
+                            "message: ${response.message}"
+                )
 
                 val result = response.result
 
@@ -84,24 +113,28 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                 imagesList = result.images
 
                 // 첫 사진을 대표사진으로 설정
-                Glide.with(this)
-                    .load(imagesList[0].imageUrl)
-                    .placeholder(R.drawable.icon_app)
-                    .error(R.drawable.icon_app)
-                    .into(binding.storeDetailCover)
+                if(imagesList.size > 0){
+                    Glide.with(this)
+                        .load(imagesList[0].imageUrl)
+                        .placeholder(R.drawable.icon_app)
+                        .error(R.drawable.icon_app)
+                        .into(binding.storeDetailCover)
+                }
 
                 // 텍스트와 겹치는 사진을 약간 어둡게 처리
-                binding.storeDetailCover.setColorFilter(Color.parseColor("#BDBDBD"),
-                PorterDuff.Mode.MULTIPLY)
+                binding.storeDetailCover.setColorFilter(
+                    Color.parseColor("#BDBDBD"),
+                    PorterDuff.Mode.MULTIPLY
+                )
 
                 // 이미지 제외한 모든 정보 입력
-                bookStoreInfo.let{
+                bookStoreInfo.let {
                     binding.storeDetailStoreName.text = it.storeName
                     isBookMarked = it.isBookMark
-                    if(isBookMarked == 1){
+                    if (isBookMarked == 1) {
                         binding.storeDetailBookmarkFilled.visibility = View.VISIBLE
                         binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE
-                    }else{
+                    } else {
                         binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE
                         binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
                     }
@@ -111,8 +144,10 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                     binding.storeDetailInfo.text = it.storeInfo
                 }
             }
-            else -> Log.d("로그", "서점 상세 조회 실패, code: ${response.code} , " +
-                        "message: ${response.message}")
+            else -> Log.d(
+                "로그", "서점 상세 조회 실패, code: ${response.code} , " +
+                        "message: ${response.message}"
+            )
         }
 
     }

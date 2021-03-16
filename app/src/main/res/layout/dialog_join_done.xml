@@ -15,7 +15,6 @@
         android:fontFamily="@font/notosanskrbold"
         android:text="@string/dialog_txt_done"
         android:textSize="17sp"
-        android:textStyle="bold"
         android:textColor="@color/colorPrimaryDark"/>
 
     <androidx.appcompat.widget.AppCompatButton

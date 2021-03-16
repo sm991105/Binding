@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.example.binding.config.ApplicationClass
 import com.example.binding.config.BaseActivity
 import com.example.binding.databinding.ActivityLoginBinding
+import com.example.binding.src.find_password.FindPasswordActivity
 import com.example.binding.src.join.JoinActivity
 import com.example.binding.src.login.models.LoginResponse
 import com.example.binding.src.main.MainActivity
@@ -34,6 +36,9 @@ LoginActivityView{
         // 회원가입 버튼 클릭
         binding.loginJoin.setOnClickListener(onClickJoin)
 
+        // 비밀번호 찾기 버튼
+        binding.loginFindPw.setOnClickListener(onClickPassword)
+
         // 로그인(다음) 버튼 클릭
         binding.loginNext.setOnClickListener(onClickNext)
 
@@ -46,15 +51,32 @@ LoginActivityView{
         binding.loginEmail.onFocusChangeListener = onFocusEmail
         binding.loginPassword.onFocusChangeListener = onFocusPwd
 
-        // 엔터키 방지
+        // 첫번째 text칸 엔터키 -> 아래 editText로 이동
         binding.loginEmail.setOnKeyListener { v, keyCode, event ->
-            when(keyCode){
-               KeyEvent.KEYCODE_ENTER -> {
-                   true
-               }
-                else -> {true}
+            if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                binding.loginPassword.requestFocus()
+                true
             }
+            false
         }
+
+        // 2번째 editText 엔터버튼 클릭 -> 다음 버튼 자동 눌림
+        binding.loginPassword.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.loginNext.performClick()
+                true
+            }
+            false
+        }
+    }
+
+    private val onClickPassword = View.OnClickListener {
+        val passwordIntent = Intent(this, FindPasswordActivity::class.java)
+        isHere = false
+        startActivity(passwordIntent)
+        finish()
     }
 
     // 로그인(다음) 버튼 클릭
@@ -78,7 +100,16 @@ LoginActivityView{
     // 이메일 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusEmail = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus ){
-            true -> binding.loginEmailLineBold.visibility = View.VISIBLE
+            true -> {
+                binding.loginEmailLineBold.visibility = View.VISIBLE
+
+                // 키보드 올라온다
+                val manager: InputMethodManager =
+                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                // manager.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
+                manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+
+            }
             false ->
                 if(isHere){
                     binding.loginEmailLineBold.visibility = View.INVISIBLE

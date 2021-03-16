@@ -22,7 +22,6 @@
         </activity>
 
         <activity android:name=".src.main.MainActivity">
-
         </activity>
 
         <!-- 로그인 화면-->
@@ -30,6 +29,9 @@
 
         <!-- 회원가입 화면-->
         <activity android:name=".src.join.JoinActivity"/>
+
+        <!-- 비밀번호 찾기 화면-->
+        <activity android:name=".src.find_password.FindPasswordActivity"/>
 
     </application>
 

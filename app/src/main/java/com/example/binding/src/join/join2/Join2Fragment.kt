@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.example.binding.R
 import com.example.binding.config.BaseFragment
@@ -38,6 +39,26 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
 
         // 비밀번호 오류 메시지를 감춘다
         binding.join2WrongPw.visibility = View.INVISIBLE
+
+        // 첫번째 text칸 엔터키 -> 아래 editText로 이동
+        binding.join2PwLine.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                binding.join2PwChkLine.requestFocus()
+                true
+            }
+            false
+        }
+
+        // 2번째 editText 엔터버튼 클릭 -> 다음 버튼 자동 눌림
+        binding.join2PasswordCheck.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.join2Next.performClick()
+                true
+            }
+            false
+        }
 
         // 다음 버튼 클릭 -> 비밀번호가 맞으면 닉네임 입력으로 넘어간다
         binding.join2Next.setOnClickListener(onClickNext)
