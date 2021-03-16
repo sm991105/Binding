@@ -8,7 +8,7 @@ import com.example.binding.databinding.FragmentMyPageBinding
 
 class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
     FragmentMyPageBinding::bind,
-    R.layout.fragment_my_page
+    R.layout.fragment_home
 ){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

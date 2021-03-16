@@ -83,5 +83,6 @@
         android:text="선택완료"
         android:fontFamily="@font/notosanskrbold"
         android:textColor="#ffffff"
+        style="?android:attr/borderlessButtonStyle"
         android:textSize="17dp" />
 </RelativeLayout>
