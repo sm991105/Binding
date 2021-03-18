@@ -18,7 +18,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         // 메뉴 프래그먼트로 진입
         supportFragmentManager.beginTransaction()
-            .add(R.id.main_frm, MenuFragment())
+            .add(R.id.main_frm, HomeFragment())
             .commitAllowingStateLoss()
 
         // 아이콘 틴트는 셀렉터로 적용

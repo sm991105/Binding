@@ -1,8 +1,6 @@
 package com.example.binding.src.main.menu.store_detail
 
 import com.example.binding.config.BaseResponse
-import com.example.binding.src.join.join3.models.PostJoinBody
-import com.example.binding.src.main.menu.models.GetStoresResponse
 import com.example.binding.src.main.menu.store_detail.models.GetBookStoreResponse
 import retrofit2.Call
 import retrofit2.http.*

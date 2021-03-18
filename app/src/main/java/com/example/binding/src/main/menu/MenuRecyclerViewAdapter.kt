@@ -1,8 +1,5 @@
 package com.example.binding.src.main.menu
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.binding.R
-import com.example.binding.src.main.home.HomeRecyclerViewAdapter
-import com.example.binding.src.main.home.models.GetBooksResponse
 import com.example.binding.src.main.menu.models.StoresResult
 import com.example.binding.src.main.menu.store_detail.StoreDetailFragment
-import com.example.binding.src.main.my_page.MyPageFragment
 import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.item_menu.view.*
 
