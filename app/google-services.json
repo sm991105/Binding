@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "790240248654",
+    "project_id": "binding-d015e",
+    "storage_bucket": "binding-d015e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790240248654:android:e266f4249d91fcd8c9541f",
+        "android_client_info": {
+          "package_name": "com.makeus6.binding"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790240248654-ljbtmr8qq1jkrrm78lff9hspgbu3ioo3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxE_dEofpqRraCR5hNQ4FjVbXvwtsaTYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790240248654-ljbtmr8qq1jkrrm78lff9hspgbu3ioo3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

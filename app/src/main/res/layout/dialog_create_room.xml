@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="420dp"
+    android:layout_height="match_parent"
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     android:background="@drawable/background_dialog_30dp">
@@ -30,6 +30,7 @@
         android:paddingLeft="10dp"
         android:textSize="15dp"
         android:textColor="@color/ColorPrimaryLight"
+        android:fontFamily="@font/notosanskrregular"
         android:layout_below="@id/dialog_create_room_text"/>
 
     <View
@@ -54,6 +55,7 @@
         android:paddingLeft="10dp"
         android:textSize="15dp"
         android:textColor="@color/ColorPrimaryLight"
+        android:fontFamily="@font/notosanskrregular"
         android:layout_below="@id/dialog_create_room_title_line"/>
 
     <View
@@ -80,8 +82,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="책 표지 사진을 첨부해주세요"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:textColor="@color/ColorPrimaryLight"
+        android:fontFamily="@font/notosanskrregular"
         android:layout_below="@id/dialog_create_room_add"
         android:layout_centerHorizontal="true"/>
 
@@ -92,7 +95,8 @@
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginBottom="25dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginTop="77dp"
+        android:layout_below="@id/dialog_create_room_add"
         android:text="만들기"
         android:fontFamily="@font/notosanskrbold"
         android:textSize="17dp"

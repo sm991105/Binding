@@ -2,15 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:id="@+id/home_top_bar"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        tools:menu="@menu/menu_home_toolbar"
+        app:collapseIcon="@drawable/icon_left_25">
 
         <RelativeLayout
             android:id="@+id/home_sort_btn"
@@ -37,21 +41,13 @@
                 android:layout_toRightOf="@id/home_sort_txt"
                 android:src="@drawable/down" />
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/home_search"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/search" />
-    </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <View
         android:id="@+id/home_view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/home_top_bar"
+        android:layout_below="@id/toolbar"
         android:background="#dadada" />
 
     <!--정렬 탭입니다. down 화살표 누르면 보여지고, 하나 선택하면 사라지도록 visibility 설정해주세요. -->
@@ -109,13 +105,16 @@
         tools:listitem="@layout/item_book"/>
 
     <ImageView
+        android:id="@+id/home_create_room"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/red_btn"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
 
 </RelativeLayout>
