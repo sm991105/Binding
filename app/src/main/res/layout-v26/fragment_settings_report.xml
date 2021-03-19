@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/settings_report_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+        <ImageView
+            android:id="@+id/settings_report_left"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_left" />
+
+        <TextView
+            android:id="@+id/settings_report_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/settings_report_left"
+            android:fontFamily="@font/notosanskrbold"
+            android:text="서점제보"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15dp" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/settings_report_view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#dadada" />
+
+    <LinearLayout
+        android:id="@+id/settings_report_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="71dp"
+        android:layout_marginHorizontal="46dp"
+        android:background="@drawable/background_dialog_30dp"
+        android:elevation="2dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskrbold"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="서점 이름"
+            android:layout_marginTop="31dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskrbold"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="전화번호"
+            android:layout_marginTop="31dp"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskrbold"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="위치"
+            android:layout_marginTop="31dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskrbold"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="서점 소개글"
+            android:layout_marginTop="31dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskrbold"
+            android:textSize="15dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="사진 5장 이내"
+            android:layout_marginTop="31dp"
+            android:layout_marginBottom="31dp"
+            android:layout_gravity="center_horizontal"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/notosanskrbold"
+        android:textSize="15dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="관리자 이메일을 통해\n 서점을 제보해주세요"
+        android:lineHeight="30dp"
+        android:layout_marginTop="72dp"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="sm991105@gmail.com"
+        android:lineHeight="30dp"
+        android:layout_marginTop="36dp"
+        android:layout_gravity="center_horizontal"
+        />
+
+</LinearLayout>

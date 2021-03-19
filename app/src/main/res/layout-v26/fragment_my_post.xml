@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <RelativeLayout
+        android:id="@+id/my_post_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+        <ImageView
+            android:id="@+id/my_post_left"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_left" />
+
+        <TextView
+            android:id="@+id/my_post_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/my_post_left"
+            android:fontFamily="@font/notosanskrbold"
+            android:text="온도차이"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/home_sort_popular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/notosanskrbold"
+            android:text="인기글"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15dp"
+            android:visibility="invisible" />
+
+
+        <ImageView
+            android:id="@+id/my_post_search"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/search" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/my_post_view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/my_post_top_bar"
+        android:layout_marginBottom="10dp"
+        android:background="#dadada" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/my_post_view"
+        android:layout_marginTop="20dp"
+        tools:listitem="@layout/item_post"/>
+
+</RelativeLayout>

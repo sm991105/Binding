@@ -66,6 +66,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="13dp" />
 
+    <!-- 비워진 북마크입니다 -->
     <ImageView
         android:id="@+id/item_post_bookmark_empty"
         android:layout_width="40dp"
@@ -75,7 +76,7 @@
 
     <!-- 채워진 북마크입니다 -->
     <ImageView
-        android:visibility="invisible"
+        android:visibility="visible"
         android:id="@+id/item_post_bookmark_filled"
         android:layout_width="40dp"
         android:layout_height="40dp"
