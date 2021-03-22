@@ -82,13 +82,13 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
 
     fun updateNewest(nList: ArrayList<NewestResult>, flag: Int){
         newestList = nList
-        notifyDataSetChanged()
         categoryFlag = flag
+        notifyDataSetChanged()
     }
 
     fun updatePopular(pList: ArrayList<PopularResult>, flag: Int){
         popularList = pList
-        notifyDataSetChanged()
         categoryFlag = flag
+        notifyDataSetChanged()
     }
 }

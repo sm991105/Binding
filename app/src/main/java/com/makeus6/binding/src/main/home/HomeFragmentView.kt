@@ -17,7 +17,7 @@ interface HomeFragmentView {
     fun onGetPopularFailure(message: String)
 
     // 책방 검색 콜백 함수
-    fun onGetSearchSuccess(response: GetSearchResponse)
+    fun onGetSearchSuccess(response: GetSearchResponse, query: String?)
 
     fun onGetSearchFailure(message: String)
 }

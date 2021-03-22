@@ -11,6 +11,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -86,16 +87,38 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
         toolbar.inflateMenu(R.menu.menu_home_toolbar)
         mSearchView = toolbar.menu.findItem(R.id.menu_home_toolbar_search).actionView as SearchView
 
+        // 서치뷰에서 뒤로가기 버튼 눌렀을 때 동작 정의하기 위함
+        toolbar.menu.findItem(R.id.menu_home_toolbar_search).setOnActionExpandListener(
+            object: MenuItem.OnActionExpandListener {
+                    // 검색 버튼 눌러서 서치뷰 열렸을 떄
+                    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                    Log.d("로그", "onMenuItemActionExpand() called")
+                    return true
+                }
+
+                // 서치뷰에서 뒤로가기 버튼 눌렀을 때 -> 원래의 최신순 or 인기순으로 보여준다
+                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    Log.d("로그", "onMenuItemActionCollapse() called")
+                    when(categoryFlag){
+                        0 -> HomeService(this@HomeFragment).tryGetNewest()
+                        1 -> HomeService(this@HomeFragment).tryGetPopular()
+                    }
+                    return true
+                }
+            }
+        )
+
         mSearchView.apply{
             this.setIconifiedByDefault(false)
 
             this.queryHint = String.format("책 제목을 입력해주세요")
 
+            // 검색 submit 버튼 보이게 바꾸고, 이미지 변경
             this.isSubmitButtonEnabled = true
-
             val searchSubmit = this.findViewById<ImageView>(androidx.appcompat.R.id.search_go_btn)
             searchSubmit.setImageResource(R.drawable.search_25)
 
+            // 검색 리스너, 밑에 함수 있음
             this.setOnQueryTextListener(this@HomeFragment)
 
             this.setOnQueryTextFocusChangeListener { v, hasExpanded ->
@@ -105,9 +128,12 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
                 }
             }
 
-            // 텍스트 앞의 hint icon 제거
+            // 검색 텍스트에 뜨는 hint icon 제거
             val hintIcon = this.findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
             hintIcon.layoutParams = LinearLayout.LayoutParams(0,0)
+            // 텍스트 한꺼번에 지우는 close 버튼 제거
+            val closeIcon = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+            closeIcon.layoutParams = LinearLayout.LayoutParams(0,0)
 
             // 서치뷰에서 에딧텍스트를 가져온다
             searchEditText = this.findViewById(androidx.appcompat.R.id.search_src_text)
@@ -117,7 +143,6 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             this.setTextColor(resources.getColor(R.color.colorPrimaryDark))
             this.setHintTextColor(resources.getColor(R.color.colorPrimaryGray60))
             this.setTextSize(TypedValue.COMPLEX_UNIT_SP ,15F)
-
         }
     }
 
@@ -241,22 +266,59 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     }
 
     // 책방 검색 통신 성공
-    override fun onGetSearchSuccess(response: GetSearchResponse) {
+    override fun onGetSearchSuccess(response: GetSearchResponse, query: String?) {
+        Log.d("로그", "onGetSearchSuccess() called, response: $response")
+        dismissLoadingDialog()
 
+        when(response.code){
+            1000 -> {
+                Log.d("로그", "책방 검색 성공, result: ${response.result}")
+
+                // 검색어로 받아오는 데이터 클래스가 NewestResult이기 때문에
+                // 임시로 newest로 설정해서 데이터를 보낸다
+                homeRecyclerAdapter.updateNewest(response.result, 0)
+            }
+
+            2003 -> showCustomToast("검색어를 입력해주세요")
+
+            3000 -> {
+                showCustomToast("\"${query}\"를 포함하는 책방이 존재하지 않습니다")
+            }
+
+            else -> Log.d("로그", "책방 검색 실패, message: ${response.message}")
+        }
     }
 
     // 책방 검색 통신 실패
     override fun onGetSearchFailure(message: String) {
+        Log.d("로그", "onGetSearchFailure() called, message: $message")
+        dismissLoadingDialog()
 
+        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
 
-    // 서치뷰 검색어 입력 리스너
+    // 서치뷰 검색 리스너
     override fun onQueryTextSubmit(query: String?): Boolean {
+        Log.d("로그", "검색 = query: $query")
+
+        if(query?.isEmpty()!! || query == ""){
+            showCustomToast("검색어를 입력해주세요")
+        }else{
+            HomeService(this).tryGetSearchBooks(query.toString())
+        }
         return true
     }
 
-    //
+    // 검색 입력 변화 감지 리스너
     override fun onQueryTextChange(newText: String?): Boolean {
+
+        // 검색어를 다 지우면 원래 화면으로 돌아간다
+        if(newText?.isEmpty()!! || newText == ""){
+            when(categoryFlag){
+                0 -> HomeService(this@HomeFragment).tryGetNewest()
+                1 -> HomeService(this@HomeFragment).tryGetPopular()
+            }
+        }
         return true
     }
 }

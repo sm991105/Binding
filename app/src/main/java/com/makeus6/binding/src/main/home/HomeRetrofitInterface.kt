@@ -24,6 +24,9 @@ interface HomeRetrofitInterface {
 
     // 책방 검색 api
     @GET("/books?bookName")
-    fun getSearchBooks(@Query("bookName") bookName: String): Call<GetSearchResponse>
+    fun getSearchBooks(@Query("bookName") bookName: String,
+                       @Query("page") page: Int,
+                       @Query("limit") limit: Int
+    ): Call<GetSearchResponse>
 
 }

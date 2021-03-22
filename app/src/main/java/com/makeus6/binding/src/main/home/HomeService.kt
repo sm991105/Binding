@@ -16,7 +16,7 @@ class HomeService(val view: HomeFragmentView) {
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getNewest(1, 20)
+        homeRetrofitInterface.getNewest(0, 20)
             .enqueue(object : Callback<GetNewestResponse> {
 
                 override fun onResponse(call: Call<GetNewestResponse>,
@@ -37,7 +37,7 @@ class HomeService(val view: HomeFragmentView) {
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getPopular(1, 20)
+        homeRetrofitInterface.getPopular(0, 20)
             .enqueue(object : Callback<GetPopularResponse> {
 
                 override fun onResponse(call: Call<GetPopularResponse>,
@@ -58,13 +58,13 @@ class HomeService(val view: HomeFragmentView) {
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getSearchBooks(bookName)
+        homeRetrofitInterface.getSearchBooks(bookName,0 , 20)
             .enqueue(object : Callback<GetSearchResponse> {
 
                 override fun onResponse(call: Call<GetSearchResponse>,
                                         response: Response<GetSearchResponse>
                 ) {
-                    view.onGetSearchSuccess(response.body() as GetSearchResponse)
+                    view.onGetSearchSuccess(response.body() as GetSearchResponse, bookName)
                 }
 
                 override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {

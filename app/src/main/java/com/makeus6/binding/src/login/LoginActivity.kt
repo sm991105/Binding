@@ -85,6 +85,7 @@ LoginActivityView{
         pwd = binding.loginPassword.text.toString()
 
         // 로그인 API 호출
+        showLoadingDialog(this)
         LoginService(this).tryPostLogin(email, pwd)
         // JoinDialog(this, true).show()
     }
@@ -131,6 +132,7 @@ LoginActivityView{
     // 로그인 API 통신 성공
     override fun onPostLoginSuccess(response: LoginResponse) {
         Log.d("로그", "onPostLoginSuccess() called, response: $response")
+        dismissLoadingDialog()
 
         when(response.code){
 
@@ -159,6 +161,7 @@ LoginActivityView{
     // 로그인 API 통신 실패
     override fun onPostLoginFailure(message: String) {
         Log.d("로그", "onPostLoginFailure() called, message: $message")
+        dismissLoadingDialog()
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }

@@ -20,7 +20,9 @@
         android:layout_height="30dp"
         android:src="@drawable/bookmark_filled"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="14dp"/>
+        android:layout_marginRight="14dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -41,6 +43,7 @@
             android:src="@drawable/dot" />
 
         <TextView
+            android:id="@+id/item_bookmark_store_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

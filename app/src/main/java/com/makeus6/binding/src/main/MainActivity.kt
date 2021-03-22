@@ -29,21 +29,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             BottomNavigationView.OnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.menu_main_btm_nav_home -> {
-                        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_home
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frm, HomeFragment())
                             .commitAllowingStateLoss()
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.menu_main_btm_nav_menu -> {
-                        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_menu
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frm, MenuFragment())
                             .commitAllowingStateLoss()
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.menu_main_btm_nav_my_page -> {
-                        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frm, MyPageFragment())
                             .commitAllowingStateLoss()
