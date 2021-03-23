@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.makeus6.binding.src.main.menu.store_detail.MRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/store_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
@@ -21,26 +22,26 @@
                 android:layout_height="215dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/jangu" />
-            
+
             <ImageView
                 android:id="@+id/store_detail_bookmark_empty"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/bookmark_empty"
                 android:layout_below="@id/store_detail_cover"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="20dp"/>
+                android:layout_marginRight="20dp"
+                android:src="@drawable/bookmark_empty" />
 
             <!-- 클릭시 색깔 채워지도록 설정해주세요 -->
             <ImageView
-                android:visibility="gone"
                 android:id="@+id/store_detail_bookmark_filled"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/bookmark_filled"
                 android:layout_below="@id/store_detail_cover"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="20dp"/>
+                android:layout_marginRight="20dp"
+                android:src="@drawable/bookmark_filled"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/store_detail_store_name"
@@ -59,12 +60,14 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/store_detail_cover"
                 android:layout_marginTop="20dp">
+
                 <ImageView
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:src="@drawable/location" />
+
                 <TextView
                     android:id="@+id/store_detail_location_txt"
                     android:layout_width="match_parent"
@@ -74,19 +77,22 @@
                     android:layout_marginLeft="9dp"
                     android:text="경기 수원시 팔달구 권광로188번길 2층 부크빌라"
                     android:textColor="#494949"
-                    android:textSize="12dp"/>
+                    android:textSize="12dp" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/store_detail_web_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/store_detail_location">
+
                 <ImageView
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:src="@drawable/home" />
+
                 <TextView
                     android:id="@+id/store_detail_web_address"
                     android:layout_width="match_parent"
@@ -96,19 +102,22 @@
                     android:layout_marginLeft="9dp"
                     android:text="@string/bookvill"
                     android:textColor="#494949"
-                    android:textSize="12dp"/>
+                    android:textSize="12dp" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/store_detail_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/store_detail_web_container">
+
                 <ImageView
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:src="@drawable/phone" />
+
                 <TextView
                     android:id="@+id/store_detail_phone_txt"
                     android:layout_width="match_parent"
@@ -118,7 +127,7 @@
                     android:layout_marginLeft="9dp"
                     android:text="010-2779-4199"
                     android:textColor="#494949"
-                    android:textSize="12dp"/>
+                    android:textSize="12dp" />
             </LinearLayout>
 
             <View
@@ -133,20 +142,20 @@
                 android:id="@+id/store_detail_Info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/bookvill_text"
+                android:layout_below="@id/store_detail_view"
                 android:layout_margin="20dp"
-                android:textSize="15dp"
-                android:lineSpacingExtra="2dp"
                 android:justificationMode="inter_word"
+                android:lineSpacingExtra="2dp"
+                android:text="@string/bookvill_text"
                 android:textColor="@color/ColorPrimaryLight"
-                android:layout_below="@id/store_detail_view"/>
+                android:textSize="15dp" />
         </RelativeLayout>
 
     </ScrollView>
 
     <WebView
-        android:visibility="gone"
         android:id="@+id/stroe_detail_wv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</RelativeLayout>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+</com.makeus6.binding.src.main.menu.store_detail.MRelativeLayout>

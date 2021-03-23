@@ -95,7 +95,7 @@ LoginActivityView{
         val joinIntent = Intent(this, JoinActivity::class.java)
         isHere = false
         startActivity(joinIntent)
-        finish()
+        // finish()
     }
 
     // 이메일 입력 칸 포커스 -> 밑줄이 굵어진다

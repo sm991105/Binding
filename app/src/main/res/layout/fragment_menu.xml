@@ -50,5 +50,9 @@
         android:paddingTop="20dp"
         tools:listitem="@layout/item_menu"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/menu_frm"/>
 
 </RelativeLayout>

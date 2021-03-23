@@ -48,7 +48,6 @@ class JoinDoneDialog(context: Context, private val isSuccess: Boolean) : DialogF
         btn.setOnClickListener {
             (activity as JoinActivity).let{
                 it.moveToLogin(isSuccess)
-                it.finish()
             }
         }
 

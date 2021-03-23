@@ -12,6 +12,7 @@ import com.makeus6.binding.R
 import com.makeus6.binding.config.BaseFragment
 import com.makeus6.binding.databinding.FragmentMyPageBinding
 import com.makeus6.binding.src.main.my_page.models.*
+import com.makeus6.binding.src.main.my_page.settings.SettingsFragment
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +24,8 @@ class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
     lateinit var sBookMarkAdapter: SBookMarkRecyclerAdapter
     lateinit var wBookMarkAdapter: WBookMarkRecyclerAdapter
     lateinit var writingAdapter: WritingRecyclerAdapter
+
+    private var userImgUrl: String = "-1"
 
     lateinit var fontKr: Typeface
     lateinit var fontBold: Typeface
@@ -103,6 +106,20 @@ class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
                 binding.myPageRecyclerBookmark.visibility = View.VISIBLE
             }
         }
+
+        binding.myPageBtnSettings.setOnClickListener(onClickSettings)
+    }
+
+    // 설정 버튼 클릭
+    private val onClickSettings = View.OnClickListener {
+        val settingsFragment = SettingsFragment(this)
+        val cFragmentManager = childFragmentManager
+        binding.myPageFrm.visibility = View.VISIBLE
+        cFragmentManager.beginTransaction().apply{
+            this.add(R.id.my_page_frm, settingsFragment)
+                .commitAllowingStateLoss()
+            this.addToBackStack("settings")
+        }
     }
 
     override fun onGetUserSuccess(response: GetUserResponse) {
@@ -132,6 +149,8 @@ class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
                 // 유저 정보
                 // 프로필 사진, 닉네임, 이메일
                 userInfo.get(0).apply {
+                    this@MyPageFragment.userImgUrl = this.userImgUrl
+
                     Glide.with(this@MyPageFragment)
                         .load(this.userImgUrl)
                         .error(R.drawable.icon_app)
@@ -173,4 +192,7 @@ class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
+
+    // 유저 이미지 url 전달
+    override fun provideImgUrl() = this.userImgUrl
 }

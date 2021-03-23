@@ -12,6 +12,7 @@ import com.makeus6.binding.src.main.menu.models.StoresResult
 import com.makeus6.binding.src.main.menu.store_detail.StoreDetailFragment
 import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.item_menu.view.*
+import java.util.*
 
 class MenuRecyclerViewAdapter(fragment: MenuFragment):
     RecyclerView.Adapter<MenuRecyclerViewAdapter.StoreViewHolder>() {
@@ -52,6 +53,7 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
             title.text = store.storeName
             address.text = store.location
 
+            // 상세페이지로 이동
             item.setOnClickListener{
                 val fragmentManager = menuFragment.childFragmentManager
                 val storeDetailFragment = StoreDetailFragment()
@@ -59,7 +61,8 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
                 idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
                 storeDetailFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .replace(R.id.menu_root, storeDetailFragment)
+                    .addToBackStack("storeDetail")
+                    .add(R.id.menu_frm, storeDetailFragment)
                     .commitAllowingStateLoss()
             }
         }

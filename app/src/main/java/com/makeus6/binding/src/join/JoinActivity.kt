@@ -2,6 +2,7 @@ package com.makeus6.binding.src.join
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.makeus6.binding.R
 import com.makeus6.binding.config.BaseActivity
 import com.makeus6.binding.databinding.ActivityJoinBinding
@@ -16,7 +17,9 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         super.onCreate(savedInstanceState)
 
         // join_frm 프레임레이아웃에 Join1 프래그먼트를 올린다
-        supportFragmentManager.beginTransaction().add(R.id.join_frm, Join1Fragment())
+        supportFragmentManager.beginTransaction()
+            .add(R.id.join_frm, Join1Fragment())
+            .addToBackStack("join1")
             .commitAllowingStateLoss()
     }
 
@@ -30,8 +33,10 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         val join2Fragment = Join2Fragment()
         join2Fragment.arguments = bundle
 
-        supportFragmentManager.beginTransaction().replace(R.id.join_frm, join2Fragment)
-            .commitAllowingStateLoss()
+        supportFragmentManager.beginTransaction()
+                .addToBackStack("join2")
+                .replace(R.id.join_frm, join2Fragment)
+                .commitAllowingStateLoss()
     }
 
     // 회원가입 마지막 화면, 닉네임 입력창으로 이동
@@ -46,7 +51,9 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         val join3Fragment = Join3Fragment()
         join3Fragment.arguments = bundle
 
-        supportFragmentManager.beginTransaction().replace(R.id.join_frm, join3Fragment)
+        supportFragmentManager.beginTransaction()
+            .addToBackStack("join3")
+            .replace(R.id.join_frm, join3Fragment)
             .commitAllowingStateLoss()
     }
 
@@ -56,5 +63,20 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         // 회원가입 성공 후 로그인 화면으로 돌아오는건지 확인
         loginIntent.putExtra("isJoined", isJoined)
         startActivity(loginIntent)
+        finish()
+    }
+
+    // 회원가입 중 백 버튼 -> 이전 프래그먼트로 돌아간다
+    override fun onBackPressed() {
+        val fragmentManager = supportFragmentManager
+
+        if(fragmentManager.backStackEntryCount > 0){
+            fragmentManager.popBackStack()
+            if(fragmentManager.backStackEntryCount == 0){
+                super.onBackPressed()
+            }
+        }else{
+            super.onBackPressed()
+        }
     }
 }

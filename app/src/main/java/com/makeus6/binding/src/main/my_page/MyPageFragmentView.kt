@@ -8,4 +8,7 @@ interface MyPageFragmentView {
     fun onGetUserSuccess(response: GetUserResponse)
 
     fun onGetUserFailure(message: String)
+
+    // 이미지 URL 전달
+    fun provideImgUrl(): String
 }

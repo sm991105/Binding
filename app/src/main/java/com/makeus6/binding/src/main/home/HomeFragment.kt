@@ -195,7 +195,6 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     private val onTouchRecyclerView = View.OnTouchListener { v, event ->
         if(binding.homeSortTab.visibility == View.VISIBLE){
             binding.homeSortTab.visibility = View.GONE
-            true
         }
         v.performClick()
     }

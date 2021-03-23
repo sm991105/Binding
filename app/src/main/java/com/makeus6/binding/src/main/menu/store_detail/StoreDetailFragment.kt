@@ -71,7 +71,14 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
             StoreDetailService(this).tryPatchBookmark(bookStoreIdx)
         }
 
+        // 웹 주소 클릭
         binding.storeDetailWebContainer.setOnClickListener(onClickWebAddress)
+
+        // FrameLayout 하단 뷰로 터치 이벤트가 전달되는 것을 막는다
+        binding.storeDetailContainer.setOnTouchListener { v, event ->
+            v.performClick()
+            true
+        }
     }
 
     // 서점 인스타 홈페이지 띄우기 - web으로 띄우기
