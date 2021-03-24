@@ -59,9 +59,10 @@
         android:layout_marginLeft="33dp"
         android:layout_below="@id/settings_change_pw_view"
         android:background="@null"
-        android:hint="현재 비밀번호를 입력해주세요"
+        android:hint="현재 비밀번호를 입력해주세요 (8~20자)"
         android:textColor="@color/ColorPrimaryLight"
-        android:textSize="17sp"/>
+        android:textSize="17sp"
+        android:inputType="textPassword"/>
 
     <View
         android:id="@+id/settings_change_pw_view_2"
@@ -81,9 +82,10 @@
         android:layout_marginLeft="33dp"
         android:layout_below="@id/settings_change_pw_view_2"
         android:background="@null"
-        android:hint="새로운 비밀번호를 입력해주세요"
+        android:hint="새로운 비밀번호를 입력해주세요 (8~20자)"
         android:textColor="@color/ColorPrimaryLight"
-        android:textSize="17sp"/>
+        android:textSize="17sp"
+        android:inputType="textPassword"/>
 
     <View
         android:id="@+id/settings_change_pw_view_3"
@@ -105,7 +107,8 @@
         android:background="@null"
         android:hint="새로운 비밀번호를 한 번 더 입력해주세요"
         android:textColor="@color/ColorPrimaryLight"
-        android:textSize="17sp"/>
+        android:textSize="17sp"
+        android:inputType="textPassword"/>
 
     <View
         android:id="@+id/settings_change_pw_view_4"
@@ -116,6 +119,19 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="9dp"
         android:background="#dadada" />
+
+    <!-- 버튼 클릭시 이미 가입된 이메일인 경우 -->
+    <TextView
+        android:id="@+id/settings_change_pw_wrong"
+        android:layout_below="@id/settings_change_pw_view_4"
+        android:textAlignment="viewEnd"
+        android:layout_marginTop="27dp"
+        android:layout_marginRight="27dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text=""/>
 
 
 </RelativeLayout>

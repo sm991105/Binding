@@ -38,6 +38,12 @@
         <!-- 비밀번호 찾기 화면-->
         <activity android:name="com.makeus6.binding.src.find_password.FindPasswordActivity"/>
 
+        <!-- 마이페이지 세팅 - 프로필 관리 화면-->
+        <activity android:name=".src.main.my_page.settings.profile.SettingsProfileActivity"/>
+
+        <!-- 마이페이지 세팅 - 비밀번호 변경 화면-->
+        <activity android:name=".src.main.my_page.settings.password.ChangePWActivity"/>
+
     </application>
 
 </manifest>

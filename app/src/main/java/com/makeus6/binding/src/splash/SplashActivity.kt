@@ -27,9 +27,6 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
 
         val jwt = sp.getString(ApplicationClass.X_ACCESS_TOKEN, null)
 
-        // 임시 로그아웃 설정
-        // logOut()
-
         // 처음에 next 버튼을 안보이게 한다
         binding.splashNext.visibility = View.GONE
 
@@ -69,10 +66,5 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
         startActivity(loginIntent)
         overridePendingTransition(R.anim.none, R.anim.none_to_left)
         finish()
-    }
-
-    // 임시 로그아웃 함수
-    fun logOut(){
-        sp.edit().putString(ApplicationClass.X_ACCESS_TOKEN, null).apply()
     }
 }

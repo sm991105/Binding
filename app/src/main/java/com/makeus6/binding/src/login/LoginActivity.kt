@@ -50,6 +50,8 @@ LoginActivityView{
         // 각 입력칸이 포커싱되면 밑줄이 굵어진다
         binding.loginEmail.onFocusChangeListener = onFocusEmail
         binding.loginPassword.onFocusChangeListener = onFocusPwd
+        val manager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        manager.showSoftInput(binding.loginPassword, InputMethodManager.SHOW_IMPLICIT)
 
         // 첫번째 text칸 엔터키 -> 아래 editText로 이동
         binding.loginEmail.setOnKeyListener { v, keyCode, event ->
@@ -121,7 +123,9 @@ LoginActivityView{
     // 비밀번호 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwd = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus){
-            true -> binding.loginPwLineBold.visibility = View.VISIBLE
+            true -> {
+                binding.loginPwLineBold.visibility = View.VISIBLE
+            }
             false ->
                 if(isHere){
                     binding.loginPwLineBold.visibility = View.INVISIBLE
@@ -140,8 +144,12 @@ LoginActivityView{
             1000 -> {
                 Log.d("로그", "로그인 성공, jwt: ${response.jwt}")
 
-                // jwt 저장
-                sp.edit().putString(ApplicationClass.X_ACCESS_TOKEN, response.jwt).apply()
+                // jwt, 패스워드 저장
+                sp.edit().apply {
+                    this.putString(ApplicationClass.X_ACCESS_TOKEN, response.jwt)
+                    this.putString("pw", pwd)
+                    this.apply()
+                }
 
                 val mainIntent = Intent(this, MainActivity::class.java)
                 isHere = false
