@@ -143,6 +143,10 @@ class ChangePWActivity : BaseActivity<ActivitySettingsChangePwBinding>(
             // 변경 전 후 비밀번호가 같다
             2003 -> binding.settingsChangePwWrong.text =
                 String.format("현재 비밀번호와 다른 비밀번호를 사용해주세요")
+
+            // 현재 비밀번호 불일치
+            3001 -> binding.settingsChangePwWrong.text =
+                String.format("현재 비밀번호가 일치하지 않습니다")
         }
     }
 

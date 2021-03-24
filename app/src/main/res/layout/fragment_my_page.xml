@@ -31,6 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/my_page_profile_photo"
+            android:layout_alignTop="@id/my_page_profile_photo"
             android:fontFamily="@font/notosanskrbold"
             android:text="제이드"
             android:textColor="@color/colorPrimaryDark"
