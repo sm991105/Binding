@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/my_page_profile_photo"
             android:layout_alignTop="@id/my_page_profile_photo"
+            android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrbold"
             android:text="제이드"
             android:textColor="@color/colorPrimaryDark"
@@ -42,8 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/my_page_profile_name"
-            android:layout_marginTop="3dp"
             android:layout_toRightOf="@id/my_page_profile_photo"
+            android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrregular"
             android:text="sm991105@gmail.com"
             android:textColor="@color/ColorPrimaryLight"
@@ -110,6 +111,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrbold"
             android:gravity="center"
             android:text="내가 쓴 글"
@@ -121,6 +123,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrregular"
             android:gravity="center"
             android:text="북마크 글"
@@ -167,17 +170,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/my_page_bookshelf_view"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">
-        
+
         <TextView
             android:id="@+id/my_page_bookmark_store_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="29dp"
+            android:layout_marginBottom="20dp"
             android:text="서점 북마크"
             android:textSize="14sp"
+            android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrbold"
             android:textColor="@color/colorPrimaryDark"/>
 
@@ -193,9 +197,11 @@
     </RelativeLayout>
 
     <FrameLayout
-        android:visibility="invisible"
         android:id="@+id/my_page_frm"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

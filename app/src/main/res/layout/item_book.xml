@@ -36,27 +36,27 @@
 
     <TextView
         android:id="@+id/item_book_title"
-        android:layout_width="wrap_content"
+        android:layout_width="164dp"
         android:layout_height="wrap_content"
-        android:text="페스트"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/notosanskrbold"
+        android:includeFontPadding="false"
+        android:text="나는 집에 그지같은 얼른 얼른"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/notosanskrbold"
-        android:textColor="@color/colorPrimaryDark"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/item_book_icon"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
         android:src="@drawable/right"
-        app:layout_constraintLeft_toRightOf="@id/item_book_title"
-        app:layout_constraintTop_toTopOf="@id/item_book_title"
-        app:layout_constraintBottom_toBottomOf="@id/item_book_title"
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="10dp"/>
+        app:layout_constraintLeft_toRightOf="@id/item_book_post_amount"
+        app:layout_constraintTop_toTopOf="@id/item_book_post_amount"
+        app:layout_constraintBottom_toBottomOf="@id/item_book_post_amount"
+        android:layout_marginLeft="5dp"/>
 
     <TextView
         android:id="@+id/item_book_author"
@@ -69,6 +69,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:textColor="@color/ColorPrimaryLight"/>
 
     <TextView
@@ -78,10 +79,10 @@
         android:text="3개의 글"
         android:textSize="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/item_book_author"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="16dp"
+        android:includeFontPadding="false"
         android:fontFamily="@font/notosanskrregular"
         android:textColor="@color/ColorPrimaryLight"/>
 

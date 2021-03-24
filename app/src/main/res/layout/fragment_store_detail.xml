@@ -69,6 +69,7 @@
                     android:src="@drawable/location" />
 
                 <TextView
+                    android:includeFontPadding="false"
                     android:id="@+id/store_detail_location_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,6 +85,7 @@
                 android:id="@+id/store_detail_web_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_below="@id/store_detail_location">
 
                 <ImageView
@@ -94,6 +96,7 @@
                     android:src="@drawable/home" />
 
                 <TextView
+                    android:includeFontPadding="false"
                     android:id="@+id/store_detail_web_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -109,6 +112,7 @@
                 android:id="@+id/store_detail_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_below="@id/store_detail_web_container">
 
                 <ImageView
@@ -119,6 +123,7 @@
                     android:src="@drawable/phone" />
 
                 <TextView
+                    android:includeFontPadding="false"
                     android:id="@+id/store_detail_phone_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

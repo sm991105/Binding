@@ -49,6 +49,7 @@
             android:layout_gravity="center_vertical"
             android:layout_below="@id/item_bookmark_store_photo"
             android:layout_toRightOf="@id/item_bookmark_store_dot"
+            android:includeFontPadding="false"
             android:text="뭐가있조"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14dp"/>
