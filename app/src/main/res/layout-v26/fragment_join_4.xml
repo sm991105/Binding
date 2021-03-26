@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <LinearLayout
+        android:id="@+id/join_4_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="13dp">
+
+        <ImageView
+            android:id="@+id/join_4_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/icon_left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/notosanskrbold"
+            android:text="회원가입"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/join_4_top_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/join_4_top_bar"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="38dp"
+        android:fontFamily="@font/notosanskrbold"
+        android:text="바인딩에 가입하기 전에\n이용약관에 동의해주세요"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_above="@id/join_4_btn"
+        android:layout_below="@id/join_4_top_text"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="25dp"
+        android:background="@drawable/background_agreement"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanskrbold"
+                android:text="개인정보 수집 및 이용 안내"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="13sp" />
+
+            <View
+                android:id="@+id/settings_profile_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="9.5dp"
+                android:layout_marginBottom="9.5dp"
+                android:background="#dadada" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/agreement"
+                android:textSize="13sp"
+                android:textColor="@color/ColorPrimaryLight" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/join_4_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/background_btn_20dp"
+        android:fontFamily="@font/notosanskrbold"
+        android:text="동의하고 가입하기"
+        android:textColor="@color/colorWhite" />
+</RelativeLayout>
