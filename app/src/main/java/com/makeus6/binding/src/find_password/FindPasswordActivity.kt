@@ -45,7 +45,7 @@ class FindPasswordActivity:
         binding.findPwNickname.setOnKeyListener { v, keyCode, event ->
             if(event.action == KeyEvent.ACTION_DOWN && (keyCode == KeyEvent.KEYCODE_ENTER ||
                     keyCode == KeyEvent.KEYCODE_ENDCALL)){
-                binding.findPwEmail.requestFocus()
+                binding.findPwEmail.performClick()
                 true
             }
             false
@@ -218,9 +218,12 @@ class FindPasswordActivity:
 
     fun moveToLogin(){
         val loginIntent = Intent(this, LoginActivity::class.java)
-        // 회원가입 성공 후 로그인 화면으로 돌아오는건지 확인
         isHere = false
         startActivity(loginIntent)
         finish()
+    }
+
+    override fun onBackPressed() {
+        moveToLogin()
     }
 }

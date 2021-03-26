@@ -75,7 +75,7 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
         binding.storeDetailWebContainer.setOnClickListener(onClickWebAddress)
 
         // FrameLayout 하단 뷰로 터치 이벤트가 전달되는 것을 막는다
-        binding.storeDetailContainer.setOnTouchListener { v, event ->
+        binding.storeDetailRoot.setOnTouchListener { v, event ->
             v.performClick()
             true
         }
@@ -174,13 +174,17 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
         dismissLoadingDialog()
 
         when(response.code){
+
+            // 북마크 첫 추가, 북마크 ON
             in 1000..1001 -> {
                 isBookMarked = 1
                 binding.storeDetailBookmarkFilled.visibility = View.VISIBLE
+                binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE
             }
             1002 -> {
                 isBookMarked = 0
-                binding.storeDetailBookmarkFilled.visibility = View.GONE
+                binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE
+                binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
             }
             else -> Log.d("로그", "북마크 수정 실패, message: ${response.message}")
         }

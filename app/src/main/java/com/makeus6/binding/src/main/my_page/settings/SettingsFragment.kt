@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.makeus6.binding.MainActivity
 import com.makeus6.binding.R
 import com.makeus6.binding.config.ApplicationClass
 import com.makeus6.binding.config.BaseFragment
@@ -29,6 +28,12 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // ChildFragment(SettingsFragment) 하단 뷰로 터치 이벤트가 전달되는 것을 막는다
+        binding.settingsRoot.setOnTouchListener { v, event ->
+            v.performClick()
+            true
+        }
 
         // 로그아웃 클릭시 나오는 다이얼로그
         logoutDialog = LogoutDialog(context!!, confirmLogout, cancelLogout)

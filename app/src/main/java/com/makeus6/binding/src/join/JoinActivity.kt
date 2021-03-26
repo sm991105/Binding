@@ -19,8 +19,8 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         // join_frm 프레임레이아웃에 Join1 프래그먼트를 올린다
         supportFragmentManager.beginTransaction()
             .add(R.id.join_frm, Join1Fragment())
-            .addToBackStack("join1")
             .commitAllowingStateLoss()
+
     }
 
     // 회원가입 2번째 화면, 비밀번호 입력창으로 이동
@@ -72,11 +72,11 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
 
         if(fragmentManager.backStackEntryCount > 0){
             fragmentManager.popBackStack()
-            if(fragmentManager.backStackEntryCount == 0){
-                super.onBackPressed()
+            if(fragmentManager.backStackEntryCount <= 0){
+                moveToLogin(false)
             }
         }else{
-            super.onBackPressed()
+            moveToLogin(false)
         }
     }
 }

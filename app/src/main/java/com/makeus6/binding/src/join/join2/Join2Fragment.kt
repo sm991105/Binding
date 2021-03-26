@@ -37,9 +37,9 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         binding.join2WrongPw.visibility = View.INVISIBLE
 
         // 첫번째 text칸 엔터키 -> 아래 editText로 이동
-        binding.join2PwLine.setOnKeyListener { v, keyCode, event ->
+        binding.join2Password.setOnKeyListener { v, keyCode, event ->
             if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
-                binding.join2PwChkLine.requestFocus()
+                binding.join2PasswordCheck.performClick()
                 true
             }
             false

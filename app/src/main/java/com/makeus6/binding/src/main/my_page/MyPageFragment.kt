@@ -1,6 +1,5 @@
 package com.makeus6.binding.src.main.my_page
 
-import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -16,10 +15,11 @@ import com.makeus6.binding.src.main.my_page.settings.SettingsFragment
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MyPageFragment: BaseFragment<FragmentMyPageBinding>(
+class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     FragmentMyPageBinding::bind,
     R.layout.fragment_my_page
 ), MyPageFragmentView{
+
 
     lateinit var sBookMarkAdapter: SBookMarkRecyclerAdapter
     lateinit var wBookMarkAdapter: WBookMarkRecyclerAdapter

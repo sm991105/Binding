@@ -50,13 +50,11 @@ LoginActivityView{
         // 각 입력칸이 포커싱되면 밑줄이 굵어진다
         binding.loginEmail.onFocusChangeListener = onFocusEmail
         binding.loginPassword.onFocusChangeListener = onFocusPwd
-        val manager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        manager.showSoftInput(binding.loginPassword, InputMethodManager.SHOW_IMPLICIT)
 
         // 첫번째 text칸 엔터키 -> 아래 editText로 이동
         binding.loginEmail.setOnKeyListener { v, keyCode, event ->
             if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
-                binding.loginPassword.requestFocus()
+                binding.loginPassword.performClick()
                 true
             }
             false
@@ -97,7 +95,7 @@ LoginActivityView{
         val joinIntent = Intent(this, JoinActivity::class.java)
         isHere = false
         startActivity(joinIntent)
-        // finish()
+        finish()
     }
 
     // 이메일 입력 칸 포커스 -> 밑줄이 굵어진다

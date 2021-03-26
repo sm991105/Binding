@@ -56,7 +56,7 @@
         android:layout_width="98dp"
         android:layout_height="98dp"
         app:riv_corner_radius="50dp"
-        android:src="@drawable/jangu"
+        android:src="@drawable/icon_app"
         android:scaleType="centerCrop"
         android:layout_below="@id/settings_profile_view"
         android:layout_marginTop="60dp"
@@ -83,7 +83,8 @@
         android:text="제이드"
         android:textColor="@color/colorPrimaryDark"
         android:fontFamily="@font/notosanskrbold"
-        android:textSize="17sp"/>
+        android:textSize="17sp"
+        android:inputType="text"/>
 
     <View
         android:id="@+id/settings_profile_view_2"
@@ -95,7 +96,7 @@
         android:layout_marginTop="9dp"
         android:background="#dadada" />
 
-    <EditText
+    <TextView
         android:id="@+id/settings_profile_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

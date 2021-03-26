@@ -1,16 +1,9 @@
 package com.makeus6.binding.src.main.home
 
 import android.annotation.SuppressLint
-import android.app.SearchManager
-import android.content.Context
-import android.graphics.Color
-import android.media.Image
 import android.os.Bundle
-import android.text.Html
 import android.util.Log
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -22,12 +15,8 @@ import com.makeus6.binding.R
 import com.makeus6.binding.config.ApplicationClass
 import com.makeus6.binding.config.BaseFragment
 import com.makeus6.binding.databinding.FragmentHomeBinding
-import com.makeus6.binding.src.main.home.create_room.CreateRoomDialog
+import com.makeus6.binding.src.main.home.create_room.CreateBookDialog
 import com.makeus6.binding.src.main.home.models.*
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.MenuItemCompat
-import androidx.core.view.contains
-import com.makeus6.binding.src.main.MainActivity
 import java.util.*
 
 class HomeFragment: BaseFragment<FragmentHomeBinding>(
@@ -148,7 +137,7 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
     // 책방 추가 버튼 리스너
     private val onClickCreateRoom = View.OnClickListener {
-        val dialog = CreateRoomDialog(context!!)
+        val dialog = CreateBookDialog(context!!)
         val fragmentManager = childFragmentManager
         dialog.show(fragmentManager, "create_room")
     }

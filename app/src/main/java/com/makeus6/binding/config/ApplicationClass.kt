@@ -2,6 +2,7 @@ package com.makeus6.binding.config
 
 import android.app.Application
 import android.content.SharedPreferences
+import com.google.firebase.storage.FirebaseStorage
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -26,6 +27,15 @@ class ApplicationClass : Application() {
 
         // Retrofit 인스턴스, 앱 실행시 한번만 생성하여 사용합니다.
         lateinit var sRetrofit: Retrofit
+
+        // 파이어베이스 저장소
+        lateinit var userStorage: FirebaseStorage
+
+        // 프로필 변경 플래그
+        var isEdited = false
+
+        // 닉네임 정규표현식
+        val regExp = "^(?=.*[가-힣]).{2,8}$"
     }
 
     // 앱이 처음 생성되는 순간, SP를 새로 만들어주고, 레트로핏 인스턴스를 생성합니다.
@@ -35,6 +45,8 @@ class ApplicationClass : Application() {
             applicationContext.getSharedPreferences("BINDING_APP", MODE_PRIVATE)
         // 레트로핏 인스턴스 생성
         initRetrofitInstance()
+
+        userStorage = FirebaseStorage.getInstance()
     }
 
     // 레트로핏 인스턴스를 생성하고, 레트로핏에 각종 설정값들을 지정해줍니다.

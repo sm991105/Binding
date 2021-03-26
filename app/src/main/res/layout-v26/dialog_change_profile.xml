@@ -2,39 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="25dp"
+    android:paddingHorizontal="10dp"
     android:background="@drawable/background_dialog_30dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/dialog_change_profile_remove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="18dp"
         android:gravity="center"
         android:fontFamily="@font/notosanskrbold"
         android:text="사진삭제"
-        android:textSize="17sp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textSize="14sp"
+        android:textColor="@drawable/selector_btn_txt_color"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="9dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="4dp"
         android:background="#dadada" />
     <TextView
         android:id="@+id/dialog_change_profile_choose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="18dp"
         android:gravity="center"
         android:fontFamily="@font/notosanskrbold"
         android:text="사진첩에서 선택"
-        android:textSize="17sp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textSize="14sp"
+        android:textColor="@drawable/selector_btn_txt_color"/>
 
 
 </LinearLayout>

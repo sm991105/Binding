@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.makeus6.binding.src.main.menu.store_detail.MRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/store_detail_container"
+    android:id="@+id/store_detail_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
@@ -149,7 +149,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/store_detail_view"
                 android:layout_margin="20dp"
-                android:justificationMode="inter_word"
                 android:lineSpacingExtra="2dp"
                 android:text="@string/bookvill_text"
                 android:textColor="@color/ColorPrimaryLight"

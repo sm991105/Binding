@@ -1,11 +1,7 @@
 package com.makeus6.binding.src.main
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.makeus6.binding.R
 import com.makeus6.binding.config.BaseActivity
 import com.makeus6.binding.databinding.ActivityMainBinding
@@ -13,8 +9,11 @@ import com.makeus6.binding.src.main.home.HomeFragment
 import com.makeus6.binding.src.main.menu.MenuFragment
 import com.makeus6.binding.src.main.my_page.MyPageFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.makeus6.binding.config.ApplicationClass
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+
+    private var isProEdited = false
 
     private var homeFragment: HomeFragment? = null
     private var menuFragment: MenuFragment? = null
@@ -75,12 +74,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             })
     }
 
+    // 뒤로가기 눌렀을 때 처리
     override fun onBackPressed() {
 
         when(binding.mainBtmNav.selectedItemId){
             R.id.menu_main_btm_nav_home -> {
                 finishOnBackPressed()
             }
+
             R.id.menu_main_btm_nav_menu -> {
 
                 if(menuFragment!!.childFragmentManager.backStackEntryCount > 0){
@@ -88,13 +89,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 }else{
                     finishOnBackPressed()
                 }
-
             }
+
             R.id.menu_main_btm_nav_my_page -> {
 
                 // 마이페이지 프래그먼트에 childFragment가 있으면 childFragment만 종료
                 if(myPageFragment!!.childFragmentManager.backStackEntryCount > 0){
                     myPageFragment!!.childFragmentManager.popBackStack()
+
+                    // 프로필 수정됐으면 새로고침
+                    if(ApplicationClass.isEdited){
+                        myPageFragment = MyPageFragment()
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, myPageFragment!!, "myPage")
+                            .commitAllowingStateLoss()
+                        ApplicationClass.isEdited = false
+                    }
                 }else{
                     finishOnBackPressed()   // 두 번 눌러 앱 종료
                 }
@@ -115,4 +125,5 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             showCustomToast("뒤로 버튼을 한번 더 누르시면 종료됩니다.")
         }
     }
+
 }
