@@ -11,7 +11,7 @@
         android:layout_width="203dp"
         android:layout_height="144dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/jangu"
+        android:src="@drawable/icon_app"
         app:riv_corner_radius="14dp" />
 
     <ImageView

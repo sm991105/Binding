@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="26dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/jangu"
+            android:src="@drawable/icon_app"
             app:riv_corner_radius="50dp" />
 
         <TextView
@@ -34,7 +34,7 @@
             android:layout_alignTop="@id/my_page_profile_photo"
             android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrbold"
-            android:text="제이드"
+            android:text=""
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14dp" />
 
@@ -46,7 +46,7 @@
             android:layout_toRightOf="@id/my_page_profile_photo"
             android:includeFontPadding="false"
             android:fontFamily="@font/notosanskrregular"
-            android:text="sm991105@gmail.com"
+            android:text=""
             android:textColor="@color/ColorPrimaryLight"
             android:textSize="14dp" />
 

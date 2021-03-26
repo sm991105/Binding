@@ -140,6 +140,17 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
         val dialog = CreateBookDialog(context!!)
         val fragmentManager = childFragmentManager
         dialog.show(fragmentManager, "create_room")
+
+        // dialog.dialog의 NullPointerExeption을 막는다
+        fragmentManager.executePendingTransactions()
+        dialog.dialog?.setOnDismissListener {
+            // 책방 새로고침
+            showLoadingDialog(context!!)
+            when(binding.homeSortTxt.text.toString()){
+                "최신글" -> HomeService(this).tryGetNewest()
+                "인기글" -> HomeService(this).tryGetPopular()
+            }
+        }
     }
 
     // 최신글 필터링 적용

@@ -16,23 +16,24 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.DialogFragment
 import androidx.loader.content.CursorLoader
 import com.bumptech.glide.Glide
 import com.makeus6.binding.R
 import com.makeus6.binding.config.ApplicationClass
+import com.makeus6.binding.config.BaseResponse
+import com.makeus6.binding.src.main.home.create_room.models.CreateBookBody
 import com.makeus6.binding.src.main.my_page.settings.models.PatchImgBody
 import com.makeus6.binding.src.main.my_page.settings.profile.SettingsProfileActivity
 import com.makeus6.binding.src.main.my_page.settings.profile.SettingsProfileService
+import com.makeus6.binding.util.LoadingDialog
 import java.io.File
 
 
-class CreateBookDialog(context: Context) : DialogFragment() {
+class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
+    lateinit var mLoadingDialog: LoadingDialog
 
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
@@ -42,45 +43,41 @@ class CreateBookDialog(context: Context) : DialogFragment() {
     private var imgPath: String? = null
     private var storageUrl: String? = null
 
-    lateinit var bookName: EditText
-    lateinit var author: EditText
-    private lateinit var btnAdd: ImageView
+    lateinit var bookName: EditText             // 책 제목
+    lateinit var author: EditText               // 저자
+    private lateinit var btnAddImg: ImageView   // 이미지 추가 버튼
+    private lateinit var imgAdded: ImageView    // 이미지가 추가될 이미지뷰
+    private lateinit var guideTxt: TextView     // 표지추가 기본 문구
+    private lateinit var wrongTxt1: TextView    // 제목 에러문구
+    private lateinit var wrongTxt2: TextView    // 저자 에러문구
+    private lateinit var wrongTxt3: TextView    // 표지 에러문구
 
+    private var isImgAdded = false
 
+    // 다이얼로그 사이즈 설정
     override fun onResume() {
         super.onResume()
-
-        /*// 꼭 DialogFragment 클래스에서 선언하지 않아도 된다.
-        val windowManager = activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = windowManager.defaultDisplay
-        val size = Point()
-        display.getSize(size)*/
 
         // 다이얼로그 크기 설정
         val params: WindowManager.LayoutParams = dialog?.window?.attributes!!
         val widthSize = ((activity!!.resources.displayMetrics.widthPixels) * 0.88).toInt()
-        val heightSize = ((activity!!.resources.displayMetrics.heightPixels) * 0.55).toInt()
+        // val heightSize = ((activity!!.resources.displayMetrics.heightPixels) * 0.55).toInt()
         val density: Float = activity!!.resources.displayMetrics.density   // 기기 density
         val maxWidthPx = (360 * density + 0.5).toInt()      // 360dp -> 픽셀 변환
         val maxHeightPx = (470 * density + 0.5).toInt()     // 470dp -> 픽셀 변환
-        Log.d("로그","widthSize: $widthSize , heightSize: $heightSize , maxWidthPx: $maxWidthPx , maxHeightPx: $maxHeightPx")
-        Log.d("로그", "dialog size: ${dialog?.window!!.attributes.width},${dialog?.window!!.attributes.height} ")
+
         // 스크린 너비의 88%가 360dp보다 크면 360dp로 고정
         if(widthSize > maxWidthPx){
             params.width = maxWidthPx
         }else{
             params.width = widthSize
         }
-        // 스크린 높이의 55%가 470dp보다 크면 470dp로 고정
-        if(heightSize > maxHeightPx){
-            params.height = maxHeightPx
-        }else{
-            params.height = heightSize
-        }
+        // 스크린 높이 470dp로 고정
+        params.height = maxHeightPx
         dialog?.window?.attributes = params
-        Log.d("로그", "dialog size2: ${dialog?.window!!.attributes.width},${dialog?.window!!.attributes.height} ")
     }
 
+    // 테두리 적용
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -98,15 +95,47 @@ class CreateBookDialog(context: Context) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 만들기 버튼 클릭
-        val btn = view.findViewById<Button>(R.id.dialog_create_room_btn)
-        btn.setOnClickListener {
-            dismiss()
-        }
-
         bookName = view.findViewById<EditText>(R.id.dialog_create_room_title)
         author = view.findViewById<EditText>(R.id.dialog_create_room_author)
-        btnAdd = view.findViewById<ImageView>(R.id.dialog_create_room_add)
+        btnAddImg = view.findViewById<ImageView>(R.id.dialog_create_room_add)
+        imgAdded = view.findViewById<ImageView>(R.id.dialog_create_room_added)
+        guideTxt = view.findViewById<TextView>(R.id.dialog_create_room_guide)
+        wrongTxt1 = view.findViewById<TextView>(R.id.dialog_create_room_title_wrong)
+        wrongTxt2 = view.findViewById<TextView>(R.id.dialog_create_room_author_wrong)
+        wrongTxt3 = view.findViewById<TextView>(R.id.dialog_create_room_guide_wrong)
+        val titleLine = view.findViewById<View>(R.id.dialog_create_room_title_line)
+        val authorLine = view.findViewById<View>(R.id.dialog_create_room_author_line)
+
+        // 만들기 버튼 클릭
+        val btnCreate = view.findViewById<Button>(R.id.dialog_create_room_btn)
+        btnCreate.setOnClickListener {
+            val bookNameStr = bookName.text.toString()
+            val authorStr = author.text.toString()
+            Log.d("로그", "bookNameStr: $bookNameStr , authorStr: $authorStr ," +
+                    " storageUrl: $storageUrl"
+            )
+
+            if(bookNameStr.isBlank()){
+                wrongTxt1.visibility = View.VISIBLE
+                bookName.visibility = View.INVISIBLE
+            }
+            if(authorStr.isBlank()){
+                wrongTxt2.visibility = View.VISIBLE
+                author.visibility = View.INVISIBLE
+            }
+            if(!isImgAdded){
+                wrongTxt3.visibility = View.VISIBLE
+                guideTxt.visibility = View.INVISIBLE
+            }
+
+            if(bookNameStr.isNotBlank() && authorStr.isNotBlank() && isImgAdded){
+                showLoadingDialog(context!!)
+                val mThread = Thread(Runnable{
+                    storeAndCall()
+                })
+                mThread.run()
+            }
+        }
 
         // 첫번째 editText칸 엔터키 -> 아래 editText로 이동
         bookName.setOnKeyListener { _, keyCode, event ->
@@ -121,19 +150,59 @@ class CreateBookDialog(context: Context) : DialogFragment() {
             if(event.action == KeyEvent.ACTION_DOWN &&
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
-                btnAdd.requestFocus()
+                if(!isImgAdded){
+                    btnAddImg.requestFocus()
+                }else{
+                    btnAddImg
+                }
             }
             false
         }
 
-        btnAdd.setOnClickListener(onClickAdd)
+        // 에딧 텍스트 클릭과 유사 역할
+        titleLine.setOnClickListener{
+            if(wrongTxt1.visibility == View.VISIBLE){
+                wrongTxt1.performClick()
+            }else{
+                bookName.performClick()
+            }
+        }
+        authorLine.setOnClickListener {
+            if(wrongTxt2.visibility == View.VISIBLE){
+                wrongTxt2.performClick()
+            }else{
+                author.performClick()
+            }
+        }
+
+        // 책 표지 추가 버튼
+        btnAddImg.setOnClickListener(onClickAdd)
+        imgAdded.setOnClickListener(onClickAdd) // 표지 클릭(변경) 버튼
+
+        // 다시 입력하기 위해 에러문구를 클릭할 때
+        wrongTxt1.setOnClickListener(onClickWrong1)
+        wrongTxt2.setOnClickListener(onClickWrong2)
+    }
+
+    // 책 제목 에러 문구 클릭 -> 에러문구 사라지고, 다시 입력창이 나타난다
+    private val onClickWrong1 = View.OnClickListener {
+        it.visibility = View.INVISIBLE
+        bookName.visibility = View.VISIBLE
+        bookName.performClick()
+    }
+
+    // 저자 에러 문구 클릭 -> 에러문구 사라지고, 다시 입력창이 나타난다
+    private val onClickWrong2 = View.OnClickListener {
+        it.visibility = View.INVISIBLE
+        author.visibility = View.VISIBLE
+        author.performClick()
     }
 
     // 갤러리에서 사진 선택
     private val onClickAdd = View.OnClickListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             // 갤러리 접근 권한이 없으면 권한을 요청
-            if (activity!!.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED){
+            if (activity!!.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
                 val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 requestPermissions(permissions, PERMISSION_CODE)
             }
@@ -156,6 +225,7 @@ class CreateBookDialog(context: Context) : DialogFragment() {
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
+                    dismissLoadingDialog()
                     throw it
                 }
             }
@@ -165,9 +235,16 @@ class CreateBookDialog(context: Context) : DialogFragment() {
             if (task.isSuccessful) {
                 storageUrl = task.result.toString()   // 이미지 다운로드가 가능한 url
 
+                // 책방 만들기 API call
+                CreateBookService(this).tryPostBook(
+                    CreateBookBody(bookName.text.toString(),
+                        author.text.toString(), storageUrl!!
+                    )
+                )
                 Log.d("로그", "storageUrl: $storageUrl")
             } else {
-                Toast.makeText(activity, "책 사진을 올리는 과정에서 오류가 발생했습니다.\n" +
+                dismissLoadingDialog()
+                Toast.makeText(activity, "책 사진을 업로드하는 과정에서 오류가 발생했습니다.\n" +
                         "오류가 계속되면 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -223,7 +300,13 @@ class CreateBookDialog(context: Context) : DialogFragment() {
                         Glide.with(context!!)
                             .load(contentUri)
                             .error(R.drawable.add)
-                            .into(btnAdd)
+                            .into(imgAdded)
+
+                        isImgAdded = true
+                        btnAddImg.visibility = View.INVISIBLE
+                        imgAdded.visibility = View.VISIBLE
+                        guideTxt.visibility = View.GONE
+                        wrongTxt3.visibility = View.GONE
                     }
                     close()
                 }
@@ -246,7 +329,13 @@ class CreateBookDialog(context: Context) : DialogFragment() {
                 .asBitmap()
                 .load(imgPath)
                 .error(R.drawable.add)
-                .into(btnAdd)
+                .into(imgAdded)
+
+            isImgAdded = true
+            imgAdded.visibility = View.VISIBLE
+            btnAddImg.visibility = View.INVISIBLE
+            guideTxt.visibility = View.GONE
+            wrongTxt3.visibility = View.GONE
         }
     }
 
@@ -302,5 +391,69 @@ class CreateBookDialog(context: Context) : DialogFragment() {
                 renderGalleyImg(data.data!!)
             }
         }
+    }
+
+    override fun onPostBookSuccess(response: BaseResponse) {
+        Log.d("로그", "onPostBookSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code){
+
+            // 성공
+            1000 -> {
+                showCustomToast("책방 만들기 성공!")
+                dismiss()
+            }
+
+            // 책 제목을 입력해주세요
+            2000 -> {
+                wrongTxt1.visibility = View.VISIBLE
+                bookName.visibility = View.INVISIBLE
+            }
+
+            // 저자를 입력해주세요
+            2001 -> {
+                wrongTxt2.visibility = View.VISIBLE
+                author.visibility = View.INVISIBLE
+            }
+
+            // 책 표지 사진을 첨부해주세요.
+            2002 -> {
+                wrongTxt3.visibility = View.VISIBLE
+                guideTxt.visibility = View.INVISIBLE
+            }
+
+            // 하루에 6개 이상 책방을 등록할 수 없습니다.
+            3000 -> {
+                showCustomToast(response.message ?: "하루에 6개 이상 책방을 등록할 수 없습니다.")
+                dismiss()
+            }
+
+            // 해당 책방이 이미 존재합니다.
+            3001 -> showCustomToast(response.message?: "해당 책방이 이미 존재합니다.")
+
+        }
+    }
+
+    override fun onPostBookFailure(message: String) {
+        Log.d("로그", "onPostBookFailure() called, message: $message")
+        dismissLoadingDialog()
+
+        showCustomToast("책방을 만들던 중 에러가 발생했습니다.\n에러가 계속되면 관리자에게 문의해주세요.")
+    }
+
+    fun showLoadingDialog(context: Context) {
+        mLoadingDialog = LoadingDialog(context)
+        mLoadingDialog.show()
+    }
+
+    fun dismissLoadingDialog() {
+        if (mLoadingDialog.isShowing) {
+            mLoadingDialog.dismiss()
+        }
+    }
+
+    fun showCustomToast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }
