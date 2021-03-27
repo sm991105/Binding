@@ -86,7 +86,8 @@
         android:fontFamily="@font/notosanskrbold"
         android:text="온도차이"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="17dp" />
+        android:textSize="17dp"
+        android:includeFontPadding="false"/>
 
     <TextView
         android:id="@+id/home_room_text"
@@ -94,9 +95,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/home_room_view"
         android:layout_toRightOf="@id/home_room_text_title"
+        android:fontFamily="@font/notosanskrregular"
         android:text="에 대해"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="17dp" />
+        android:textSize="17dp"
+        android:includeFontPadding="false"/>
 
     <TextView
         android:id="@+id/home_room_text_2"
@@ -104,9 +107,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/home_room_text_title"
         android:layout_marginLeft="20dp"
+        android:fontFamily="@font/notosanskrregular"
         android:text="자유롭게 얘기해주세요."
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="17dp" />
+        android:textSize="17dp"
+        android:includeFontPadding="false" />
 
     <ImageView
         android:id="@+id/home_room_sort_down"
@@ -125,11 +130,14 @@
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/home_room_sort_down"
         android:gravity="center"
+        android:fontFamily="@font/notosanskrregular"
         android:text="북마크순"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="10dp" />
+        android:textSize="10dp"
+        android:includeFontPadding="false"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/home_room_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/home_room_text_2"

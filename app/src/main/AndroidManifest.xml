@@ -24,10 +24,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.makeus6.binding.src.main.MainActivity">
-
-        </activity>
-
         <!-- 로그인 화면-->
         <activity android:name="com.makeus6.binding.src.login.LoginActivity"/>
 
@@ -36,6 +32,12 @@
 
         <!-- 비밀번호 찾기 화면-->
         <activity android:name="com.makeus6.binding.src.find_password.FindPasswordActivity"/>
+
+        <!-- 메인 화면 -->
+        <activity android:name="com.makeus6.binding.src.main.MainActivity"/>
+
+        <!-- 책방 화면 -->
+        <activity android:name=".src.main.home.room.HomeRoomActivity"/>
 
         <!-- 마이페이지 세팅 - 프로필 관리 화면-->
         <activity android:name=".src.main.my_page.settings.profile.SettingsProfileActivity"/>

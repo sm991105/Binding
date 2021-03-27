@@ -33,6 +33,9 @@ class ApplicationClass : Application() {
 
         // 프로필 변경 플래그
         var isEdited = false
+
+        // 유저 인덱스
+        var userIdx: Int = -1
     }
 
     // 앱이 처음 생성되는 순간, SP를 새로 만들어주고, 레트로핏 인스턴스를 생성합니다.

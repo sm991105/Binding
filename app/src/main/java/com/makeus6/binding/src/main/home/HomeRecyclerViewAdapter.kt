@@ -1,5 +1,6 @@
 package com.makeus6.binding.src.main.home
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.makeus6.binding.R
 import com.makeus6.binding.src.main.home.models.NewestResult
 import com.makeus6.binding.src.main.home.models.PopularResult
 import com.makeramen.roundedimageview.RoundedImageView
+import com.makeus6.binding.src.main.home.room.HomeRoomActivity
 import kotlinx.android.synthetic.main.item_book.view.*
 
 class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
@@ -64,6 +66,12 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
                 .error(R.drawable.icon_app)
                 .placeholder(R.drawable.icon_app)
                 .into(bookImg)
+
+            view.setOnClickListener {
+                val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)
+                bookRoomIntent.putExtra("bookIdx", bookData.bookIdx)
+                homeFragment.startActivity(bookRoomIntent)
+            }
         }
 
         // 인기글

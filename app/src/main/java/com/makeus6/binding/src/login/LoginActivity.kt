@@ -146,6 +146,8 @@ LoginActivityView{
                 sp.edit().apply {
                     this.putString(ApplicationClass.X_ACCESS_TOKEN, response.jwt)
                     this.putString("pw", pwd)
+                    ApplicationClass.userIdx = response.userIdx
+                    this.putInt("userIdx", response.userIdx)
                     this.apply()
                 }
 

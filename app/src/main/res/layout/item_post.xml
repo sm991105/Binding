@@ -25,7 +25,7 @@
             android:layout_marginTop="23dp"
             android:layout_marginBottom="20dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/jangu"
+            android:src="@drawable/icon_app"
             app:riv_border_width="0dip"
             app:riv_corner_radius="50dip" />
 
