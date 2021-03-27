@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.ImageView
 import com.makeus6.binding.R
 import com.makeus6.binding.config.BaseFragment
 import com.makeus6.binding.databinding.FragmentJoin2Binding
@@ -25,8 +26,14 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
     // 다음 버튼 클릭 -> 포커싱 해제될 때 실행되는 코드를 막기 위한 플래그
     private var isHere = true
 
+    private lateinit var boldLine1: ImageView
+    private lateinit var boldLine2: ImageView
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        boldLine1 = view.findViewById(R.id.join_2_pw_line_bold)
+        boldLine2 = view.findViewById(R.id.join_2_pw_chk_line_bold)
 
         isHere = true
 
@@ -40,7 +47,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         binding.join2Password.setOnKeyListener { v, keyCode, event ->
             if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
                 binding.join2PasswordCheck.performClick()
-                true
             }
             false
         }
@@ -51,7 +57,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
                 binding.join2Next.performClick()
-                true
             }
             false
         }
@@ -76,10 +81,10 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
     // 비밀번호 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwd = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus ){
-            true -> binding.join2PwLineBold.visibility = View.VISIBLE
+            true -> boldLine1.visibility = View.VISIBLE
             false ->
                 if(isHere){
-                    binding.join2PwLineBold.visibility = View.INVISIBLE
+                    boldLine1.visibility = View.INVISIBLE
                 }
         }
     }
@@ -87,10 +92,10 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
     // 비밀번호 확인 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwdChk = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus){
-            true -> binding.join2PwChkLineBold.visibility = View.VISIBLE
+            true -> boldLine2.visibility = View.VISIBLE
             false ->
                 if(isHere){
-                    binding.join2PwChkLineBold.visibility = View.INVISIBLE
+                    boldLine2.visibility = View.INVISIBLE
                 }
         }
     }
