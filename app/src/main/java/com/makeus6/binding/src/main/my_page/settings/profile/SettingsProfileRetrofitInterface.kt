@@ -4,6 +4,7 @@ import com.makeus6.binding.config.BaseResponse
 import com.makeus6.binding.src.main.my_page.settings.models.GetProfileResponse
 import com.makeus6.binding.src.main.my_page.settings.models.PatchImgBody
 import com.makeus6.binding.src.main.my_page.settings.models.PatchNicknameBody
+import com.makeus6.binding.src.main.my_page.settings.models.PatchProfileBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -28,4 +29,7 @@ interface SettingsProfileRetrofitInterface {
     @PATCH("/users/nickname")
     fun patchNickname(@Body params: PatchNicknameBody): Call<BaseResponse>
 
+    // 프로필 전체 변경 API
+    @PATCH("/users/profile")
+    fun patchProfile(@Body params: PatchProfileBody): Call<BaseResponse>
 }

@@ -61,13 +61,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.menu_main_btm_nav_my_page -> {
-                        if(myPageFragment == null){
-                            myPageFragment = MyPageFragment()
+                        // 설정 화면에서 마이페이지 하단 뷰를 누르면 마이페이지 화면으로 간다
+                        myPageFragment?.let{
+                            if(it.childFragmentManager.backStackEntryCount > 0) {
+                                it.childFragmentManager.popBackStack()
+                            }
                         }
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_frm, myPageFragment!!, "myPage")
-                            .commitAllowingStateLoss()
-                        return@OnNavigationItemSelectedListener true
+                            // myPageFragment가 null이면, 생성하고 실행
+                            ?: run{
+                            myPageFragment = MyPageFragment()
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.main_frm, myPageFragment!!, "myPage")
+                                .commitAllowingStateLoss()
+                            return@OnNavigationItemSelectedListener true
+                        }
                     }
                 }
                 false

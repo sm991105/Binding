@@ -24,4 +24,9 @@ interface SettingsProfileActivityView {
     fun onPatchNicknameSuccess(response: BaseResponse)
 
     fun onPatchNicknameFailure(message: String)
+
+    // 프로필 변경 콜백 함수
+    fun onPatchProfileSuccess(response: BaseResponse)
+
+    fun onPatchProfileFailure(message: String)
 }

@@ -18,7 +18,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/icon_left" />
+            android:src="@drawable/icon_left"
+            android:background="@drawable/ripple_effect"/>
 
         <TextView
             android:id="@+id/settings_profile_title"
@@ -33,13 +34,17 @@
 
         <TextView
             android:id="@+id/settings_profile_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center"
             android:text="완료"
             android:textSize="13sp"
             android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/notosanskrregular"
+            android:includeFontPadding="false"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:background="@drawable/ripple_effect"
             />
 
     </RelativeLayout>
@@ -83,6 +88,7 @@
         android:text="제이드"
         android:textColor="@color/colorPrimaryDark"
         android:fontFamily="@font/notosanskrbold"
+        android:includeFontPadding="false"
         android:textSize="17sp"
         android:inputType="text"/>
 
@@ -107,6 +113,7 @@
         android:text="sm991105@gmail.com"
         android:textColor="@color/ColorPrimaryLight"
         android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:textSize="17sp"/>
 
     <View
@@ -119,5 +126,18 @@
         android:layout_marginTop="9dp"
         android:background="#dadada" />
 
+    <!-- 버튼 클릭시 한글 닉네임이 아닐 경우 -->
+    <TextView
+        android:visibility="invisible"
+        android:id="@+id/settings_profile_wrong"
+        android:layout_below="@id/settings_profile_view_3"
+        android:textAlignment="viewEnd"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="27dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:textColor="@color/colorSecondary"
+        android:text="닉네임 형식이 맞지 않습니다"/>
 
 </RelativeLayout>

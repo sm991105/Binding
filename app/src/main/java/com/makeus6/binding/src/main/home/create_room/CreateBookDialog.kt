@@ -186,15 +186,15 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
 
     // 책 제목 에러 문구 클릭 -> 에러문구 사라지고, 다시 입력창이 나타난다
     private val onClickWrong1 = View.OnClickListener {
-        it.visibility = View.INVISIBLE
         bookName.visibility = View.VISIBLE
+        it.visibility = View.INVISIBLE
         bookName.performClick()
     }
 
     // 저자 에러 문구 클릭 -> 에러문구 사라지고, 다시 입력창이 나타난다
     private val onClickWrong2 = View.OnClickListener {
-        it.visibility = View.INVISIBLE
         author.visibility = View.VISIBLE
+        it.visibility = View.INVISIBLE
         author.performClick()
     }
 

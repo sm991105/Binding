@@ -12,20 +12,13 @@ import com.makeus6.binding.databinding.FragmentJoin3Binding
 import com.makeus6.binding.src.join.JoinActivity
 import com.makeus6.binding.src.join.join3.models.PostJoinBody
 import com.makeus6.binding.src.join.done.JoinDoneDialog
+import com.makeus6.binding.util.JoinClass
 import java.util.regex.Pattern
 
 class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
     FragmentJoin3Binding::bind,
     R.layout.fragment_join_3
 ), Join3FragmentView {
-
-    // 한글(자음+모음+공백+언더바+숫자)만 허용하는 정규표현식, 2~8자
-    // private val regExp =  "^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣\\s_0-9]).{2,8}$"
-
-    // 한글(자음+모음)만 허용하는 식, 2~8자
-    // private val regExp = "^(?=.*[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,8}$"
-    private val regExp = "^(?=.*[가-힣]).{2,8}$"
-    // 입력받은 닉네임 저장 변수
     lateinit var nickname: String
     // 넘겨받은 이메일 주소, 비밀번호, 비밀번호 확인 임시 값
     /*private var email = "temp_ghdtkdgh5@naver.com"
@@ -79,37 +72,14 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
         nickname = binding.join3Name.text.toString()
 
         // 닉네임 형식이 올바르지 않으면 에러 메시지를 보여준다
-        if(!isValidNickname(nickname)){
-            Log.d("로그","nickname: $nickname , isValid: ${isValidNickname(nickname)}")
-
+        if(!JoinClass.isValidNickname(nickname)){
             binding.join3SameNickname.visibility = View.INVISIBLE
             binding.join3WrongNickname.visibility = View.VISIBLE
         }
         // 형식이 올바르면 중복 닉네임 검사 + 회원가입 api 호출
         else{
             val joinBody = PostJoinBody(email, pwd, pwdChk, nickname)
-            Log.d("로그","회원가입 api 호출 - postJoinBody: $joinBody")
             Join3Service(this).tryPostJoin(joinBody)
-        }
-    }
-
-    // 정규식으로 한글 닉네임 형식 검사
-    private fun isValidNickname(nickname: String):Boolean {
-        var returnValue = false
-
-        try
-        {
-            val p = Pattern.compile(regExp)
-            val m = p.matcher(nickname)
-
-            if (m.matches()) {
-                returnValue = true
-            }
-
-            return returnValue
-        }
-        catch (e: Exception) {
-            return false
         }
     }
 

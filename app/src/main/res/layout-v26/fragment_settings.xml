@@ -46,12 +46,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="31dp"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:background="?attr/selectableItemBackground">
         <TextView
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="4"
+            android:layout_marginLeft="31dp"
             android:text="프로필 관리"
             android:textSize="15sp"
             android:gravity="center_vertical"
@@ -78,12 +79,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="31dp"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:background="?attr/selectableItemBackground">
         <TextView
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="4"
+            android:layout_marginLeft="31dp"
             android:text="비밀번호 변경"
             android:textSize="15sp"
             android:gravity="center_vertical"
@@ -111,12 +113,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="31dp"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:background="?attr/selectableItemBackground">
         <TextView
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="4"
+            android:layout_marginLeft="31dp"
             android:text="로그아웃"
             android:textSize="15sp"
             android:gravity="center_vertical"
@@ -144,12 +147,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="31dp"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:background="?attr/selectableItemBackground">
         <TextView
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="4"
+            android:layout_marginLeft="31dp"
             android:text="회원탈퇴"
             android:textSize="15sp"
             android:gravity="center_vertical"
@@ -176,12 +180,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="31dp"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:background="?attr/selectableItemBackground">
         <TextView
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_weight="4"
+            android:layout_marginLeft="31dp"
             android:text="서점제보"
             android:textSize="15sp"
             android:gravity="center_vertical"

@@ -56,7 +56,8 @@
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/settings" />
+            android:src="@drawable/settings"
+            android:background="@drawable/ripple_effect"/>
 
     </RelativeLayout>
 

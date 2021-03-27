@@ -35,6 +35,10 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
             true
         }
 
+        binding.settingsLeft.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
         // 로그아웃 클릭시 나오는 다이얼로그
         logoutDialog = LogoutDialog(context!!, confirmLogout, cancelLogout)
 

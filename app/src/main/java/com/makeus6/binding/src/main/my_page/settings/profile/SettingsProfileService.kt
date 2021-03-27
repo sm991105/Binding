@@ -6,6 +6,7 @@ import com.makeus6.binding.src.main.my_page.settings.SettingsRetrofitInterface
 import com.makeus6.binding.src.main.my_page.settings.models.GetProfileResponse
 import com.makeus6.binding.src.main.my_page.settings.models.PatchImgBody
 import com.makeus6.binding.src.main.my_page.settings.models.PatchNicknameBody
+import com.makeus6.binding.src.main.my_page.settings.models.PatchProfileBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -92,6 +93,27 @@ class SettingsProfileService(val view: SettingsProfileActivityView) {
 
                 override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                     view.onPatchNicknameFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
+
+    // 유저 닉네임 변경( 네트워크 통신)
+    fun tryPatchProfile(profileBody: PatchProfileBody){
+
+        val settingsProfileRetrofitInterface = ApplicationClass.sRetrofit.create(
+            SettingsProfileRetrofitInterface::class.java)
+
+        settingsProfileRetrofitInterface.patchProfile(profileBody)
+            .enqueue(object : Callback<BaseResponse> {
+
+                override fun onResponse(call: Call<BaseResponse>,
+                                        response: Response<BaseResponse>
+                ) {
+                    view.onPatchProfileSuccess(response.body() as BaseResponse)
+                }
+
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    view.onPatchProfileFailure(t.message ?: "통신 오류")
                 }
             })
     }

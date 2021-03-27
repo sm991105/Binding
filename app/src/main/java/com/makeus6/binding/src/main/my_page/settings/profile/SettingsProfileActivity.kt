@@ -11,8 +11,10 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import androidx.exifinterface.media.ExifInterface
 import androidx.loader.content.CursorLoader
@@ -25,6 +27,8 @@ import com.makeus6.binding.databinding.ActivitySettingsProfileBinding
 import com.makeus6.binding.src.main.my_page.settings.models.GetProfileResponse
 import com.makeus6.binding.src.main.my_page.settings.models.PatchImgBody
 import com.makeus6.binding.src.main.my_page.settings.models.PatchNicknameBody
+import com.makeus6.binding.src.main.my_page.settings.models.PatchProfileBody
+import com.makeus6.binding.util.JoinClass
 import java.io.File
 
 
@@ -33,18 +37,19 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 ), SettingsProfileActivityView {
 
     companion object{
-        private val IMAGE_CHOOSE = 1000
-        private val PERMISSION_CODE = 1001
-        private val IMG_SAME = 0
-        private val IMG_ERASED = 1
-        private val IMG_CHANGED = 2
+        private const val IMAGE_CHOOSE = 1000
+        private const val PERMISSION_CODE = 1001
+        private const val IMG_SAME = 0
+        private const val IMG_ERASED = 1
+        private const val IMG_CHANGED = 2
     }
 
+    // 버튼 중복클릭 방지용
+    private var mLastClickTime: Long = 0
 
     private var isImgOn = false             // 이미지가 있는지 없는지 플래그
     private var imgPath: String? = null     // 갤러리 이미지 절대 경로
     private var imgFlag: Int = IMG_SAME     // 이미지 변경 플래그
-    private var isNickEdited = false        // 닉네임이 변경 플래그
 
     private lateinit var nickname: String
 
@@ -70,27 +75,96 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         }
 
         // 완료 버튼
-        binding.settingsProfileDone.setOnClickListener{
-            Log.d("로그", "done, imgFlag: $imgFlag")
-            Log.d("로그", "nickname: $nickname , changed: ${binding.settingsProfileNickname}")
+        binding.settingsProfileDone.setOnClickListener(onClickDone)
 
-            // 닉네임 변경 처리
-            val nicknameTxt = binding.settingsProfileNickname.text.toString()
-            if(nickname != nicknameTxt){
-                SettingsProfileService(this).tryPatchNickname(PatchNicknameBody(nicknameTxt))
+        // 닉네임 완료버튼 클릭 -> 완료 버튼 자동 눌림
+        binding.settingsProfileNickname.setOnKeyListener { v, keyCode, event ->
+            if(event.action == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
+            ){
+                binding.settingsProfileDone.performClick()
             }
-            // 프로필 이미지 변경 처리
+            false
+        }
+
+    }
+
+    private val onClickDone = View.OnClickListener {
+        showLoadingDialog(this)
+
+        Log.d("로그", "done, imgFlag: $imgFlag")
+        Log.d("로그", "nickname: $nickname , changed: ${binding.settingsProfileNickname}")
+
+        // 중복 클릭 방지
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+            return@OnClickListener
+        }
+        mLastClickTime = SystemClock.elapsedRealtime();
+
+        val nicknameTxt = binding.settingsProfileNickname.text.toString()
+        // 닉네임 변경 x
+        if(nickname == nicknameTxt){
             when(imgFlag){
 
-                // 이미지 삭제했을 때 -> 삭제 API 호출
-                IMG_ERASED -> {
-                    SettingsProfileService(this).tryDeleteImg()
+                // 닉변x , 이미지 수정사항 x -> 그냥 수정화면에서 나간다
+                IMG_SAME -> {
+                    dismissLoadingDialog()
+                    finish()
                 }
 
-                // 이미지를 변경했을 떄
-                // 파이어베이스에 업로드, 변경 API call
+                // 닉변x , 이미지 삭제
+                IMG_ERASED -> {
+                    Log.d("로그", "완료버튼 - 닉네임 변경x, 이미지 삭제")
+
+                    SettingsProfileService(this)
+                        .tryPatchProfile(PatchProfileBody("-1", null))
+                }
+
+                // 닉변x , 이미지 변경
                 IMG_CHANGED -> {
-                    storeAndCall()
+                    Log.d("로그", "완료버튼 - 닉네임 변경x, 이미지 변경")
+
+                    storeAndCall(editedNick = null)
+                }
+            }
+        }
+        // 닉네임 변경 o
+        else{
+
+            // 바꿀 닉네임 형식이 올바르지 않으면, 에러문구 출력
+            if(!JoinClass.isValidNickname(nicknameTxt)){
+                dismissLoadingDialog()
+                binding.settingsProfileWrong.apply{
+                    text = String.format("닉네임 형식이 맞지 않습니다")
+                    visibility = View.VISIBLE
+                }
+            }
+            // 바꿀 닉네임 형식이 올바를 때
+            else{
+                when(imgFlag){
+
+                    // 닉네임만 변경 요청
+                    IMG_SAME ->  {
+                        Log.d("로그", "완료버튼 - 닉네임만 변경")
+
+                        SettingsProfileService(this)
+                            .tryPatchProfile(PatchProfileBody(null, nicknameTxt))
+                    }
+
+                    // 닉변o , 이미지 삭제
+                    IMG_ERASED -> {
+                        Log.d("로그", "완료버튼 - 닉네임 변경o, 이미지 삭제")
+
+                        SettingsProfileService(this)
+                            .tryPatchProfile(PatchProfileBody("-1", nicknameTxt))
+                    }
+
+                    // 닉변o, 이미지 변경
+                    IMG_CHANGED -> {
+                        Log.d("로그", "완료버튼 - 닉네임 변경o, 이미지 변경")
+
+                        storeAndCall(editedNick = nicknameTxt)
+                    }
                 }
             }
         }
@@ -102,8 +176,7 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         imgFlag = IMG_ERASED
         isImgOn = false
         binding.settingsProfilePhoto.setImageResource(R.drawable.icon_app)
-        /*showLoadingDialog(this)
-        SettingsProfileService(this).tryDeleteImg()*/
+        imgDialog.dismiss()
     }
 
     // 갤러리에서 사진 선택
@@ -123,8 +196,8 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         }
     }
 
-    // 파이어베이스에 이미지 저장하고 이미지 변경 API 호출
-    private fun storeAndCall(){
+    // 파이어베이스에 이미지 저장하고 프로필 변경 API 호출
+    private fun storeAndCall(editedNick: String?){
         val file = Uri.fromFile(File(imgPath!!))
         val riversRef = db.child("profileImg")
         val uploadTask = riversRef.putFile(file)
@@ -133,6 +206,7 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
+                    dismissLoadingDialog()
                     throw it
                 }
             }
@@ -142,10 +216,11 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
             if (task.isSuccessful) {
                 val downloadUrl = task.result   // 이미지 다운로드가 가능한 url
                 SettingsProfileService(this)
-                    .tryPatchImg(PatchImgBody(downloadUrl.toString()))
+                    .tryPatchProfile(PatchProfileBody(downloadUrl.toString(), editedNick))
 
                 Log.d("로그", "downloadUri: $downloadUrl")
             } else {
+                dismissLoadingDialog()
                 showCustomToast(
                     "프로필 사진을 바꾸는 과정에서 오류가 발생했습니다.\n" +
                             "오류가 계속되면 관리자에게 문의해주세요."
@@ -289,8 +364,9 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
             if(data != null && data.data != null){
                 renderGalleyImg(data.data!!)
             }
-            imgDialog.dismiss()
         }
+
+        imgDialog.dismiss()
     }
 
     // 프로필 조회 통신 성공
@@ -310,12 +386,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
                     // 프로필이미지가 있으면 true, 없으면 false
                     isImgOn = result.userImgUrl != "-1"
-                    // 프로필 이미지가 있으면 이미지플래그 = IMG_SAME, 없으면 IMG_ERASED
-                    imgFlag = if (isImgOn) {
-                        IMG_SAME
-                    } else {
-                        IMG_ERASED
-                    }
                     Glide.with(this)
                         .load(result.userImgUrl)
                         .error(R.drawable.icon_app)
@@ -396,7 +466,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
     override fun onPatchNicknameSuccess(response: BaseResponse) {
         Log.d("로그", "onPatchNicknameSuccess() called, response: $response")
 
-        isNickEdited = true
     }
 
     // 닉네임 변경 통신 실패
@@ -404,5 +473,55 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         Log.d("로그", "onPatchNicknameFailure() called, message: $message")
 
         showCustomToast("오류가 발생했습니다, 오류가 반복되면 관리자에게 문의주세요.")
+    }
+
+    // 프로필 변경 통신 성공
+    override fun onPatchProfileSuccess(response: BaseResponse) {
+        Log.d("로그", "onPatchProfileSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code){
+
+            // 성공
+            1000 -> {
+                showCustomToast("프로필 변경 성공")
+                ApplicationClass.isEdited = true
+                finish()
+            }
+
+            // 닉네임 형식 오류
+            in 2001..2002 ->{
+                Log.d("로그", "message: ${response.message}")
+
+                binding.settingsProfileWrong.apply{
+                    text = String.format("닉네임 형식이 맞지 않습니다")
+                    visibility = View.VISIBLE
+                }
+            }
+
+            // 사용중 닉네임
+            3001 -> {
+                Log.d("로그", "message: ${response.message}")
+
+                binding.settingsProfileWrong.apply{
+                    text = String.format("이미 사용중인 닉네임입니다")
+                    visibility = View.VISIBLE
+                }
+            }
+
+            else -> {
+                Log.d("로그", "message: ${response.message}")
+
+                showCustomToast("프로필 변경 중 에러가 발생했습니다, 에러가 계속되면 관리자에게 문의해주세요.")
+            }
+        }
+    }
+
+    // 프로필 변경 통신 실패
+    override fun onPatchProfileFailure(message: String) {
+        Log.d("로그", "onPatchProfileFailure() called, message: $message")
+        dismissLoadingDialog()
+
+        showCustomToast("프로필 변경 중 오류가 발생했습니다, 오류가 반복되면 관리자에게 문의주세요.")
     }
 }
