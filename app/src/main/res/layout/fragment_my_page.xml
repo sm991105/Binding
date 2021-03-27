@@ -67,7 +67,6 @@
         android:layout_height="1dp"
         android:layout_below="@id/my_page_profile"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="10dp"
         android:background="#dadada" />
 
     <LinearLayout
@@ -161,8 +160,7 @@
         android:id="@+id/my_page_bookshelf_view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/my_page_recycler_mine"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="382dp"
         android:layout_marginBottom="10dp"
         android:background="#dadada" />
 
