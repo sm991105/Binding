@@ -1,6 +1,7 @@
 package com.makeus6.binding.src.main.home.room
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
     override fun onBindViewHolder(holder: CommentsRecyclerAdapter.CommentsHolder, position: Int) {
 
         // 사용자 선택에 따라 최신글 or 인기글 데이터 연결
-        holder.bindCommentsValue(commentsList[position])
+        holder.bindCommentsValue(commentsList[position], position)
     }
 
     inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -56,7 +57,7 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
         private val delete: TextView = itemView.item_post_delete            // 삭제 - 자기 글일 때만
 
         // 최신글
-        fun bindCommentsValue(commentsData: CommentsResult){
+        fun bindCommentsValue(commentsData: CommentsResult, itemPos: Int){
 
             // 북마크
             if(commentsData.isBookMark == 1){
@@ -92,11 +93,25 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
                 report.setOnClickListener {  }  // 신고 버튼
             }
 
-            markEmpty.setOnClickListener {}     // 북마크 설정
-            markFilled.setOnClickListener {  }  // 북마크 해제
-
             // 글 내용
             comments.text = commentsData.contents
+
+            // 북마크 설정
+            markEmpty.setOnClickListener{
+                commentsData.contentsIdx?.let{
+                    homeRoomActivity.showLoadingDialog(homeRoomActivity)
+                    Log.d("로그", "itemPos: $itemPos")
+                    HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
+                }
+            }
+            // 북마크 해제
+            markFilled.setOnClickListener {
+                commentsData.contentsIdx?.let {
+                    homeRoomActivity.showLoadingDialog(homeRoomActivity)
+                    Log.d("로그", "itemPos: $itemPos")
+                    HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
+                }
+            }
         }
     }
 
@@ -105,4 +120,9 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
         notifyDataSetChanged()
     }
 
+    // 1. 북마크 수정
+    fun updateItem(pos: Int, bookmark: Int){
+        commentsList[pos].isBookMark = bookmark
+        notifyItemChanged(pos)
+    }
 }

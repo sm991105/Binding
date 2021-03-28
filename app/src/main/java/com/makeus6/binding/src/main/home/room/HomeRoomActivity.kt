@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.makeus6.binding.R
 import com.makeus6.binding.config.ApplicationClass
 import com.makeus6.binding.config.BaseActivity
+import com.makeus6.binding.config.BaseResponse
 import com.makeus6.binding.databinding.ActivityHomeRoomBinding
 import com.makeus6.binding.src.main.home.models.CommentsResult
 import com.makeus6.binding.src.main.home.models.GetCommentsResponse
+import kotlinx.android.synthetic.main.item_bookmark_store.*
 
 class HomeRoomActivity : BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
 HomeRoomActivityView{
@@ -20,6 +24,8 @@ HomeRoomActivityView{
         private const val ORDER_BY_BOOKMARK: Int = 0
         private const val ORDER_BY_NEWEST: Int = 1
         private var sortFlag: Int = ORDER_BY_BOOKMARK   // 0 - 북마크순, 1 - 최신순
+        private const val BOOKMARK_ON: Int = 1
+        private const val BOOKMARK_OFF: Int = 0
     }
 
     // 뒤로가기 2번 눌러 종료할 때 사용
@@ -32,6 +38,10 @@ HomeRoomActivityView{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 정렬 레이아웃 테두리 둥글게 만들기 위함
+        binding.homeRoomSortNewest.clipToOutline = false
+        binding.homeRoomSortBookmark.clipToOutline = false
 
         // 코멘트 어댑터
         commentsRecyclerAdapter = CommentsRecyclerAdapter(this)
@@ -122,7 +132,7 @@ HomeRoomActivityView{
             1000 -> {
                 Log.d("로그", "최신순 글 조회 성공")
 
-                doWhenSuccess(response.result)
+                doWhenSuccess(response.result, ORDER_BY_NEWEST)
             }
 
             else -> {
@@ -160,7 +170,7 @@ HomeRoomActivityView{
             1000 -> {
                 Log.d("로그", "북마크순 글 조회 성공")
 
-                doWhenSuccess(response.result)
+                doWhenSuccess(response.result, ORDER_BY_BOOKMARK)
             }
 
             else -> {
@@ -181,7 +191,43 @@ HomeRoomActivityView{
                 "에러가 계속되면 관리자에게 문의주세요.")
     }
 
-    private fun doWhenSuccess(result: ArrayList<CommentsResult>){
+    // 글 북마크 수정 통신 성공
+    override fun onPatchWBookmarkSuccess(response: BaseResponse, itemPos: Int) {
+        Log.d("로그", "onPatchWBookmarkSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code){
+
+            // 성공(추가 or ON)
+            in 1000..1001 -> {
+                commentsRecyclerAdapter.updateItem(itemPos, BOOKMARK_ON)
+            }
+
+            // 성공(해제)
+            1002 -> {
+                commentsRecyclerAdapter.updateItem(itemPos, BOOKMARK_OFF)
+            }
+
+            else-> {
+                Log.d("로그", "북마크 수정 실패, message: ${response.message}")
+
+                showCustomToast("북마크 수정 중 에러가 발생했습니다\n" +
+                        "에러가 계속되면 관리자에게 문의주세요.")
+            }
+
+        }
+    }
+
+    // 글 북마크 수정 통신 실패
+    override fun onPatchWBookmarkFailure(message: String) {
+        Log.d("로그", "onPatchWBookmarkFailure() called, message: $message")
+        dismissLoadingDialog()
+
+        showCustomToast("북마크 수정 중 에러가 발생했습니다\n" +
+                "에러가 계속되면 관리자에게 문의주세요.")
+    }
+
+    private fun doWhenSuccess(result: ArrayList<CommentsResult>, mSortFlag: Int){
         bookTitle = result[0].bookName
 
         // 댓글이 없으면 종료
@@ -199,17 +245,27 @@ HomeRoomActivityView{
         binding.homeRoomSortTab.visibility = View.INVISIBLE
 
         // 탭 Text 설정
-        when(sortFlag){
-            ORDER_BY_BOOKMARK -> binding.homeRoomSortText.text = String.format("북마크순")
-            ORDER_BY_NEWEST -> binding.homeRoomSortText.text = String.format("최신순")
+        when(mSortFlag){
+            ORDER_BY_BOOKMARK -> {
+                binding.homeRoomSortText.text = String.format("북마크순")
+                sortFlag = ORDER_BY_BOOKMARK
+
+            }
+            ORDER_BY_NEWEST -> {
+                binding.homeRoomSortText.text = String.format("최신순")
+                sortFlag = ORDER_BY_NEWEST
+            }
         }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.d("로그", "onTouchEvent called()")
         if(binding.homeRoomSortTab.visibility == View.VISIBLE){
+            Log.d("로그", "동작함")
             binding.homeRoomSortTab.visibility = View.INVISIBLE
-            return true
+            return false
         }
+        Log.d("로그", "동작 안함")
         return super.onTouchEvent(event)
     }
 }
