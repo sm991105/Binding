@@ -19,7 +19,7 @@
             android:layout_height="25dp"
             android:layout_centerVertical="true"
             android:src="@drawable/icon_left"
-            android:background="@drawable/ripple_effect"/>
+            android:background="@drawable/ripple_effect_oval"/>
 
         <TextView
             android:id="@+id/settings_profile_title"
@@ -44,7 +44,7 @@
             android:includeFontPadding="false"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/ripple_effect"
+            android:background="@drawable/ripple_effect_oval"
             />
 
     </RelativeLayout>

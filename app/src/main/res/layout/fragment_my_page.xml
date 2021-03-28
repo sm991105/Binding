@@ -57,7 +57,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@drawable/settings"
-            android:background="@drawable/ripple_effect"/>
+            android:background="@drawable/ripple_effect_oval"/>
 
     </RelativeLayout>
 

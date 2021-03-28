@@ -17,6 +17,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
+            android:background="@drawable/ripple_effect_oval"
             android:src="@drawable/icon_left" />
 
         <TextView
@@ -113,28 +114,81 @@
         android:textSize="17dp"
         android:includeFontPadding="false" />
 
-    <ImageView
-        android:id="@+id/home_room_sort_down"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+    <LinearLayout
+        android:id="@+id/home_room_sort_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_below="@id/home_room_text"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:src="@drawable/down" />
+        android:layout_marginRight="20dp">
 
-    <TextView
-        android:id="@+id/home_room_sort_text"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_below="@id/home_room_text"
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/home_room_sort_down"
-        android:gravity="center"
-        android:fontFamily="@font/notosanskrregular"
-        android:text="북마크순"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="10dp"
-        android:includeFontPadding="false"/>
+        <TextView
+            android:id="@+id/home_room_sort_text"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:fontFamily="@font/notosanskrregular"
+            android:text="북마크순"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10dp"
+            android:includeFontPadding="false"
+            android:layout_marginRight="5dp"/>
+
+        <ImageView
+            android:id="@+id/home_room_sort_down"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/down" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:visibility="invisible"
+        android:id="@+id/home_room_sort_tab"
+        android:layout_width="93dp"
+        android:layout_height="74dp"
+        android:orientation="vertical"
+        android:background="@drawable/background_home_room_tab"
+        android:layout_below="@id/home_room_sort_btn"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/home_room_sort_bookmark"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@drawable/ripple_effect_rect"
+            android:backgroundTint="@color/colorWhite"
+            android:fontFamily="@font/notosanskrregular"
+            android:text="북마크순"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10dp"
+            android:includeFontPadding="false"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="9dp"
+            android:background="#dadada" />
+
+        <TextView
+            android:id="@+id/home_room_sort_newest"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/ripple_effect_rect"
+            android:backgroundTint="@color/colorWhite"
+            android:gravity="center"
+            android:fontFamily="@font/notosanskrregular"
+            android:text="최신순"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10dp"
+            android:includeFontPadding="false"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/home_room_recycler"
