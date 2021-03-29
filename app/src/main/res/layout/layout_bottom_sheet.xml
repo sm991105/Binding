@@ -39,10 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/bottom_sheet_title"
         android:layout_above="@id/bottom_sheet_button"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="30dp"
         android:weightSum="5">
 
-        <ListView
+        <com.medium.binding.src.main.menu.btm_sheet.MListView
             android:id="@+id/bottom_sheet_big_list"
             android:layout_weight="2"
             android:layout_width="0dp"
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25dp"
             android:orientation="vertical">
-            <ListView
+            <com.medium.binding.src.main.menu.btm_sheet.MListView
                 android:id="@+id/bottom_sheet_small_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 android:divider="@color/colorPrimaryGrey"
                 android:dividerHeight="1dp"
                 android:listSelector="@android:color/transparent">
-            </ListView>
+            </com.medium.binding.src.main.menu.btm_sheet.MListView>
         </LinearLayout>
 
     </LinearLayout>

@@ -4,15 +4,17 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medium.binding.R
 import com.medium.binding.databinding.LayoutBottomSheetBinding
 import com.medium.binding.src.main.menu.MenuFragmentView
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.*
+
 
 class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomSheetDialogFragment() {
     private var _binding: LayoutBottomSheetBinding? = null
@@ -29,9 +31,11 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터
     private var selectedLocation: String? = null             // 최종 선택된 지역
     private var selectedLocationList = ArrayList<String>() // 여러 지역 선택할 때 사용 가능
-    private var bigPos = -1     // 큰 지역 pos
-    private var smallPos = -1    // 작은 지역 pos
+    private var bigPos = 0    // 큰 지역 pos
+    private var smallPos = 0   // 작은 지역 pos
 
+
+    // 크기 설정
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val btmSheetDialog =  super.onCreateDialog(savedInstanceState) as BottomSheetDialog
 
@@ -97,7 +101,6 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
             binding.bottomSheetSmallList.setSelection(smallPos)
         }
 
-
         // 선택완료 버튼
         binding.bottomSheetButton.setOnClickListener(onClickSelect)
 
@@ -107,45 +110,45 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
         }
     }
 
+    // 선택 완료 버튼
     private val onClickSelect = View.OnClickListener {
+        val locationTxt: String?
 
-        // 지역을 선택하고 버튼을 누르면 동작
-        if(selectedLocation != null){
-            var locationTxt: String? = null
+        // 전지역 전체 서점 선택
+        if(bigPos == 0 && smallPos == 0){
+            menuFragmentView.let{
+                it.getAllStores()
+                it.updateLocationPos(bigPos, smallPos)
+                it.updateLocationTxt("전체")
+            }
+        }
 
-            // 전지역 전체 서점 선택
-            if(bigPos == 0 && smallPos == 0){
-                menuFragmentView.let{
-                    it.getAllStores()
-                    it.updateLocationPos(bigPos, smallPos)
-                    it.updateLocationTxt("전체")
-                }
+        // 특정 지역 서점 선택
+        else{
+            // bigLocation의 전체 서점
+            if(smallPos == 0){
+                selectedLocationList.addAll(smallLocationList)
+                locationTxt = bigLocationList[bigPos]
+                selectedLocationList.removeAt(0)  // selectedLocationList[0] ("전체") 삭제
+            }
+            // bigLocation의 특정 지역 서점
+            else {
+                selectedLocationList.add(smallLocationList[smallPos])
+                locationTxt = smallLocationList[smallPos]
             }
 
-            // 특정 지역 서점 선택
-            else{
-                // bigLocation의 전체 지역
-                if(selectedLocation == "전체"){
-                    selectedLocationList.addAll(smallLocationList)
-                    locationTxt = bigLocationList[bigPos]
-                    selectedLocationList.removeAt(0)        // smallLocationList[0] ("전체") 삭제
-                }
-                // bigLocation의 특정 지역
-                else {
-                    selectedLocationList.add(selectedLocation!!)
-                    locationTxt = selectedLocation
-                }
-
-                menuFragmentView.let{
-                    it.updateLocationStores(selectedLocationList)
-                    it.updateLocationPos(bigPos, smallPos)
-                    it.updateLocationTxt(locationTxt!!)
-                }
+            // 반영
+            menuFragmentView.let{
+                it.updateLocationStores(selectedLocationList)
+                it.updateLocationPos(bigPos, smallPos)
+                it.updateLocationTxt(locationTxt)
             }
         }
 
         this.dismiss()
     }
+
+    // 왼쪽 리스트뷰 아이템을 선택했을때
     private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
         val location = (view as TextView).text.toString()
         Log.d("로그", "location1: $location")
@@ -159,6 +162,21 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
         updateSmallListView(position)
     }
 
+    // 오른쪽 리스트뷰 아이템을 선택했을 때
+    private val onSmallClick = AdapterView.OnItemClickListener { parent, view, position, id ->
+        val location = (view as TextView).text.toString()
+        Log.d("로그", "location2: $location")
+
+        if(view.isActivated) {
+            selectedLocation = location
+            smallPos = position
+        }else{
+            selectedLocation = null
+            smallPos = -1
+        }
+    }
+
+    // 왼쪽 리스트뷰 아이템 선택에 따라 오른쪽 리스트뷰의 배열을 바꾼다
     private fun updateSmallListView(bigPos: Int){
         when(bigPos){
             0 -> smallLocationList.apply {
@@ -169,29 +187,16 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
                 this.clear()
                 this.addAll(listSeoul)
             }
-                2 -> smallLocationList.apply {
+            2 -> smallLocationList.apply {
                 this.clear()
                 this.addAll(listGyeonggi)
             }
-                3 -> smallLocationList.apply {
+            3 -> smallLocationList.apply {
                 this.clear()
                 this.addAll(listIncheon)
             }
         }
         smallAdapter.notifyDataSetChanged()
-    }
-
-    private val onSmallClick = AdapterView.OnItemClickListener { parent, view, position, id ->
-        val location = (view as TextView).text.toString()
-        Log.d("로그", "location2: $location")
-
-       if(view.isActivated) {
-           selectedLocation = location
-           smallPos = position
-        }else{
-           selectedLocation = null
-           smallPos = -1
-        }
     }
 
 
