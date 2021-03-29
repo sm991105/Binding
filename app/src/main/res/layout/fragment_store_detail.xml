@@ -155,13 +155,40 @@
                 android:textSize="15dp" />
 
             <ImageView
+                android:visibility="gone"
+                android:id="@+id/store_detail_img_1"
                 android:layout_width="match_parent"
                 android:layout_height="215dp"
-                android:src="@drawable/jangu"
+                android:src="@drawable/icon_app"
                 android:scaleType="centerCrop"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="16dp"
                 android:layout_below="@id/store_detail_Info"/>
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/store_detail_img_2"
+                android:layout_width="match_parent"
+                android:layout_height="215dp"
+                android:src="@drawable/icon_app"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="16dp"
+                android:layout_below="@id/store_detail_img_1"/>
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/store_detail_img_3"
+                android:layout_width="match_parent"
+                android:layout_height="215dp"
+                android:src="@drawable/icon_app"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="26dp"
+                android:layout_below="@id/store_detail_img_2"/>
         </RelativeLayout>
 
     </ScrollView>
