@@ -18,12 +18,17 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     private var _binding: LayoutBottomSheetBinding? = null
     private val binding get() = _binding!!
 
+    private var listWhole: ArrayList<String> = ArrayList()
+    private var listSeoul: ArrayList<String> = ArrayList()
+    private var listGyeonggi: ArrayList<String> = ArrayList()
+    private var listIncheon: ArrayList<String> = ArrayList()
+
     private lateinit var bigLocationList: ArrayList<String> // 첫번째 지역(시/도) 리스트뷰 데이터
     private lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터
     lateinit var smallLocationList: ArrayList<String> // 두번째 지역(구) 리스트뷰 데이터
     lateinit var smallAdapter: ArrayAdapter<String>   // 두번째 지역 리스트뷰 어댑터
     private var selectedLocation: String? = null             // 최종 선택된 지역
-    lateinit var selectedLocations: ArrayList<String> // 여러 지역 선택할 때 사용 가능
+    private var selectedLocationList = ArrayList<String>() // 여러 지역 선택할 때 사용 가능
     private var bigPos = -1     // 큰 지역 pos
     private var smallPos = -1    // 작은 지역 pos
 
@@ -54,13 +59,25 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
             smallPos = it.getInt("smallPos")
         }
 
+        // 지역 smallList들 미리 설정
+        listSeoul.addAll(resources.getStringArray(R.array.Seoul))
+        listGyeonggi.addAll(resources.getStringArray(R.array.Gyeonggi))
+        listIncheon.addAll(resources.getStringArray(R.array.Incheon))
+        listWhole.apply{
+            this.addAll(listSeoul)
+            this.addAll(listGyeonggi.subList(1, listGyeonggi.lastIndex))
+            this.addAll(listIncheon.subList(1, listIncheon.lastIndex))
+        }
+        Log.d("로그", "서울 리스트: $listSeoul , 전체 리스트: $listWhole")
+
         // 첫번째 지역 선택 리스트뷰 설정
-        bigLocationList = arrayListOf("서울", "경기도", "인천")
-        bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location,bigLocationList)
+        bigLocationList = arrayListOf("전체", "서울", "경기도", "인천")
+        bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location, bigLocationList)
         binding.bottomSheetBigList.adapter = bigAdapter
         binding.bottomSheetBigList.onItemClickListener = onBigClick
         if(bigPos != -1){
             binding.bottomSheetBigList.setItemChecked(bigPos, true)     // default 값
+            binding.bottomSheetBigList.setSelection(bigPos)
         }
 
 
@@ -68,19 +85,19 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
         smallLocationList = arrayListOf()
         smallAdapter = ArrayAdapter(context!!, R.layout.item_small_location, smallLocationList)
         binding.bottomSheetSmallList.adapter = smallAdapter
-        // 이전에 선택했던 게 있으면 그 상태로 돌아가고, 없으면 서울을 보여준다
+        // 이전에 선택했던 게 있으면 그 상태로 돌아가고, 없으면 전체를 보여준다
         if(bigPos != -1){
             updateSmallListView(bigPos)
         } else{
-            smallLocationList.addAll(resources.getStringArray(R.array.Seoul))
+            smallLocationList.addAll(listWhole)
         }
         binding.bottomSheetSmallList.onItemClickListener = onSmallClick
         if(smallPos != -1){
             binding.bottomSheetSmallList.setItemChecked(smallPos, true)
+            binding.bottomSheetSmallList.setSelection(smallPos)
         }
 
 
-        selectedLocations = arrayListOf("강동구") // 여러 지역 선택할 때 사용 가능
         // 선택완료 버튼
         binding.bottomSheetButton.setOnClickListener(onClickSelect)
 
@@ -91,31 +108,42 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     }
 
     private val onClickSelect = View.OnClickListener {
-        // val smallListView = binding.bottomSheetSmallList
-
-        /*// 각 리스트 아이템이 선택되었는지, 반복문을 사용하여 확인 가능
-        val checkedItems: SparseBooleanArray = smallListView.checkedItemPositions
-        for(i in 0 until smallListView.count){
-            if(checkedItems.get(i)){
-                selectedLocations.add(smallLocationList[i])
-            }
-        }*/
-
-        // Log.d("로그", "onClickSelect() called, selectedLocations: $selectedLocations")
-
-        // menuFragmentView.changeStores(selectedLocations)
 
         // 지역을 선택하고 버튼을 누르면 동작
         if(selectedLocation != null){
-            selectedLocations[0] = selectedLocation!!
-            menuFragmentView.let{
-                it.updateLocationStores(selectedLocations)
-                it.updateLocationTxt(selectedLocations[0])
-                it.updateLocationPos(bigPos, smallPos)
+            var locationTxt: String? = null
+
+            // 전지역 전체 서점 선택
+            if(bigPos == 0 && smallPos == 0){
+                menuFragmentView.let{
+                    it.getAllStores()
+                    it.updateLocationPos(bigPos, smallPos)
+                    it.updateLocationTxt("전체")
+                }
             }
-        }else{
-            // menuFragmentView.st
+
+            // 특정 지역 서점 선택
+            else{
+                // bigLocation의 전체 지역
+                if(selectedLocation == "전체"){
+                    selectedLocationList.addAll(smallLocationList)
+                    locationTxt = bigLocationList[bigPos]
+                    selectedLocationList.removeAt(0)        // smallLocationList[0] ("전체") 삭제
+                }
+                // bigLocation의 특정 지역
+                else {
+                    selectedLocationList.add(selectedLocation!!)
+                    locationTxt = selectedLocation
+                }
+
+                menuFragmentView.let{
+                    it.updateLocationStores(selectedLocationList)
+                    it.updateLocationPos(bigPos, smallPos)
+                    it.updateLocationTxt(locationTxt!!)
+                }
+            }
         }
+
         this.dismiss()
     }
     private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
@@ -133,18 +161,21 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
 
     private fun updateSmallListView(bigPos: Int){
         when(bigPos){
-            0 -> smallLocationList.let{
-                it.clear()
-                it.addAll(resources.getStringArray(R.array.Seoul))
+            0 -> smallLocationList.apply {
+                this.clear()
+                this.addAll(listWhole)
             }
-            1 ->
-                smallLocationList.let{
-                    it.clear()
-                    it.addAll(resources.getStringArray(R.array.Gyeonggi))
-                }
-            2 -> smallLocationList.let{
-                it.clear()
-                it.addAll(resources.getStringArray(R.array.Incheon))
+            1 -> smallLocationList.apply {
+                this.clear()
+                this.addAll(listSeoul)
+            }
+                2 -> smallLocationList.apply {
+                this.clear()
+                this.addAll(listGyeonggi)
+            }
+                3 -> smallLocationList.apply {
+                this.clear()
+                this.addAll(listIncheon)
             }
         }
         smallAdapter.notifyDataSetChanged()

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="big_location">
+        <item>전체</item>
+        <item>서울</item>
+        <item>경기도</item>
+        <item>인천</item>
+    </string-array>
+
     <!-- 서울 서점 -->
     <string-array name="Seoul">
+        <item>전체</item>
         <item>강남구</item>
         <item>강동구</item>
         <item>강북구</item>
@@ -31,6 +39,7 @@
 
     <!-- 경기도 서점-->
     <string-array name="Gyeonggi">
+        <item>전체</item>
         <item>가평군</item>
         <item>고양시</item>
         <item>과천시</item>
@@ -66,6 +75,7 @@
 
     <!-- 인천 서점 -->
     <string-array name="Incheon">
+        <item>전체</item>
         <item>강화군</item>
         <item>계양구</item>
         <item>남동구</item>

@@ -14,13 +14,15 @@
             android:layout_height="24dp"
             android:layout_marginTop="2dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/icon_left" />
+            android:src="@drawable/icon_left"
+            android:background="@drawable/ripple_effect_oval"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
+            android:includeFontPadding="false"
             android:layout_marginTop="2dp"
             android:text="회원가입"
             android:textColor="@color/colorPrimaryDark"
@@ -38,6 +40,8 @@
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:textSize="17dp"
         android:textColor="@android:color/darker_gray"
         android:hint="한글 닉네임을 입력해주세요"

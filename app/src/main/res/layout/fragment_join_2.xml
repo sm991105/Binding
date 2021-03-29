@@ -14,13 +14,15 @@
             android:layout_height="24dp"
             android:layout_marginTop="2dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/icon_left" />
+            android:src="@drawable/icon_left"
+            android:background="@drawable/ripple_effect_oval"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
+            android:includeFontPadding="false"
             android:layout_marginTop="2dp"
             android:text="회원가입"
             android:textColor="@color/colorPrimaryDark"
@@ -38,9 +40,12 @@
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="17dp"
         android:hint="비밀번호를 입력해주세요 (8자 이상)"
+        android:textColorHint="@color/ColorPrimaryLight"
         android:inputType="textPassword"
         android:maxLength="20" />
 
@@ -66,9 +71,12 @@
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
-        android:textColor="@color/ColorPrimaryLight"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="17dp"
         android:hint="비밀번호를 한 번 더 입력해주세요"
+        android:textColorHint="@color/ColorPrimaryLight"
         android:inputType="textPassword"/>
 
     <ImageView

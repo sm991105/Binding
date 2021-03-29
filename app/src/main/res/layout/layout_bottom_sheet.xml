@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/notosanskrbold"
+            android:includeFontPadding="false"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"
             android:text="지역선택"
@@ -38,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/bottom_sheet_title"
         android:layout_above="@id/bottom_sheet_button"
+        android:layout_marginTop="45dp"
         android:weightSum="5">
 
         <ListView
