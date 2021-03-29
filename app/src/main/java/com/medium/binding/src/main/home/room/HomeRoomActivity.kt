@@ -1,5 +1,6 @@
 package com.medium.binding.src.main.home.room
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -38,6 +39,7 @@ HomeRoomActivityView{
 
     lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,15 +47,15 @@ HomeRoomActivityView{
         setSupportActionBar(binding.homeRoomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // 정렬 레이아웃 테두리 둥글게 만들기 위함
-        binding.homeRoomSortNewest.clipToOutline = false
-        binding.homeRoomSortBookmark.clipToOutline = false
+        // 정렬탭 레이아웃 테두리 둥글게 만들기 위함
+        binding.homeRoomSortTab.clipToOutline = true
 
         // 코멘트 어댑터
         commentsRecyclerAdapter = CommentsRecyclerAdapter(this)
         binding.homeRoomRecycler.apply {
             adapter = commentsRecyclerAdapter
-            layoutManager = LinearLayoutManager(this@HomeRoomActivity,
+            layoutManager = LinearLayoutManager(
+                this@HomeRoomActivity,
                 LinearLayoutManager.VERTICAL, false
             )
         }
@@ -61,21 +63,27 @@ HomeRoomActivityView{
         // 불러올 책방 인덱스
         bookIdx = intent.extras?.getInt("bookIdx")
         Log.d("로그", "bookIdx: $bookIdx")
-        bookIdx?.let{
+        bookIdx?.let {
             showLoadingDialog(this)
             HomeRoomService(this).tryGetNewestWR(bookIdx!!)
         }
 
         // 뒤로가기 버튼
-        binding.homeRoomLeft.setOnClickListener{
+        binding.homeRoomLeft.setOnClickListener {
             super.onBackPressed()
         }
 
         // 정렬 탭 버튼
         binding.homeRoomSortBtn.setOnClickListener(onClickSort)
+        // 정렬 버튼
         binding.homeRoomSortBookmark.setOnClickListener(onClickSortBookmark)
         binding.homeRoomSortNewest.setOnClickListener(onClickSortNewest)
 
+        binding.homeRoomRecycler.setOnClickListener {
+            if (binding.homeRoomSortTab.visibility == View.VISIBLE) {
+                binding.homeRoomSortTab.visibility = View.INVISIBLE
+            }
+        }
     }
 
     // 정렬 탭 버튼 리스너
@@ -84,7 +92,7 @@ HomeRoomActivityView{
             if(this.visibility == View.INVISIBLE){
                 this.visibility = View.VISIBLE
             }else{
-                this.visibility = View.VISIBLE
+                this.visibility = View.INVISIBLE
             }
         }
     }
@@ -266,8 +274,22 @@ HomeRoomActivityView{
         }
     }
 
+    // 화면을 터치하면 정렬탭이 닫힌다
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         Log.d("로그", "onTouchEvent called()")
+
+        event?.let {
+            when (it.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    Log.d("로그", "ACTION_DOWN")
+                    if(binding.homeRoomSortTab.visibility == View.VISIBLE){
+                        binding.homeRoomSortTab.visibility = View.INVISIBLE
+                    }
+            }
+        }
+        return true
+    }
+
         if(binding.homeRoomSortTab.visibility == View.VISIBLE){
             Log.d("로그", "동작함")
             binding.homeRoomSortTab.visibility = View.INVISIBLE

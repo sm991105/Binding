@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:fontFamily="@font/notosanskrbold"
+            android:includeFontPadding="false"
             android:layout_marginTop="2dp"
             android:text="로그인"
             android:textColor="@color/colorPrimaryDark"
@@ -38,6 +39,8 @@
         android:layout_marginTop="116dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
@@ -65,6 +68,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:paddingLeft="11dp"
         android:paddingBottom="14.5dp"
         android:background="@null"
@@ -121,6 +126,8 @@
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="15sp"
         android:text="회원가입"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:layout_marginRight="23dp"
         android:layout_toLeftOf="@id/login_find_pw"
         android:layout_below="@id/login_pw_line"/>
@@ -133,6 +140,8 @@
         android:textColor="@color/ColorPrimaryLight"
         android:textSize="16sp"
         android:text="비밀번호 찾기"
+        android:fontFamily="@font/notosanskrregular"
+        android:includeFontPadding="false"
         android:layout_below="@id/login_pw_line"
         android:layout_alignParentRight="true"/>
 

@@ -6,7 +6,6 @@
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
             <solid android:color="@color/colorPrimary"/>
-            <size android:width="36dp" android:height="36dp"/>
         </shape>
     </item>
 

@@ -191,12 +191,15 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
         }
     }
 
-    // 리사이클러뷰 터치 리스너
+    // 리사이클러뷰 터치 리스너 -> 바깥을 터치하면 탭이 사라지게 하고 싶은데 잘 안된다
     private val onTouchRecyclerView = View.OnTouchListener { v, event ->
         if(binding.homeSortTab.visibility == View.VISIBLE){
             binding.homeSortTab.visibility = View.GONE
+            false
         }
-        v.performClick()
+        else{
+            v.performClick()
+        }
     }
 
     // 최신순 책방 불러오기 통신 성공
