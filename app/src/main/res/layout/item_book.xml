@@ -50,6 +50,20 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <TextView
+        android:id="@+id/item_book_post_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3개의 글"
+        android:textSize="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="16dp"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/notosanskrregular"
+        android:textColor="@color/ColorPrimaryLight"/>
+
     <ImageView
         android:id="@+id/item_book_icon"
         android:layout_width="12dp"
@@ -59,6 +73,7 @@
         app:layout_constraintTop_toTopOf="@id/item_book_post_amount"
         app:layout_constraintBottom_toBottomOf="@id/item_book_post_amount"
         android:layout_marginLeft="5dp"/>
+
 
     <TextView
         android:id="@+id/item_book_author"
@@ -74,19 +89,6 @@
         android:includeFontPadding="false"
         android:textColor="@color/ColorPrimaryLight"/>
 
-    <TextView
-        android:id="@+id/item_book_post_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="3개의 글"
-        android:textSize="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="16dp"
-        android:includeFontPadding="false"
-        android:fontFamily="@font/notosanskrregular"
-        android:textColor="@color/ColorPrimaryLight"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

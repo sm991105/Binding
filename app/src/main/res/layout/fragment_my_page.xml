@@ -1,199 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_page_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary"
     tools:context=".src.main.my_page.MyPageFragment">
 
-    <RelativeLayout
-        android:id="@+id/my_page_profile"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="20dp">
+        android:layout_height="wrap_content">
 
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/my_page_profile_photo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="26dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/icon_app"
-            app:riv_corner_radius="50dp" />
-
-        <TextView
-            android:id="@+id/my_page_profile_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/my_page_profile_photo"
-            android:layout_alignTop="@id/my_page_profile_photo"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/notosanskrbold"
-            android:text=""
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="14dp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/my_page_profile_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/my_page_profile_name"
-            android:layout_toRightOf="@id/my_page_profile_photo"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/notosanskrregular"
-            android:text=""
-            android:textColor="@color/ColorPrimaryLight"
-            android:textSize="14dp" />
+            <RelativeLayout
+                android:id="@+id/my_page_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginRight="20dp">
 
-        <ImageView
-            android:id="@+id/my_page_btn_settings"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/settings"
-            android:background="@drawable/ripple_effect_oval"/>
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/my_page_profile_photo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="26dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_app"
+                    app:riv_corner_radius="50dp" />
 
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/my_page_profile_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/my_page_profile_photo"
+                    android:layout_toRightOf="@id/my_page_profile_photo"
+                    android:fontFamily="@font/notosanskrbold"
+                    android:includeFontPadding="false"
+                    android:text=""
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14dp" />
 
-    <View
-        android:id="@+id/my_page_profile_view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/my_page_profile"
-        android:layout_marginTop="30dp"
-        android:background="#dadada" />
+                <TextView
+                    android:id="@+id/my_page_profile_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/my_page_profile_name"
+                    android:layout_toRightOf="@id/my_page_profile_photo"
+                    android:fontFamily="@font/notosanskrregular"
+                    android:includeFontPadding="false"
+                    android:text=""
+                    android:textColor="@color/ColorPrimaryLight"
+                    android:textSize="14dp" />
 
-    <LinearLayout
-        android:id="@+id/my_page_post_dot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/my_page_profile_view"
-        android:layout_marginTop="30dp"
-        android:weightSum="2">
+                <ImageView
+                    android:id="@+id/my_page_btn_settings"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ripple_effect_oval"
+                    android:src="@drawable/settings" />
 
-        <ImageView
-            android:id="@+id/my_page_post_dot_mine"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:src="@drawable/dot" />
+            </RelativeLayout>
 
-        <!-- '북마크 글' 을 눌렀을 땐 이 점이 보이게 해주세요 -->
-        <ImageView
-            android:id="@+id/my_page_post_dot_bookmark"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:src="@drawable/dot"
-            android:visibility="invisible" />
+            <View
+                android:id="@+id/my_page_profile_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/my_page_profile"
+                android:layout_marginTop="30dp"
+                android:background="#dadada" />
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/my_page_post_dot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_page_profile_view"
+                android:layout_marginTop="30dp"
+                android:weightSum="2">
 
-    <LinearLayout
-        android:id="@+id/my_page_post"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/my_page_post_dot"
-        android:layout_marginTop="9dp"
-        android:layout_marginBottom="25dp"
-        android:weightSum="2">
+                <ImageView
+                    android:id="@+id/my_page_post_dot_mine"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:src="@drawable/dot" />
 
-        <TextView
-            android:id="@+id/my_page_post_mine"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/notosanskrbold"
-            android:gravity="center"
-            android:text="내가 쓴 글"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="14dp" />
+                <!-- '북마크 글' 을 눌렀을 땐 이 점이 보이게 해주세요 -->
+                <ImageView
+                    android:id="@+id/my_page_post_dot_bookmark"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:src="@drawable/dot"
+                    android:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/my_page_post_bookmark"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/notosanskrregular"
-            android:gravity="center"
-            android:text="북마크 글"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="14dp" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/my_page_post"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_page_post_dot"
+                android:layout_marginTop="9dp"
+                android:layout_marginBottom="25dp"
+                android:weightSum="2">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/my_page_recycler_mine"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/my_page_post"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_bookshelf"/>
+                <TextView
+                    android:id="@+id/my_page_post_mine"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/notosanskrbold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="내가 쓴 글"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14dp" />
 
-    <!-- 북마크글의 recyclerview 입니다 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:visibility="invisible"
-        android:id="@+id/my_page_recycler_bookmark"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/my_page_post"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_bookshelf"/>
+                <TextView
+                    android:id="@+id/my_page_post_bookmark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/notosanskrregular"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="북마크 글"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14dp" />
 
-    <View
-        android:id="@+id/my_page_bookshelf_view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="382dp"
-        android:layout_marginBottom="10dp"
-        android:background="#dadada" />
+            </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/my_page_bookmark_store"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/my_page_bookshelf_view"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:visibility="gone"
+                android:id="@+id/my_page_recycler_mine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_page_post"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_bookshelf" />
 
-        <TextView
-            android:id="@+id/my_page_bookmark_store_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="서점 북마크"
-            android:textSize="14sp"
-            android:includeFontPadding="false"
-            android:fontFamily="@font/notosanskrbold"
-            android:textColor="@color/colorPrimaryDark"/>
+            <!-- 북마크글의 recyclerview 입니다 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:visibility="visible"
+                android:id="@+id/my_page_recycler_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_page_post"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_bookshelf" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/my_page_recycler_store"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/my_page_bookmark_store_text"
-            tools:listitem="@layout/item_bookmark_store"/>
+            <View
+                android:id="@+id/my_page_bookshelf_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/my_page_recycler_mine"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="#dadada" />
 
-    </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/my_page_bookmark_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_page_bookshelf_view"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp">
+
+                <TextView
+                    android:id="@+id/my_page_bookmark_store_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/notosanskrbold"
+                    android:includeFontPadding="false"
+                    android:text="서점 북마크"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/my_page_recycler_store"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/my_page_bookmark_store_text"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_bookmark_store" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <FrameLayout
         android:id="@+id/my_page_frm"

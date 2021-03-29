@@ -153,6 +153,15 @@
                 android:text=""
                 android:textColor="@color/ColorPrimaryLight"
                 android:textSize="15dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="215dp"
+                android:src="@drawable/jangu"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_below="@id/store_detail_Info"/>
         </RelativeLayout>
 
     </ScrollView>
