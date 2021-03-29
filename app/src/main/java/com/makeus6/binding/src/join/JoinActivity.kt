@@ -6,6 +6,7 @@ import android.util.Log
 import com.makeus6.binding.R
 import com.makeus6.binding.config.BaseActivity
 import com.makeus6.binding.databinding.ActivityJoinBinding
+import com.makeus6.binding.src.join.join0.Join0Fragment
 import com.makeus6.binding.src.join.join1.Join1Fragment
 import com.makeus6.binding.src.join.join2.Join2Fragment
 import com.makeus6.binding.src.join.join3.Join3Fragment
@@ -18,9 +19,17 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
 
         // join_frm 프레임레이아웃에 Join1 프래그먼트를 올린다
         supportFragmentManager.beginTransaction()
-            .add(R.id.join_frm, Join1Fragment())
+            .add(R.id.join_frm, Join0Fragment())
             .commitAllowingStateLoss()
 
+    }
+
+    // 회원가입 화면: 이메일 입력
+    fun moveToJoin1() {
+   supportFragmentManager.beginTransaction()
+       .addToBackStack("join1")
+       .replace(R.id.join_frm, Join1Fragment())
+       .commitAllowingStateLoss()
     }
 
     // 회원가입 2번째 화면, 비밀번호 입력창으로 이동
@@ -34,9 +43,9 @@ class JoinActivity: BaseActivity<ActivityJoinBinding>(ActivityJoinBinding::infla
         join2Fragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
-                .addToBackStack("join2")
-                .replace(R.id.join_frm, join2Fragment)
-                .commitAllowingStateLoss()
+            .addToBackStack("join2")
+            .replace(R.id.join_frm, join2Fragment)
+            .commitAllowingStateLoss()
     }
 
     // 회원가입 마지막 화면, 닉네임 입력창으로 이동

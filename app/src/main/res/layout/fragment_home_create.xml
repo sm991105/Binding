@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.makeus6.binding.src.main.menu.store_detail.MRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_room_create_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
@@ -59,4 +60,4 @@
         android:hint="책에 대한 내용을 자유롭게 작성해주세요."/>
 
 
-</RelativeLayout>
+</com.makeus6.binding.src.main.menu.store_detail.MRelativeLayout>

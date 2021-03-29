@@ -64,9 +64,9 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         // 다음 버튼 클릭 -> 비밀번호가 맞으면 닉네임 입력으로 넘어간다
         binding.join2Next.setOnClickListener(onClickNext)
 
-        // 뒤로가기 버튼 -> 로그인 화면으로 돌아간다
+        // 뒤로가기 버튼 -> 이메일 입력화면(join1) 돌아간다
         binding.join2Back.setOnClickListener{
-            (activity!! as JoinActivity).moveToLogin(false)
+            (activity!! as JoinActivity).onBackPressed()
         }
 
         // 각 입력칸이 포커싱되면 밑줄이 굵어진다

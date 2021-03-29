@@ -2,9 +2,10 @@ package com.makeus6.binding.src.main.home.room
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makeus6.binding.R
 import com.makeus6.binding.config.ApplicationClass
@@ -13,6 +14,7 @@ import com.makeus6.binding.config.BaseResponse
 import com.makeus6.binding.databinding.ActivityHomeRoomBinding
 import com.makeus6.binding.src.main.home.models.CommentsResult
 import com.makeus6.binding.src.main.home.models.GetCommentsResponse
+import com.makeus6.binding.src.main.home.room.create.HomeCreateFragment
 import kotlinx.android.synthetic.main.item_bookmark_store.*
 
 class HomeRoomActivity : BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
@@ -38,6 +40,10 @@ HomeRoomActivityView{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 액션 바 설정
+        setSupportActionBar(binding.homeRoomToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // 정렬 레이아웃 테두리 둥글게 만들기 위함
         binding.homeRoomSortNewest.clipToOutline = false
@@ -97,7 +103,7 @@ HomeRoomActivityView{
     private val onClickSortNewest = View.OnClickListener {
         if(sortFlag != ORDER_BY_NEWEST){
             showLoadingDialog(this)
-            HomeRoomService(this).tryGetMarkedWR(bookIdx!!)
+            HomeRoomService(this).tryGetNewestWR(bookIdx!!)
         }else{
             binding.homeRoomSortTab.visibility = View.INVISIBLE
         }
@@ -230,16 +236,18 @@ HomeRoomActivityView{
     private fun doWhenSuccess(result: ArrayList<CommentsResult>, mSortFlag: Int){
         bookTitle = result[0].bookName
 
+        // 책 제목
+        with(bookTitle){
+            binding.homeRoomTitle.text = this
+            binding.homeRoomTextTitle.text = this
+        }
+
         // 댓글이 없으면 종료
         if(result.size <= 1){
             return
         }
 
         result.removeAt(0)
-        with(bookTitle){
-            binding.homeRoomTitle.text = this
-            binding.homeRoomTextTitle.text = this
-        }
 
         commentsRecyclerAdapter.updateList(result)
         binding.homeRoomSortTab.visibility = View.INVISIBLE
@@ -267,5 +275,33 @@ HomeRoomActivityView{
         }
         Log.d("로그", "동작 안함")
         return super.onTouchEvent(event)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_home_room_toolbar, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menu_home_room_toolbar_write -> {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.home_room_frm, HomeCreateFragment())
+                    .addToBackStack("HomeCreate")
+                    .commitAllowingStateLoss()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if(supportFragmentManager.backStackEntryCount > 0){
+            supportFragmentManager.popBackStack()
+        }else{
+            super.onBackPressed()
+        }
     }
 }

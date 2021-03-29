@@ -60,9 +60,9 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
         binding.join3WrongNickname.visibility = View.INVISIBLE
         binding.join3SameNickname.visibility = View.INVISIBLE
 
-        // 뒤로가기 버튼 -> 로그인 화면으로 돌아간다
+        // 뒤로가기 버튼 -> 비밀번호 입력 화면(join2)으로 돌아간다
         binding.join3Back.setOnClickListener{
-            (activity!! as JoinActivity).moveToLogin(false)
+            (activity!! as JoinActivity).onBackPressed()
         }
     }
 

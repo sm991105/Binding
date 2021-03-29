@@ -44,7 +44,7 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
 
         // 뒤로가기 버튼 -> 로그인 화면으로 돌아간다
         binding.join1Back.setOnClickListener{
-            (activity!! as JoinActivity).moveToLogin(false)
+            (activity!! as JoinActivity).onBackPressed()
         }
 
         // 엔터 -> next 버튼 클릭

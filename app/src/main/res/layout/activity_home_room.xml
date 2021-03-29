@@ -3,69 +3,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
 
-    <RelativeLayout
-        android:id="@+id/home_room_top_bar"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/home_room_toolbar"
         android:layout_width="match_parent"
         android:layout_height="49dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        app:contentInsetEnd="0dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        tools:menu="@menu/menu_home_room_toolbar">
 
-        <ImageView
-            android:id="@+id/home_room_left"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ripple_effect_oval"
-            android:src="@drawable/icon_left" />
-
-        <TextView
-            android:id="@+id/home_room_title"
+        <RelativeLayout
+            android:id="@+id/home_sort_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/home_room_left"
-            android:fontFamily="@font/notosanskrbold"
-            android:text="온도차이"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="15dp" />
+            android:layout_centerVertical="true">
 
-        <TextView
-            android:id="@+id/home_sort_popular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/notosanskrbold"
-            android:text="인기글"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="15dp"
-            android:visibility="invisible" />
+            <ImageView
+                android:id="@+id/home_room_left"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ripple_effect_oval"
+                android:src="@drawable/icon_left" />
 
-
-        <ImageView
-            android:id="@+id/home_room_search"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/home_room_create"
-            android:src="@drawable/search" />
-
-        <ImageView
-            android:id="@+id/home_room_create"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/pencil" />
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/home_room_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/home_room_left"
+                android:layout_marginRight="16dp"
+                android:ellipsize="marquee"
+                android:fontFamily="@font/notosanskrbold"
+                android:text="온도차이"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15dp" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <View
         android:id="@+id/home_room_view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/home_room_top_bar"
+        android:layout_below="@id/home_room_toolbar"
         android:layout_marginBottom="10dp"
         android:background="#dadada" />
 
@@ -85,6 +69,7 @@
         android:layout_below="@id/home_room_view"
         android:layout_marginLeft="20dp"
         android:fontFamily="@font/notosanskrbold"
+        android:ellipsize="end"
         android:text="온도차이"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="17dp"
@@ -95,6 +80,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/home_room_view"
+        android:layout_toLeftOf="@id/home_room_sort_btn"
+        android:paddingRight="16dp"
         android:layout_toRightOf="@id/home_room_text_title"
         android:fontFamily="@font/notosanskrregular"
         android:text="에 대해"
@@ -197,5 +184,10 @@
         android:layout_below="@id/home_room_text_2"
         android:layout_marginTop="20dp"
         tools:listitem="@layout/item_post"/>
+
+    <FrameLayout
+        android:id="@+id/home_room_frm"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>
