@@ -45,8 +45,10 @@
         android:text="나는 집에 그지같은 얼른 얼른"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="15dp"
+        android:maxLines="3"
+        android:ellipsize="end"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/item_book_icon"

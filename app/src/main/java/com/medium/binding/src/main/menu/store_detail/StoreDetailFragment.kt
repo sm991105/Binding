@@ -26,7 +26,6 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
     private val binding get() = _binding!!
     lateinit var mLoadingDialog: LoadingDialog
 
-    private val sp = ApplicationClass.sSharedPreferences
     private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스
 
     private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트
@@ -54,6 +53,9 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
 
         showLoadingDialog(context!!)
         StoreDetailService(this).tryGetBookStore(bookStoreIdx)
+
+        // 뒤로가기 버튼
+        binding
 
         // 북마크 ON
         binding.storeDetailBookmarkEmpty.setOnClickListener {

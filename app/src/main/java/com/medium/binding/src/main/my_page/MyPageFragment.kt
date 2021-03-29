@@ -117,8 +117,8 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
         binding.myPageFrm.visibility = View.VISIBLE
         cFragmentManager.beginTransaction().apply{
             this.add(R.id.my_page_frm, settingsFragment)
+                .addToBackStack("settings")
                 .commitAllowingStateLoss()
-            this.addToBackStack("settings")
         }
     }
 

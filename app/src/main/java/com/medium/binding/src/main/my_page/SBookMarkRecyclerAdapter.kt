@@ -2,6 +2,7 @@ package com.medium.binding.src.main.my_page
 
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.medium.binding.R
 import com.makeramen.roundedimageview.RoundedImageView
+import com.medium.binding.src.main.menu.store_detail.StoreDetailFragment
 import com.medium.binding.src.main.my_page.models.SBookMarkData
 import kotlinx.android.synthetic.main.item_bookmark_store.view.*
 
@@ -62,20 +64,20 @@ class SBookMarkRecyclerAdapter(fragment: MyPageFragment):
 
             storeName.text = store.storeName
 
-            // 나중에 클릭 -> 서점 화면 여는 기능
-            /*item.setOnClickListener{
+            // 클릭 -> 서점 화면 여는 기능
+            item.setOnClickListener{
                 val fragmentManager = myPageFragment.childFragmentManager
                 val storeDetailFragment = StoreDetailFragment()
                 val idxBundle = Bundle()
                 idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
                 storeDetailFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .replace(R.id.menu_root, storeDetailFragment)
+                    .addToBackStack("storeDetail")
+                    .add(R.id.my_page_frm, storeDetailFragment)
                     .commitAllowingStateLoss()
-            }*/
+            }
         }
     }
-
 
     fun updateList(newList: ArrayList<SBookMarkData>){
         storeList = newList
