@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="215dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/jangu" />
+                android:src="@drawable/icon_app" />
 
             <ImageView
                 android:id="@+id/store_detail_bookmark_empty"
@@ -76,7 +76,7 @@
                     android:layout_below="@id/store_detail_cover"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="9dp"
-                    android:text="경기 수원시 팔달구 권광로188번길 2층 부크빌라"
+                    android:text=""
                     android:textColor="#494949"
                     android:textSize="12dp" />
             </LinearLayout>
@@ -130,7 +130,7 @@
                     android:layout_below="@id/store_detail_cover"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="9dp"
-                    android:text="010-2779-4199"
+                    android:text=""
                     android:textColor="#494949"
                     android:textSize="12dp" />
             </LinearLayout>
@@ -150,7 +150,7 @@
                 android:layout_below="@id/store_detail_view"
                 android:layout_margin="20dp"
                 android:lineSpacingExtra="2dp"
-                android:text="@string/bookvill_text"
+                android:text=""
                 android:textColor="@color/ColorPrimaryLight"
                 android:textSize="15dp" />
         </RelativeLayout>
