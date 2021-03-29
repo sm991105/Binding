@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
@@ -19,7 +20,9 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
     private val sp = ApplicationClass.sSharedPreferences
 
-    private lateinit var storeList: ArrayList<StoresResult>
+    var hasNext = true
+    var page: Int = 0
+    val limit = 200
     private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter
     private var bigPos = 0      // 큰 지역 리스트뷰 선택된  pos
     private var smallPos = 0    // 작은 지역 리스트뷰 선택된  pos
@@ -69,9 +72,9 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     // 처음 화면 진입했을 떄 보여줄 서점들 설정
     private fun initStores(){
         if(bigPos == 0 && smallPos == 0){
-            // 임시로 1페이지 30개만 가져온다, 전체 서점
+            // 서점 100몇개 다 가져옴
             showLoadingDialog(context!!)
-            MenuService(this).tryGetAllStores(0, 30)
+            MenuService(this).tryGetAllStores(0, limit)
         }else if(smallPos == 0){
             when(bigPos){
                 1 -> {
@@ -118,11 +121,8 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
                 val result = response.result
                 Log.d("로그", "전체 서점 조회 성공 - result: $result")
 
-                storeList = ArrayList()
-                storeList = result
-
                 // 서점 데이터 전달
-                menuRecyclerAdapter.updateList(storeList)
+                menuRecyclerAdapter.updateList(result)
             }
 
             else -> {
@@ -150,11 +150,11 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
                 val result = response.result
                 Log.d("로그", "지역 서점 조회 성공 - result: $result")
 
-                storeList = ArrayList()
-                storeList = result
+                if(result.size > 0){
+                    hasNext = true      // 추가할 데이터 있음
 
-                // 서점 데이터 전달
-                menuRecyclerAdapter.updateList(storeList)
+                    menuRecyclerAdapter.updateList(result)  // 서점 데이터 전달
+                }
 
             }
 
@@ -176,13 +176,13 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     // 바텀시트에서 선택 -> 지역 서점 가져오기
     override fun updateLocationStores(LocationList: ArrayList<String>) {
         showLoadingDialog(context!!)
-        MenuService(this).tryGetLocationStores(0, 20, LocationList)
+        MenuService(this).tryGetLocationStores(page, limit, LocationList)
     }
 
     // 바텀시트에서 선택 -> 전체 서점 가져오기
     override fun getAllStores() {
         showLoadingDialog(context!!)
-        MenuService(this).tryGetAllStores(0, 20)
+        MenuService(this).tryGetAllStores(page, limit)
     }
 
     // 선택한 지역으로 TEXT 값 변경

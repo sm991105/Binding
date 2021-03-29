@@ -114,7 +114,6 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     private val onClickSettings = View.OnClickListener {
         val settingsFragment = SettingsFragment(this)
         val cFragmentManager = childFragmentManager
-        binding.myPageFrm.visibility = View.VISIBLE
         cFragmentManager.beginTransaction().apply{
             this.add(R.id.my_page_frm, settingsFragment)
                 .addToBackStack("settings")

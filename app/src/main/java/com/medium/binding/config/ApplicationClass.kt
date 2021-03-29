@@ -31,8 +31,8 @@ class ApplicationClass : Application() {
         // 파이어베이스 저장소
         lateinit var userStorage: FirebaseStorage
 
-        // 프로필 변경 플래그
-        var isEdited = false
+        var isEdited = false    // 프로필 변경 플래그
+        var isMarkEdited = false    // 북마크 변경 플래그
 
         // 유저 인덱스
         var userIdx: Int = -1

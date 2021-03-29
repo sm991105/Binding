@@ -55,15 +55,6 @@
         android:layout_marginBottom="10dp"
         android:background="#dadada" />
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/red_btn" />
-
     <TextView
         android:id="@+id/home_room_text_title"
         android:layout_width="wrap_content"

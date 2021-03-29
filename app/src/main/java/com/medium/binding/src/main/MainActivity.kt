@@ -114,6 +114,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             .commitAllowingStateLoss()
                         ApplicationClass.isEdited = false
                     }
+                    // 북마크 수정됐으면 새로고침
+                    else if(ApplicationClass.isMarkEdited){
+                        myPageFragment = MyPageFragment()
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, myPageFragment!!, "myPage")
+                            .commitAllowingStateLoss()
+                        ApplicationClass.isMarkEdited = false
+                    }
                 }else{
                     finishOnBackPressed()   // 두 번 눌러 앱 종료
                 }

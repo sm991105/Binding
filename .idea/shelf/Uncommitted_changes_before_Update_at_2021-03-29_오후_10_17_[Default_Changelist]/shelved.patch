@@ -1,0 +1,311 @@
+Index: app/src/main/java/com/medium/binding/src/main/menu/MenuFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.menu\r\n\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.ApplicationClass\r\nimport com.medium.binding.config.BaseFragment\r\nimport com.medium.binding.databinding.FragmentMenuBinding\r\nimport com.medium.binding.src.main.menu.btm_sheet.BottomSheetLayout\r\nimport com.medium.binding.src.main.menu.models.GetStoresResponse\r\nimport com.medium.binding.src.main.menu.models.StoresResult\r\n\r\nclass MenuFragment: BaseFragment<FragmentMenuBinding>(\r\n    FragmentMenuBinding::bind,\r\n    R.layout.fragment_menu\r\n), MenuFragmentView{\r\n\r\n    private val sp = ApplicationClass.sSharedPreferences\r\n\r\n    private lateinit var storeList: ArrayList<StoresResult>\r\n    private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter\r\n    private var bigPos = 0      // 큰 지역 리스트뷰 선택된  pos\r\n    private var smallPos = 0    // 작은 지역 리스트뷰 선택된  pos\r\n    private var selectedLocation: String? = null   // 선택된 지역\r\n    private var selectedLocationList = ArrayList<String>()   // API 호출에 사용할 선택 지역 리스트\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        // 이전에 선택했던 지역 pos 값, text 값\r\n        sp.let{\r\n            bigPos = it.getInt(\"bigPos\", 0)\r\n            smallPos = it.getInt(\"smallPos\", 0)\r\n            selectedLocation = it.getString(\"selectedLocation\", null)\r\n            if(selectedLocation != null){\r\n                binding.menuLocation.text = selectedLocation\r\n            }\r\n\r\n        }\r\n\r\n        menuRecyclerAdapter = MenuRecyclerViewAdapter(this)\r\n        binding.menuRecycler.adapter = menuRecyclerAdapter\r\n        binding.menuRecycler.layoutManager = LinearLayoutManager(activity\r\n            , LinearLayoutManager.VERTICAL, false\r\n        )\r\n\r\n        // 화면 진입했을 때 보일 서점들 설정\r\n        initStores()\r\n\r\n        // 지역 선택 버튼 클릭\r\n        binding.menuTopBar.setOnClickListener(onClickLocation)\r\n\r\n        // binding.menuRecycler.addOnScrollListener(onRecyclerScroll)\r\n\r\n    }\r\n\r\n    /*private val onRecyclerScroll = object: RecyclerView.OnScrollListener(){\r\n        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {\r\n            super.onScrollStateChanged(recyclerView, newState)\r\n        }\r\n\r\n        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {\r\n            super.onScrolled(recyclerView, dx, dy)\r\n        }\r\n    }*/\r\n\r\n    // 처음 화면 진입했을 떄 보여줄 서점들 설정\r\n    private fun initStores(){\r\n        if(bigPos == 0 && smallPos == 0){\r\n            // 임시로 1페이지 30개만 가져온다, 전체 서점\r\n            showLoadingDialog(context!!)\r\n            MenuService(this).tryGetAllStores(0, 30)\r\n        }else if(smallPos == 0){\r\n            when(bigPos){\r\n                1 -> {\r\n                    selectedLocationList.clear()\r\n                    selectedLocationList.addAll(resources.getStringArray(R.array.Seoul))\r\n                }\r\n                2 -> {\r\n                    selectedLocationList.clear()\r\n                    selectedLocationList.addAll(resources.getStringArray(R.array.Gyeonggi))\r\n                }\r\n                3 -> {\r\n                    selectedLocationList.clear()\r\n                    selectedLocationList.addAll(resources.getStringArray(R.array.Incheon))\r\n                }\r\n            }\r\n            updateLocationStores(selectedLocationList)\r\n        }\r\n        else{\r\n            updateLocationStores(arrayListOf(selectedLocation!!))\r\n        }\r\n    }\r\n\r\n    // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다\r\n    private val onClickLocation = View.OnClickListener {\r\n        val btmSheet = BottomSheetLayout(this)\r\n\r\n        // 지금 선택되어있는 지역 pos 값 전달\r\n        val posBundle = Bundle()\r\n        posBundle.putInt(\"bigPos\", bigPos)\r\n        posBundle.putInt(\"smallPos\", smallPos)\r\n        btmSheet.arguments = posBundle\r\n\r\n        val fragmentManager = childFragmentManager\r\n        btmSheet.show(fragmentManager, \"Location\")\r\n    }\r\n\r\n    override fun onGetAllStoresSuccess(response: GetStoresResponse) {\r\n        Log.d(\"로그\", \"onGetAllStoresSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다\r\n            1000 -> {\r\n                val result = response.result\r\n                Log.d(\"로그\", \"전체 서점 조회 성공 - result: $result\")\r\n\r\n                storeList = ArrayList()\r\n                storeList = result\r\n\r\n                // 서점 데이터 전달\r\n                menuRecyclerAdapter.updateList(storeList)\r\n            }\r\n\r\n            else -> {\r\n                Log.d(\"로그\", \"전체 서점 조회 실패 - message: ${response.message}\")\r\n\r\n                response.message?.let{showCustomToast(it)}\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onGetAllStoresFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetAllStoresFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    override fun onGetLocationStoresSuccess(response: GetStoresResponse) {\r\n        Log.d(\"로그\", \"onGetLocationStoresSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다\r\n            1000 -> {\r\n                val result = response.result\r\n                Log.d(\"로그\", \"지역 서점 조회 성공 - result: $result\")\r\n\r\n                storeList = ArrayList()\r\n                storeList = result\r\n\r\n                // 서점 데이터 전달\r\n                menuRecyclerAdapter.updateList(storeList)\r\n\r\n            }\r\n\r\n            else -> {\r\n                Log.d(\"로그\", \"지역 서점 조회 실패 - message: ${response.message}\")\r\n\r\n                response.message?.let{showCustomToast(it)}\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onGetLocationStoresFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetLocationStoresFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    // 바텀시트에서 선택 -> 지역 서점 가져오기\r\n    override fun updateLocationStores(LocationList: ArrayList<String>) {\r\n        showLoadingDialog(context!!)\r\n        MenuService(this).tryGetLocationStores(0, 20, LocationList)\r\n    }\r\n\r\n    // 바텀시트에서 선택 -> 전체 서점 가져오기\r\n    override fun getAllStores() {\r\n        showLoadingDialog(context!!)\r\n        MenuService(this).tryGetAllStores(0, 20)\r\n    }\r\n\r\n    // 선택한 지역으로 TEXT 값 변경\r\n    override fun updateLocationTxt(location: String) {\r\n        if(location == \"전체\"){\r\n            binding.menuLocation.text = resources.getStringArray(R.array.big_location)[bigPos]\r\n        }else{\r\n            binding.menuLocation.text = location\r\n        }\r\n\r\n        selectedLocation = location\r\n        sp.edit().putString(\"selectedLocation\", selectedLocation).apply()\r\n    }\r\n\r\n    // 선택한 BottomSheetLayout의 리스트뷰의 pos 값으로 업데이트\r\n    override fun updateLocationPos(bigPosition: Int, smallPosition: Int) {\r\n        bigPos = bigPosition\r\n        smallPos = smallPosition\r\n        sp.edit().let{\r\n            it.putInt(\"bigPos\", bigPos)\r\n            it.putInt(\"smallPos\", smallPos)\r\n        }.apply()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/menu/MenuFragment.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/menu/MenuFragment.kt	(date 1617021373319)
+@@ -4,6 +4,7 @@
+ import android.util.Log
+ import android.view.View
+ import androidx.recyclerview.widget.LinearLayoutManager
++import androidx.recyclerview.widget.RecyclerView
+ import com.medium.binding.R
+ import com.medium.binding.config.ApplicationClass
+ import com.medium.binding.config.BaseFragment
+@@ -19,7 +20,9 @@
+ 
+     private val sp = ApplicationClass.sSharedPreferences
+ 
+-    private lateinit var storeList: ArrayList<StoresResult>
++    var hasNext = true
++    var page: Int = 0
++    val limit = 30
+     private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter
+     private var bigPos = 0      // 큰 지역 리스트뷰 선택된  pos
+     private var smallPos = 0    // 작은 지역 리스트뷰 선택된  pos
+@@ -71,7 +74,7 @@
+         if(bigPos == 0 && smallPos == 0){
+             // 임시로 1페이지 30개만 가져온다, 전체 서점
+             showLoadingDialog(context!!)
+-            MenuService(this).tryGetAllStores(0, 30)
++            MenuService(this).tryGetAllStores(0, limit)
+         }else if(smallPos == 0){
+             when(bigPos){
+                 1 -> {
+@@ -118,11 +121,8 @@
+                 val result = response.result
+                 Log.d("로그", "전체 서점 조회 성공 - result: $result")
+ 
+-                storeList = ArrayList()
+-                storeList = result
+-
+                 // 서점 데이터 전달
+-                menuRecyclerAdapter.updateList(storeList)
++                menuRecyclerAdapter.updateList(result)
+             }
+ 
+             else -> {
+@@ -150,11 +150,11 @@
+                 val result = response.result
+                 Log.d("로그", "지역 서점 조회 성공 - result: $result")
+ 
+-                storeList = ArrayList()
+-                storeList = result
++                if(result.size > 0){
++                    hasNext = true      // 추가할 데이터 있음
+ 
+-                // 서점 데이터 전달
+-                menuRecyclerAdapter.updateList(storeList)
++                    menuRecyclerAdapter.updateList(result)  // 서점 데이터 전달
++                }
+ 
+             }
+ 
+@@ -176,13 +176,13 @@
+     // 바텀시트에서 선택 -> 지역 서점 가져오기
+     override fun updateLocationStores(LocationList: ArrayList<String>) {
+         showLoadingDialog(context!!)
+-        MenuService(this).tryGetLocationStores(0, 20, LocationList)
++        MenuService(this).tryGetLocationStores(page, limit, LocationList)
+     }
+ 
+     // 바텀시트에서 선택 -> 전체 서점 가져오기
+     override fun getAllStores() {
+         showLoadingDialog(context!!)
+-        MenuService(this).tryGetAllStores(0, 20)
++        MenuService(this).tryGetAllStores(page, limit)
+     }
+ 
+     // 선택한 지역으로 TEXT 값 변경
+@@ -206,4 +206,32 @@
+             it.putInt("smallPos", smallPos)
+         }.apply()
+     }
++
++    /*private fun initScrollListener(){
++        binding.menuRecycler.addOnScrollListener(object: RecyclerView.OnScrollListener(){
++
++            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
++                super.onScrolled(recyclerView, dx, dy)
++
++                val layoutManager = binding.menuRecycler.layoutManager
++
++                // hasNextPage() -> 다음 페이지가 있는 경우
++                if (hasNextPage()) {
++                    val lastVisibleItem = (layoutManager as LinearLayoutManager)
++                        .findLastCompletelyVisibleItemPosition()
++
++                    // 마지막으로 보여진 아이템 position 이
++                    // 전체 아이템 개수보다 5개 모자란 경우, 데이터를 loadMore 한다
++                    if (layoutManager.itemCount <= lastVisibleItem + 5) {
++                        loadMorePosts()
++                        setHasNextPage(false)
++                    }
++                }
++            }
++        })
++    }
++
++    private fun hasNextPage(): Boolean{
++
++    }*/
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_my_page.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:id=\"@+id/my_page_container\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:background=\"@color/colorPrimary\"\r\n    tools:context=\".src.main.my_page.MyPageFragment\">\r\n\r\n    <RelativeLayout\r\n        android:id=\"@+id/my_page_profile\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginTop=\"40dp\"\r\n        android:layout_marginRight=\"20dp\">\r\n\r\n        <com.makeramen.roundedimageview.RoundedImageView\r\n            android:id=\"@+id/my_page_profile_photo\"\r\n            android:layout_width=\"48dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_centerVertical=\"true\"\r\n            android:layout_marginRight=\"26dp\"\r\n            android:scaleType=\"centerCrop\"\r\n            android:src=\"@drawable/icon_app\"\r\n            app:riv_corner_radius=\"50dp\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/my_page_profile_name\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_toRightOf=\"@id/my_page_profile_photo\"\r\n            android:layout_alignTop=\"@id/my_page_profile_photo\"\r\n            android:includeFontPadding=\"false\"\r\n            android:fontFamily=\"@font/notosanskrbold\"\r\n            android:text=\"\"\r\n            android:textColor=\"@color/colorPrimaryDark\"\r\n            android:textSize=\"14dp\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/my_page_profile_email\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_below=\"@id/my_page_profile_name\"\r\n            android:layout_toRightOf=\"@id/my_page_profile_photo\"\r\n            android:includeFontPadding=\"false\"\r\n            android:fontFamily=\"@font/notosanskrregular\"\r\n            android:text=\"\"\r\n            android:textColor=\"@color/ColorPrimaryLight\"\r\n            android:textSize=\"14dp\" />\r\n\r\n        <ImageView\r\n            android:id=\"@+id/my_page_btn_settings\"\r\n            android:layout_width=\"30dp\"\r\n            android:layout_height=\"30dp\"\r\n            android:layout_alignParentRight=\"true\"\r\n            android:layout_centerVertical=\"true\"\r\n            android:src=\"@drawable/settings\"\r\n            android:background=\"@drawable/ripple_effect_oval\"/>\r\n\r\n    </RelativeLayout>\r\n\r\n    <View\r\n        android:id=\"@+id/my_page_profile_view\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"1dp\"\r\n        android:layout_below=\"@id/my_page_profile\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:background=\"#dadada\" />\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/my_page_post_dot\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/my_page_profile_view\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:weightSum=\"2\">\r\n\r\n        <ImageView\r\n            android:id=\"@+id/my_page_post_dot_mine\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"8dp\"\r\n            android:layout_weight=\"1\"\r\n            android:gravity=\"center\"\r\n            android:src=\"@drawable/dot\" />\r\n\r\n        <!-- '북마크 글' 을 눌렀을 땐 이 점이 보이게 해주세요 -->\r\n        <ImageView\r\n            android:id=\"@+id/my_page_post_dot_bookmark\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"8dp\"\r\n            android:layout_weight=\"1\"\r\n            android:gravity=\"center\"\r\n            android:src=\"@drawable/dot\"\r\n            android:visibility=\"invisible\" />\r\n\r\n    </LinearLayout>\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/my_page_post\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/my_page_post_dot\"\r\n        android:layout_marginTop=\"9dp\"\r\n        android:layout_marginBottom=\"25dp\"\r\n        android:weightSum=\"2\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/my_page_post_mine\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:includeFontPadding=\"false\"\r\n            android:fontFamily=\"@font/notosanskrbold\"\r\n            android:gravity=\"center\"\r\n            android:text=\"내가 쓴 글\"\r\n            android:textColor=\"@color/colorPrimaryDark\"\r\n            android:textSize=\"14dp\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/my_page_post_bookmark\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:includeFontPadding=\"false\"\r\n            android:fontFamily=\"@font/notosanskrregular\"\r\n            android:gravity=\"center\"\r\n            android:text=\"북마크 글\"\r\n            android:textColor=\"@color/colorPrimaryDark\"\r\n            android:textSize=\"14dp\" />\r\n\r\n    </LinearLayout>\r\n\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/my_page_recycler_mine\"\r\n        android:orientation=\"horizontal\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/my_page_post\"\r\n        app:layoutManager=\"androidx.recyclerview.widget.LinearLayoutManager\"\r\n        tools:listitem=\"@layout/item_bookshelf\"/>\r\n\r\n    <!-- 북마크글의 recyclerview 입니다 -->\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:visibility=\"invisible\"\r\n        android:id=\"@+id/my_page_recycler_bookmark\"\r\n        android:orientation=\"horizontal\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/my_page_post\"\r\n        app:layoutManager=\"androidx.recyclerview.widget.LinearLayoutManager\"\r\n        tools:listitem=\"@layout/item_bookshelf\"/>\r\n\r\n    <View\r\n        android:id=\"@+id/my_page_bookshelf_view\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"1dp\"\r\n        android:layout_marginTop=\"382dp\"\r\n        android:layout_marginBottom=\"10dp\"\r\n        android:background=\"#dadada\" />\r\n\r\n    <RelativeLayout\r\n        android:id=\"@+id/my_page_bookmark_store\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/my_page_bookshelf_view\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginRight=\"20dp\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/my_page_bookmark_store_text\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginBottom=\"20dp\"\r\n            android:text=\"서점 북마크\"\r\n            android:textSize=\"14sp\"\r\n            android:includeFontPadding=\"false\"\r\n            android:fontFamily=\"@font/notosanskrbold\"\r\n            android:textColor=\"@color/colorPrimaryDark\"/>\r\n\r\n        <androidx.recyclerview.widget.RecyclerView\r\n            android:id=\"@+id/my_page_recycler_store\"\r\n            android:orientation=\"horizontal\"\r\n            app:layoutManager=\"androidx.recyclerview.widget.LinearLayoutManager\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_below=\"@id/my_page_bookmark_store_text\"\r\n            tools:listitem=\"@layout/item_bookmark_store\"/>\r\n\r\n    </RelativeLayout>\r\n\r\n    <FrameLayout\r\n        android:id=\"@+id/my_page_frm\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:layout_alignParentStart=\"true\"\r\n        android:layout_alignParentTop=\"true\"\r\n        android:visibility=\"invisible\" />\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_my_page.xml	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/res/layout/fragment_my_page.xml	(date 1617023858078)
+@@ -66,7 +66,7 @@
+         android:layout_width="match_parent"
+         android:layout_height="1dp"
+         android:layout_below="@id/my_page_profile"
+-        android:layout_marginTop="30dp"
++        android:layout_marginTop="25dp"
+         android:background="#dadada" />
+ 
+     <LinearLayout
+@@ -74,7 +74,7 @@
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_below="@id/my_page_profile_view"
+-        android:layout_marginTop="30dp"
++        android:layout_marginTop="25dp"
+         android:weightSum="2">
+ 
+         <ImageView
+@@ -160,7 +160,9 @@
+         android:id="@+id/my_page_bookshelf_view"
+         android:layout_width="match_parent"
+         android:layout_height="1dp"
+-        android:layout_marginTop="382dp"
++        android:layout_below="@id/my_page_recycler_bookmark"
++        android:layout_marginTop="23.5dp"
++
+         android:layout_marginBottom="10dp"
+         android:background="#dadada" />
+ 
+@@ -200,7 +202,6 @@
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentStart="true"
+-        android:layout_alignParentTop="true"
+-        android:visibility="invisible" />
++        android:layout_alignParentTop="true" />
+ 
+ </RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/src/main/my_page/SBookMarkRecyclerAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.my_page\r\n\r\nimport android.graphics.Color\r\nimport android.graphics.PorterDuff\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.ImageView\r\nimport android.widget.TextView\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.bumptech.glide.Glide\r\nimport com.medium.binding.R\r\nimport com.makeramen.roundedimageview.RoundedImageView\r\nimport com.medium.binding.src.main.menu.store_detail.StoreDetailFragment\r\nimport com.medium.binding.src.main.my_page.models.SBookMarkData\r\nimport kotlinx.android.synthetic.main.item_bookmark_store.view.*\r\n\r\n\r\nclass SBookMarkRecyclerAdapter(fragment: MyPageFragment):\r\n    RecyclerView.Adapter<SBookMarkRecyclerAdapter.StoreViewHolder>() {\r\n\r\n    private var storeList = arrayListOf<SBookMarkData>()\r\n    private val myPageFragment = fragment\r\n\r\n    override fun onCreateViewHolder(\r\n        parent: ViewGroup,\r\n        viewType: Int\r\n    ): SBookMarkRecyclerAdapter.StoreViewHolder {\r\n        val viewHolder = StoreViewHolder(\r\n            LayoutInflater.from(parent.context)\r\n                .inflate(R.layout.item_bookmark_store, parent, false)\r\n        )\r\n        return viewHolder\r\n    }\r\n\r\n\r\n    override fun getItemCount() = storeList.size\r\n\r\n    override fun onBindViewHolder(holder: SBookMarkRecyclerAdapter.StoreViewHolder, position: Int) {\r\n        holder.bindValue(storeList[position])\r\n    }\r\n\r\n    inner class StoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {\r\n        private val item: View = itemView\r\n        private val photo: RoundedImageView = itemView.item_bookmark_store_photo\r\n        private val storeName: TextView = itemView.item_bookmark_store_name\r\n        private val bookmark: ImageView = itemView.item_bookmark\r\n\r\n        fun bindValue(store: SBookMarkData){\r\n            Log.d(\"로그\", \"bindValue() called\")\r\n\r\n            // 북마크 아이콘과 겹치는 부분을 약간 어둡게 처리\r\n            photo.setColorFilter(\r\n                Color.parseColor(\"#BDBDBD\"),\r\n                PorterDuff.Mode.MULTIPLY\r\n            )\r\n\r\n            Glide.with(myPageFragment)\r\n                .load(store.storeImgUrl)\r\n                .error(R.drawable.icon_app)\r\n                .into(photo)\r\n\r\n            storeName.text = store.storeName\r\n\r\n            // 클릭 -> 서점 화면 여는 기능\r\n            item.setOnClickListener{\r\n                val fragmentManager = myPageFragment.childFragmentManager\r\n                val storeDetailFragment = StoreDetailFragment()\r\n                val idxBundle = Bundle()\r\n                idxBundle.putInt(\"bookStoreIdx\", store.bookstoreIdx)\r\n                storeDetailFragment.arguments = idxBundle\r\n                fragmentManager.beginTransaction()\r\n                    .addToBackStack(\"storeDetail\")\r\n                    .add(R.id.my_page_frm, storeDetailFragment)\r\n                    .commitAllowingStateLoss()\r\n            }\r\n        }\r\n    }\r\n\r\n    fun updateList(newList: ArrayList<SBookMarkData>){\r\n        storeList = newList\r\n        this.notifyDataSetChanged()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/my_page/SBookMarkRecyclerAdapter.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/my_page/SBookMarkRecyclerAdapter.kt	(date 1617016035544)
+@@ -66,6 +66,7 @@
+ 
+             // 클릭 -> 서점 화면 여는 기능
+             item.setOnClickListener{
++                Log.d("로그", "서점 왜 안열리니?")
+                 val fragmentManager = myPageFragment.childFragmentManager
+                 val storeDetailFragment = StoreDetailFragment()
+                 val idxBundle = Bundle()
+Index: app/src/main/java/com/medium/binding/src/main/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main\r\n\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.BaseActivity\r\nimport com.medium.binding.databinding.ActivityMainBinding\r\nimport com.medium.binding.src.main.home.HomeFragment\r\nimport com.medium.binding.src.main.menu.MenuFragment\r\nimport com.medium.binding.src.main.my_page.MyPageFragment\r\nimport com.google.android.material.bottomnavigation.BottomNavigationView\r\nimport com.medium.binding.config.ApplicationClass\r\n\r\nclass MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {\r\n\r\n    private var isProEdited = false\r\n\r\n    private var homeFragment: HomeFragment? = null\r\n    private var menuFragment: MenuFragment? = null\r\n    private var myPageFragment: MyPageFragment? = null\r\n\r\n    // 뒤로가기 2번 눌러 종료할 때 사용\r\n    private val FINISH_INTERVAL_TIME: Long = 2000\r\n    private var backPressedTime: Long = 0\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        // 처음 화면이 켜졌을 때 활성화될 하단 버튼 - 실제 화면이 아닌 버튼에만 적용\r\n        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_home\r\n\r\n        // 홈 프래그먼트로 진입\r\n        if(homeFragment == null){\r\n            homeFragment = HomeFragment()\r\n            supportFragmentManager.beginTransaction()\r\n                .add(R.id.main_frm, HomeFragment())\r\n                .commitAllowingStateLoss()\r\n        }\r\n\r\n\r\n        // 아이콘 틴트는 셀렉터로 적용\r\n        binding.mainBtmNav.itemIconTintList = null\r\n\r\n        // 탭을 선택했을 때 프래그먼트 화면 전환\r\n        binding.mainBtmNav.setOnNavigationItemSelectedListener(\r\n            BottomNavigationView.OnNavigationItemSelectedListener { item ->\r\n                when (item.itemId) {\r\n                    R.id.menu_main_btm_nav_home -> {\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, homeFragment!!, \"home\")\r\n                            .commitAllowingStateLoss()\r\n                        return@OnNavigationItemSelectedListener true\r\n                    }\r\n                    R.id.menu_main_btm_nav_menu -> {\r\n                        if(menuFragment == null){\r\n                            menuFragment = MenuFragment()\r\n                        }\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, menuFragment!!, \"menu\")\r\n                            .commitAllowingStateLoss()\r\n                        return@OnNavigationItemSelectedListener true\r\n                    }\r\n                    R.id.menu_main_btm_nav_my_page -> {\r\n                        // 설정 화면에서 마이페이지 하단 뷰를 누르면 마이페이지 화면으로 간다\r\n                        myPageFragment?.let{\r\n                            if(it.isAdded && it.childFragmentManager.backStackEntryCount > 0) {\r\n                                it.childFragmentManager.popBackStack()\r\n                            }else{\r\n                                null\r\n                            }\r\n                        }\r\n                            // myPageFragment가 null이면, 생성하고 실행\r\n                            ?: run{\r\n                            myPageFragment = MyPageFragment()\r\n                            supportFragmentManager.beginTransaction()\r\n                                .replace(R.id.main_frm, myPageFragment!!, \"myPage\")\r\n                                .commitAllowingStateLoss()\r\n                            return@OnNavigationItemSelectedListener true\r\n                        }\r\n                    }\r\n                }\r\n                false\r\n            })\r\n    }\r\n\r\n    // 뒤로가기 눌렀을 때 처리\r\n    override fun onBackPressed() {\r\n\r\n        when(binding.mainBtmNav.selectedItemId){\r\n            R.id.menu_main_btm_nav_home -> {\r\n                finishOnBackPressed()\r\n            }\r\n\r\n            R.id.menu_main_btm_nav_menu -> {\r\n\r\n                if(menuFragment!!.childFragmentManager.backStackEntryCount > 0){\r\n                    menuFragment!!.childFragmentManager.popBackStack()\r\n                }else{\r\n                    finishOnBackPressed()\r\n                }\r\n            }\r\n\r\n            R.id.menu_main_btm_nav_my_page -> {\r\n\r\n                // 마이페이지 프래그먼트에 childFragment가 있으면 childFragment만 종료\r\n                if(myPageFragment!!.childFragmentManager.backStackEntryCount > 0){\r\n                    myPageFragment!!.childFragmentManager.popBackStack()\r\n\r\n                    // 프로필 수정됐으면 새로고침\r\n                    if(ApplicationClass.isEdited){\r\n                        myPageFragment = MyPageFragment()\r\n                        supportFragmentManager.beginTransaction()\r\n                            .replace(R.id.main_frm, myPageFragment!!, \"myPage\")\r\n                            .commitAllowingStateLoss()\r\n                        ApplicationClass.isEdited = false\r\n                    }\r\n                }else{\r\n                    finishOnBackPressed()   // 두 번 눌러 앱 종료\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    // 두 번 눌러 앱 종료\r\n    private fun finishOnBackPressed() {\r\n        val tempTime: Long = System.currentTimeMillis()       // 현재 시간과 1970년 1월 1일 시간 차\r\n        val intervalTime: Long = tempTime - backPressedTime\r\n\r\n        if(intervalTime >= 0 && FINISH_INTERVAL_TIME >= intervalTime){\r\n            super.onBackPressed()\r\n            Log.d(\"로그\", \"onBackPressed() called\")\r\n        }else{\r\n            backPressedTime = tempTime\r\n            showCustomToast(\"뒤로 버튼을 한번 더 누르시면 종료됩니다.\")\r\n        }\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/MainActivity.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/MainActivity.kt	(date 1617016604310)
+@@ -114,6 +114,14 @@
+                             .commitAllowingStateLoss()
+                         ApplicationClass.isEdited = false
+                     }
++                    // 북마크 수정됐으면 새로고침
++                    else if(ApplicationClass.isMarkEdited){
++                        myPageFragment = MyPageFragment()
++                        supportFragmentManager.beginTransaction()
++                            .replace(R.id.main_frm, myPageFragment!!, "myPage")
++                            .commitAllowingStateLoss()
++                        ApplicationClass.isMarkEdited = false
++                    }
+                 }else{
+                     finishOnBackPressed()   // 두 번 눌러 앱 종료
+                 }
+Index: app/src/main/java/com/medium/binding/src/main/menu/MenuRecyclerViewAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.menu\r\n\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.TextView\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.bumptech.glide.Glide\r\nimport com.medium.binding.R\r\nimport com.medium.binding.src.main.menu.models.StoresResult\r\nimport com.medium.binding.src.main.menu.store_detail.StoreDetailFragment\r\nimport com.makeramen.roundedimageview.RoundedImageView\r\nimport kotlinx.android.synthetic.main.item_menu.view.*\r\nimport java.util.*\r\n\r\nclass MenuRecyclerViewAdapter(fragment: MenuFragment):\r\n    RecyclerView.Adapter<MenuRecyclerViewAdapter.StoreViewHolder>() {\r\n\r\n    private var storeList = arrayListOf<StoresResult>()\r\n    private val menuFragment = fragment\r\n\r\n    override fun onCreateViewHolder(\r\n        parent: ViewGroup,\r\n        viewType: Int\r\n    ): MenuRecyclerViewAdapter.StoreViewHolder {\r\n        val viewHolder = StoreViewHolder(\r\n            LayoutInflater.from(parent.context)\r\n                .inflate(R.layout.item_menu, parent, false)\r\n        )\r\n        return viewHolder\r\n    }\r\n\r\n\r\n    override fun getItemCount() = storeList.size\r\n\r\n    override fun onBindViewHolder(holder: MenuRecyclerViewAdapter.StoreViewHolder, position: Int) {\r\n        holder.bindValue(storeList[position])\r\n    }\r\n\r\n    inner class StoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {\r\n        private val item: View = itemView\r\n        private val photo: RoundedImageView = itemView.item_menu_photo\r\n        private val title: TextView = itemView.item_menu_title\r\n        private val address: TextView = itemView.item_menu_address\r\n\r\n        fun bindValue(store: StoresResult){\r\n            Glide.with(menuFragment)\r\n                .load(store.storeImgUrl)\r\n                .error(R.drawable.jangu)\r\n                .into(photo)\r\n\r\n            title.text = store.storeName\r\n            address.text = store.location\r\n\r\n            // 상세페이지로 이동\r\n            item.setOnClickListener{\r\n                val fragmentManager = menuFragment.childFragmentManager\r\n                val storeDetailFragment = StoreDetailFragment()\r\n                val idxBundle = Bundle()\r\n                idxBundle.putInt(\"bookStoreIdx\", store.bookstoreIdx)\r\n                storeDetailFragment.arguments = idxBundle\r\n                fragmentManager.beginTransaction()\r\n                    .addToBackStack(\"storeDetail\")\r\n                    .add(R.id.menu_frm, storeDetailFragment)\r\n                    .commitAllowingStateLoss()\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n    fun updateList(newList: ArrayList<StoresResult>){\r\n        storeList = newList\r\n        this.notifyDataSetChanged()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/menu/MenuRecyclerViewAdapter.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/menu/MenuRecyclerViewAdapter.kt	(date 1617018635565)
+@@ -69,8 +69,17 @@
+     }
+ 
+ 
++    // 데이터 변경
+     fun updateList(newList: ArrayList<StoresResult>){
+         storeList = newList
+         this.notifyDataSetChanged()
+     }
++
++    // 데이터 추가
++    fun addList(listAdded: ArrayList<StoresResult>){
++        val startIdx = this.itemCount
++        val addedCount = listAdded.size
++        storeList.addAll(listAdded)
++        this.notifyItemRangeInserted(startIdx, addedCount)
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/config/ApplicationClass.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.config\r\n\r\nimport android.app.Application\r\nimport android.content.SharedPreferences\r\nimport com.google.firebase.storage.FirebaseStorage\r\nimport okhttp3.OkHttpClient\r\nimport okhttp3.logging.HttpLoggingInterceptor\r\nimport retrofit2.Retrofit\r\nimport retrofit2.converter.gson.GsonConverterFactory\r\nimport java.util.concurrent.TimeUnit\r\n\r\n// 앱이 실행될때 1번만 실행이 됩니다.\r\nclass ApplicationClass : Application() {\r\n    // 테스트 서버 주소\r\n    val API_URL = \"https://test.liyusang1.site/\"\r\n\r\n    // 실 서버 주소\r\n    // val API_URL = \"http://api.test.com/\"\r\n\r\n    // 코틀린의 전역변수 문법\r\n    companion object {\r\n        // 만들어져있는 SharedPreferences 를 사용해야합니다. 재생성하지 않도록 유념해주세요\r\n        lateinit var sSharedPreferences: SharedPreferences\r\n\r\n        // JWT Token Header 키 값\r\n        val X_ACCESS_TOKEN = \"X-ACCESS-TOKEN\"\r\n\r\n        // Retrofit 인스턴스, 앱 실행시 한번만 생성하여 사용합니다.\r\n        lateinit var sRetrofit: Retrofit\r\n\r\n        // 파이어베이스 저장소\r\n        lateinit var userStorage: FirebaseStorage\r\n\r\n        // 프로필 변경 플래그\r\n        var isEdited = false\r\n\r\n        // 유저 인덱스\r\n        var userIdx: Int = -1\r\n    }\r\n\r\n    // 앱이 처음 생성되는 순간, SP를 새로 만들어주고, 레트로핏 인스턴스를 생성합니다.\r\n    override fun onCreate() {\r\n        super.onCreate()\r\n        sSharedPreferences =\r\n            applicationContext.getSharedPreferences(\"BINDING_APP\", MODE_PRIVATE)\r\n        // 레트로핏 인스턴스 생성\r\n        initRetrofitInstance()\r\n\r\n        userStorage = FirebaseStorage.getInstance()\r\n    }\r\n\r\n    // 레트로핏 인스턴스를 생성하고, 레트로핏에 각종 설정값들을 지정해줍니다.\r\n    // 연결 타임아웃시간은 5초로 지정이 되어있고, HttpLoggingInterceptor를 붙여서 어떤 요청이 나가고 들어오는지를 보여줍니다.\r\n    private fun initRetrofitInstance() {\r\n        val client: OkHttpClient = OkHttpClient.Builder()\r\n            .readTimeout(5000, TimeUnit.MILLISECONDS)\r\n            .connectTimeout(5000, TimeUnit.MILLISECONDS)\r\n            // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.\r\n            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))\r\n            .addNetworkInterceptor(XAccessTokenInterceptor()) // JWT 자동 헤더 전송\r\n            .build()\r\n\r\n        // sRetrofit 이라는 전역변수에 API url, 인터셉터, Gson을 넣어주고 빌드해주는 코드\r\n        // 이 전역변수로 http 요청을 서버로 보내면 됩니다.\r\n        sRetrofit = Retrofit.Builder()\r\n            .baseUrl(API_URL)\r\n            .client(client)\r\n            .addConverterFactory(GsonConverterFactory.create())\r\n            .build()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/config/ApplicationClass.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/config/ApplicationClass.kt	(date 1617016604299)
+@@ -31,8 +31,8 @@
+         // 파이어베이스 저장소
+         lateinit var userStorage: FirebaseStorage
+ 
+-        // 프로필 변경 플래그
+-        var isEdited = false
++        var isEdited = false    // 프로필 변경 플래그
++        var isMarkEdited = false    // 북마크 변경 플래그
+ 
+         // 유저 인덱스
+         var userIdx: Int = -1
+Index: app/src/main/java/com/medium/binding/src/main/menu/store_detail/StoreDetailFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.menu.store_detail\r\n\r\nimport android.content.ActivityNotFoundException\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.graphics.Color\r\nimport android.graphics.PorterDuff\r\nimport android.net.Uri\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.*\r\nimport android.widget.Toast\r\nimport androidx.fragment.app.Fragment\r\nimport com.bumptech.glide.Glide\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.ApplicationClass\r\nimport com.medium.binding.config.BaseResponse\r\nimport com.medium.binding.databinding.FragmentStoreDetailBinding\r\nimport com.medium.binding.src.main.menu.store_detail.models.BookStoreImages\r\nimport com.medium.binding.src.main.menu.store_detail.models.GetBookStoreResponse\r\nimport com.medium.binding.util.LoadingDialog\r\n\r\n\r\nclass StoreDetailFragment: Fragment(), StoreDetailFragmentView{\r\n    private var _binding: FragmentStoreDetailBinding? = null\r\n    private val binding get() = _binding!!\r\n    lateinit var mLoadingDialog: LoadingDialog\r\n\r\n    private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스\r\n\r\n    private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트\r\n    private var isBookMarked = 0    // 1이면 마크, 0이면 노마크\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        // 프래그먼트용 테마 적용\r\n        val contextThemeWrapper = ContextThemeWrapper(activity, R.style.StoreDetailTheme)\r\n        val mInflater = inflater.cloneInContext(contextThemeWrapper)\r\n        _binding = FragmentStoreDetailBinding.inflate(mInflater, container, false)\r\n        return binding.root\r\n    }\r\n\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        bookStoreIdx = arguments?.getInt(\"bookStoreIdx\", 0)!!\r\n\r\n        imagesList = ArrayList()\r\n\r\n        showLoadingDialog(context!!)\r\n        StoreDetailService(this).tryGetBookStore(bookStoreIdx)\r\n\r\n        // 뒤로가기 버튼\r\n        binding\r\n\r\n        // 북마크 ON\r\n        binding.storeDetailBookmarkEmpty.setOnClickListener {\r\n            showLoadingDialog(context!!)\r\n\r\n            // 북마크 수정 API 호출\r\n            StoreDetailService(this).tryPatchBookmark(bookStoreIdx)\r\n        }\r\n\r\n        // 북마크 해제\r\n        binding.storeDetailBookmarkFilled.setOnClickListener {\r\n            showLoadingDialog(context!!)\r\n\r\n            // 북마크 수정 API 호출\r\n            StoreDetailService(this).tryPatchBookmark(bookStoreIdx)\r\n        }\r\n\r\n        // 웹 주소 클릭\r\n        binding.storeDetailWebContainer.setOnClickListener(onClickWebAddress)\r\n\r\n        // FrameLayout 하단 뷰로 터치 이벤트가 전달되는 것을 막는다\r\n        binding.storeDetailRoot.setOnTouchListener { v, event ->\r\n            v.performClick()\r\n            true\r\n        }\r\n    }\r\n\r\n    // 서점 인스타 홈페이지 띄우기 - web으로 띄우기\r\n    private val onClickWebAddress = View.OnClickListener {\r\n\r\n        //특정 페이지만 띄울때 사용\r\n        val instagramPageID = String.format(\"${binding.storeDetailWebAddress.text}/\")\r\n        var instagramPostID = \"\" //게시글을 까지 보여주고싶다면 이변수를 활용\r\n        // 만약 특정페이지 url이 있다면 게시글 url값을 초기화\r\n        if (instagramPageID != \"\") instagramPostID = \"\"\r\n\r\n        // val uri: Uri = Uri.parse(\"http://instagram.com/_u/$instagramPostID$instagramPageID\")\r\n        val uri: Uri = Uri.parse(\"$instagramPostID$instagramPageID\")\r\n        val instagramIntent = Intent(Intent.ACTION_VIEW, uri)\r\n\r\n        // instagramIntent.setPackage(\"com.instagram.android\")\r\n\r\n        try {\r\n            startActivity(instagramIntent)\r\n        } catch (e: ActivityNotFoundException) {\r\n            startActivity(instagramIntent)\r\n        }\r\n    }\r\n\r\n    override fun onGetBookStoreSuccess(response: GetBookStoreResponse) {\r\n        Log.d(\"로그\", \"onGetBookStoreSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            1000 -> {\r\n                Log.d(\r\n                    \"로그\", \"서점 상세 조회 성공, code: ${response.code} , \" +\r\n                            \"message: ${response.message}\"\r\n                )\r\n\r\n                val result = response.result\r\n\r\n                val bookStoreInfo = result.bookStoreInfo[0]\r\n                imagesList = result.images\r\n\r\n                // 첫 사진을 대표사진으로 설정\r\n                if(imagesList.size > 0){\r\n                    Glide.with(this)\r\n                        .load(imagesList[0].imageUrl)\r\n                        .placeholder(R.drawable.icon_app)\r\n                        .error(R.drawable.icon_app)\r\n                        .into(binding.storeDetailCover)\r\n                }\r\n\r\n                // 텍스트와 겹치는 사진을 약간 어둡게 처리\r\n                binding.storeDetailCover.setColorFilter(\r\n                    Color.parseColor(\"#BDBDBD\"),\r\n                    PorterDuff.Mode.MULTIPLY\r\n                )\r\n\r\n                // 이미지 제외한 모든 정보 입력\r\n                bookStoreInfo.let {\r\n                    binding.storeDetailStoreName.text = it.storeName\r\n                    isBookMarked = it.isBookMark\r\n                    if (isBookMarked == 1) {\r\n                        binding.storeDetailBookmarkFilled.visibility = View.VISIBLE\r\n                        binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE\r\n                    } else {\r\n                        binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE\r\n                        binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE\r\n                    }\r\n                    binding.storeDetailLocationTxt.text = it.location\r\n                    binding.storeDetailWebAddress.text = it.siteAddress\r\n                    binding.storeDetailPhoneTxt.text = it.phoneNumber\r\n                    binding.storeDetailInfo.text = it.storeInfo\r\n                }\r\n            }\r\n            else -> Log.d(\r\n                \"로그\", \"서점 상세 조회 실패, code: ${response.code} , \" +\r\n                        \"message: ${response.message}\"\r\n            )\r\n        }\r\n\r\n    }\r\n\r\n    // 북마크 수정 API 콜백\r\n\r\n    override fun onGetBookStoreFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetBookStoreFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n\r\n    override fun onPatchBookmarkSuccess(response: BaseResponse) {\r\n        Log.d(\"로그\", \"onPatchBookmarkSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n\r\n            // 북마크 첫 추가, 북마크 ON\r\n            in 1000..1001 -> {\r\n                isBookMarked = 1\r\n                binding.storeDetailBookmarkFilled.visibility = View.VISIBLE\r\n                binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE\r\n            }\r\n            1002 -> {\r\n                isBookMarked = 0\r\n                binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE\r\n                binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE\r\n            }\r\n            else -> Log.d(\"로그\", \"북마크 수정 실패, message: ${response.message}\")\r\n        }\r\n    }\r\n\r\n    override fun onPatchBookmarkFailure(message: String) {\r\n        Log.d(\"로그\", \"onPatchBookmarkFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    override fun onDestroyView() {\r\n        super.onDestroyView()\r\n        _binding = null\r\n    }\r\n\r\n    private fun showCustomToast(message: String) {\r\n        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()\r\n    }\r\n\r\n    private fun showLoadingDialog(context: Context) {\r\n        mLoadingDialog = LoadingDialog(context)\r\n        mLoadingDialog.show()\r\n    }\r\n\r\n    private fun dismissLoadingDialog() {\r\n        if (mLoadingDialog.isShowing) {\r\n            mLoadingDialog.dismiss()\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/menu/store_detail/StoreDetailFragment.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/menu/store_detail/StoreDetailFragment.kt	(date 1617016604320)
+@@ -161,8 +161,6 @@
+ 
+     }
+ 
+-    // 북마크 수정 API 콜백
+-
+     override fun onGetBookStoreFailure(message: String) {
+         Log.d("로그", "onGetBookStoreFailure() called, message: $message")
+         dismissLoadingDialog()
+@@ -170,7 +168,7 @@
+         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+     }
+ 
+-
++    // 북마크 수정 API 콜백
+     override fun onPatchBookmarkSuccess(response: BaseResponse) {
+         Log.d("로그", "onPatchBookmarkSuccess() called, response: $response")
+         dismissLoadingDialog()
+@@ -182,11 +180,13 @@
+                 isBookMarked = 1
+                 binding.storeDetailBookmarkFilled.visibility = View.VISIBLE
+                 binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE
++                ApplicationClass.isMarkEdited = true
+             }
+             1002 -> {
+                 isBookMarked = 0
+                 binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE
+                 binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
++                ApplicationClass.isMarkEdited = true
+             }
+             else -> Log.d("로그", "북마크 수정 실패, message: ${response.message}")
+         }
+Index: app/src/main/java/com/medium/binding/src/main/my_page/MyPageFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.my_page\r\n\r\nimport android.graphics.Typeface\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport androidx.core.content.res.ResourcesCompat\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.bumptech.glide.Glide\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.BaseFragment\r\nimport com.medium.binding.databinding.FragmentMyPageBinding\r\nimport com.medium.binding.src.main.my_page.models.*\r\nimport com.medium.binding.src.main.my_page.settings.SettingsFragment\r\nimport java.util.*\r\nimport kotlin.collections.ArrayList\r\n\r\nclass MyPageFragment(): BaseFragment<FragmentMyPageBinding>(\r\n    FragmentMyPageBinding::bind,\r\n    R.layout.fragment_my_page\r\n), MyPageFragmentView{\r\n\r\n\r\n    lateinit var sBookMarkAdapter: SBookMarkRecyclerAdapter\r\n    lateinit var wBookMarkAdapter: WBookMarkRecyclerAdapter\r\n    lateinit var writingAdapter: WritingRecyclerAdapter\r\n\r\n    private var userImgUrl: String = \"-1\"\r\n\r\n    lateinit var fontKr: Typeface\r\n    lateinit var fontBold: Typeface\r\n\r\n    private var writingFlag = 0     // 0 - 내가 쓴 글 , 1 - 북마크 글\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        fontKr = ResourcesCompat.getFont(context!!, R.font.notosanskrregular)!!\r\n        fontBold = ResourcesCompat.getFont(context!!, R.font.notosanskrbold)!!\r\n\r\n        // 북마크한 서점 리사이클러뷰\r\n        sBookMarkAdapter = SBookMarkRecyclerAdapter(this)\r\n        binding.myPageRecyclerStore.apply {\r\n            this.adapter = sBookMarkAdapter\r\n            this.layoutManager = LinearLayoutManager(\r\n                context, LinearLayoutManager.HORIZONTAL, false\r\n            )\r\n        }\r\n\r\n        // 내가 쓴 글 리사이클러 뷰\r\n        writingAdapter = WritingRecyclerAdapter(this)\r\n        binding.myPageRecyclerMine.apply{\r\n            this.adapter = writingAdapter\r\n            this.layoutManager = LinearLayoutManager(\r\n                context, LinearLayoutManager.HORIZONTAL, false\r\n            )\r\n        }\r\n\r\n        // 북마크한 글 리사이클러 뷰\r\n        wBookMarkAdapter = WBookMarkRecyclerAdapter(this)\r\n        binding.myPageRecyclerBookmark.apply{\r\n            this.adapter = wBookMarkAdapter\r\n            this.layoutManager = LinearLayoutManager(\r\n                context, LinearLayoutManager.HORIZONTAL, false\r\n            )\r\n        }\r\n\r\n        // 유저 정보를 불러온다\r\n        showLoadingDialog(context!!)\r\n        MyPageService(this).tryGetUser()\r\n\r\n        // 내가 쓴 글 버튼 클릭\r\n        binding.myPagePostMine.setOnClickListener{\r\n            if(writingFlag != 0){\r\n                writingFlag = 0\r\n\r\n                // 텍스트 위에 점 교체\r\n                binding.myPagePostDotMine.visibility = View.VISIBLE\r\n                binding.myPagePostDotBookmark.visibility = View.INVISIBLE\r\n\r\n                // 텍스트 폰트 변경\r\n                binding.myPagePostMine.typeface = fontBold\r\n                binding.myPagePostBookmark.typeface = fontKr\r\n\r\n                // 리사이클러 뷰 교체\r\n                binding.myPageRecyclerMine.visibility = View.VISIBLE\r\n                binding.myPageRecyclerBookmark.visibility = View.INVISIBLE\r\n            }\r\n        }\r\n\r\n        // 북마크한 글 버튼 클릭\r\n        binding.myPagePostBookmark.setOnClickListener{\r\n            if(writingFlag != 1){\r\n                writingFlag = 1\r\n\r\n                // 글씨 위에 점 교체\r\n                binding.myPagePostDotBookmark.visibility = View.VISIBLE\r\n                binding.myPagePostDotMine.visibility = View.INVISIBLE\r\n\r\n                // 텍스트 폰트 변경\r\n                binding.myPagePostMine.typeface = fontKr\r\n                binding.myPagePostBookmark.typeface = fontBold\r\n\r\n                // 리사이클러 뷰 교체\r\n                binding.myPageRecyclerMine.visibility = View.INVISIBLE\r\n                binding.myPageRecyclerBookmark.visibility = View.VISIBLE\r\n            }\r\n        }\r\n\r\n        binding.myPageBtnSettings.setOnClickListener(onClickSettings)\r\n    }\r\n\r\n    // 설정 버튼 클릭\r\n    private val onClickSettings = View.OnClickListener {\r\n        val settingsFragment = SettingsFragment(this)\r\n        val cFragmentManager = childFragmentManager\r\n        binding.myPageFrm.visibility = View.VISIBLE\r\n        cFragmentManager.beginTransaction().apply{\r\n            this.add(R.id.my_page_frm, settingsFragment)\r\n                .addToBackStack(\"settings\")\r\n                .commitAllowingStateLoss()\r\n        }\r\n    }\r\n\r\n    override fun onGetUserSuccess(response: GetUserResponse) {\r\n        Log.d(\"로그\", \"onGetUserSuccess() called, response: $response\")\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n\r\n            // 유저 정보 불러오기 성공\r\n            1000 -> {\r\n                val result = response.result\r\n                Log.d(\"로그\", \"유저 정보 불러오기 성공 - result: $result\")\r\n\r\n                // 유저 정보\r\n                val userInfo: ArrayList<InfoData> = result.info\r\n                // 유저가 쓴 글 리스트\r\n                val tempWritingList: ArrayList<ArrayList<WritingData>> = result.writing\r\n                lateinit var writingList: ArrayList<WritingData>\r\n                // 유저가 북마크한 글 리스트\r\n                val tempWBookMarkList: ArrayList<ArrayList<WBookMarkData>> = result.writingBookMark\r\n                lateinit var wBookMarkList: ArrayList<WBookMarkData>\r\n                // 유저가 북마크한 서점 리스트\r\n                val tempSBookMarkList: ArrayList<ArrayList<SBookMarkData>> =\r\n                    result.bookstoreBookMark\r\n                lateinit var sBookMarkList: ArrayList<SBookMarkData>\r\n\r\n                // 유저 정보\r\n                // 프로필 사진, 닉네임, 이메일\r\n                userInfo.get(0).apply {\r\n                    this@MyPageFragment.userImgUrl = this.userImgUrl\r\n\r\n                    Glide.with(this@MyPageFragment)\r\n                        .load(this.userImgUrl)\r\n                        .error(R.drawable.icon_app)\r\n                        .placeholder(R.drawable.icon_app)\r\n                        .into(binding.myPageProfilePhoto)\r\n                    binding.myPageProfileName.text = this.nickname\r\n                    binding.myPageProfileEmail.text = this.email\r\n                }\r\n\r\n                // 유저가 쓴 글이 있으면 그 데이터를 리사이클러뷰에 넘겨준다\r\n                if (tempWritingList.isNotEmpty()) {\r\n                    writingList = tempWritingList[0]\r\n                    writingAdapter.updateList(writingList)\r\n                }\r\n\r\n                // 유저가 북마크한 글이 있으면 그 데이터를 리사이클러뷰에 넘겨준다\r\n                if (tempWBookMarkList.isNotEmpty()) {\r\n                    wBookMarkList = tempWBookMarkList[0]\r\n                    wBookMarkAdapter.updateList(wBookMarkList)\r\n                }\r\n\r\n                // 유저가 북마크한 서점이 있으면 그 데이터를 리사이클러뷰에 넘겨준다\r\n                if (tempSBookMarkList.isNotEmpty()) {\r\n                    sBookMarkList = tempSBookMarkList[0]\r\n                    Log.d(\"로그\", \"sBookMarkList: $sBookMarkList\")\r\n                    sBookMarkAdapter.updateList(sBookMarkList)\r\n                }\r\n            }\r\n\r\n            // 실패\r\n            else -> Log.d(\"로그\", \"유저 정보 불러오기 실패 - message: ${response.message}\")\r\n\r\n        }\r\n    }\r\n\r\n    override fun onGetUserFailure(message: String) {\r\n        Log.d(\"로그\", \"onGetUserFailure() called, message: $message\")\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"네트워크 확인 후 다시 시도해주세요.\")\r\n    }\r\n\r\n    // 유저 이미지 url 전달\r\n    override fun provideImgUrl() = this.userImgUrl\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/my_page/MyPageFragment.kt	(revision 8c213f5143723ad28e7c003ce240d5b03f3853bd)
++++ app/src/main/java/com/medium/binding/src/main/my_page/MyPageFragment.kt	(date 1617016238301)
+@@ -114,7 +114,6 @@
+     private val onClickSettings = View.OnClickListener {
+         val settingsFragment = SettingsFragment(this)
+         val cFragmentManager = childFragmentManager
+-        binding.myPageFrm.visibility = View.VISIBLE
+         cFragmentManager.beginTransaction().apply{
+             this.add(R.id.my_page_frm, settingsFragment)
+                 .addToBackStack("settings")

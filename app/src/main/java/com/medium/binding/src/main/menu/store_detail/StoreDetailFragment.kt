@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -121,13 +122,27 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                 val bookStoreInfo = result.bookStoreInfo[0]
                 imagesList = result.images
 
-                // 첫 사진을 대표사진으로 설정
-                if(imagesList.size > 0){
-                    Glide.with(this)
-                        .load(imagesList[0].imageUrl)
-                        .placeholder(R.drawable.icon_app)
-                        .error(R.drawable.icon_app)
-                        .into(binding.storeDetailCover)
+                // 첫 사진을 대표사진으로 설정, 나머지는 순서대로 소개 내용 이후에 출력
+                imagesList.forEachIndexed { idx, bookStoreImages ->
+                    if(idx == 0){
+                        Glide.with(this)
+                            .load(bookStoreImages.imageUrl)
+                            .placeholder(R.drawable.icon_app)
+                            .error(R.drawable.icon_app)
+                            .into(binding.storeDetailCover)
+                    }
+                    val viewId = resources.getIdentifier(
+                        "store_detail_img_$idx", "id", context?.packageName)
+                    val imgView: ImageView? = activity?.findViewById(viewId)
+                    Log.d("로그", "viewId: $viewId , imgView: $imgView")
+                    imgView?.let {
+                        it.visibility = View.VISIBLE
+                        Glide.with(this)
+                            .load(bookStoreImages.imageUrl)
+                            .placeholder(R.drawable.icon_app)
+                            .error(R.drawable.icon_app)
+                            .into(it)
+                    }
                 }
 
                 // 텍스트와 겹치는 사진을 약간 어둡게 처리
@@ -150,7 +165,9 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                     binding.storeDetailLocationTxt.text = it.location
                     binding.storeDetailWebAddress.text = it.siteAddress
                     binding.storeDetailPhoneTxt.text = it.phoneNumber
-                    binding.storeDetailInfo.text = it.storeInfo
+                    if(it.storeInfo != "-1"){
+                        binding.storeDetailInfo.text = it.storeInfo
+                    }
                 }
             }
             else -> Log.d(
@@ -161,8 +178,6 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
 
     }
 
-    // 북마크 수정 API 콜백
-
     override fun onGetBookStoreFailure(message: String) {
         Log.d("로그", "onGetBookStoreFailure() called, message: $message")
         dismissLoadingDialog()
@@ -170,7 +185,7 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
     }
 
-
+    // 북마크 수정 API 콜백
     override fun onPatchBookmarkSuccess(response: BaseResponse) {
         Log.d("로그", "onPatchBookmarkSuccess() called, response: $response")
         dismissLoadingDialog()
@@ -182,11 +197,13 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                 isBookMarked = 1
                 binding.storeDetailBookmarkFilled.visibility = View.VISIBLE
                 binding.storeDetailBookmarkEmpty.visibility = View.INVISIBLE
+                ApplicationClass.isMarkEdited = true
             }
             1002 -> {
                 isBookMarked = 0
                 binding.storeDetailBookmarkFilled.visibility = View.INVISIBLE
                 binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
+                ApplicationClass.isMarkEdited = true
             }
             else -> Log.d("로그", "북마크 수정 실패, message: ${response.message}")
         }
