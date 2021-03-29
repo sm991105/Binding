@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.makeus6.binding">
+    package="com.medium.binding">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -8,7 +8,7 @@
 
 
     <application
-        android:name="com.makeus6.binding.config.ApplicationClass"
+        android:name="com.medium.binding.config.ApplicationClass"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme">
 
         <!-- 스플래시 화면 -->
-        <activity android:name="com.makeus6.binding.src.splash.SplashActivity">
+        <activity android:name="com.medium.binding.src.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,28 +25,28 @@
         </activity>
 
         <!-- 로그인 화면-->
-        <activity android:name="com.makeus6.binding.src.login.LoginActivity"/>
+        <activity android:name="com.medium.binding.src.login.LoginActivity"/>
 
         <!-- 회원가입 화면-->
-        <activity android:name="com.makeus6.binding.src.join.JoinActivity"/>
+        <activity android:name="com.medium.binding.src.join.JoinActivity"/>
 
         <!-- 비밀번호 찾기 화면-->
-        <activity android:name="com.makeus6.binding.src.find_password.FindPasswordActivity"/>
+        <activity android:name="com.medium.binding.src.find_password.FindPasswordActivity"/>
 
         <!-- 메인 화면 -->
-        <activity android:name="com.makeus6.binding.src.main.MainActivity"/>
+        <activity android:name="com.medium.binding.src.main.MainActivity"/>
 
         <!-- 책방 화면 -->
-        <activity android:name=".src.main.home.room.HomeRoomActivity"/>
+        <activity android:name="com.medium.binding.src.main.home.room.HomeRoomActivity"/>
 
         <!-- 마이페이지 세팅 - 프로필 관리 화면-->
-        <activity android:name=".src.main.my_page.settings.profile.SettingsProfileActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.profile.SettingsProfileActivity"/>
 
         <!-- 마이페이지 세팅 - 비밀번호 변경 화면-->
-        <activity android:name=".src.main.my_page.settings.password.ChangePWActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.password.ChangePWActivity"/>
 
         <!-- 마이페이지 세팅 - 서점 제보 화면-->
-        <activity android:name=".src.main.my_page.settings.report.SettingsReportActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.report.SettingsReportActivity"/>
 
     </application>
 
