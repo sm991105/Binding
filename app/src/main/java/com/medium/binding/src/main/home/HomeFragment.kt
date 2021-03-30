@@ -1,7 +1,10 @@
 package com.medium.binding.src.main.home
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
@@ -51,11 +54,7 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
         )
 
         // 책방 불러오기
-        showLoadingDialog(context!!)
-        when(binding.homeSortTxt.text.toString()){
-            "최신글" -> HomeService(this).tryGetNewest()
-            "인기글" -> HomeService(this).tryGetPopular()
-        }
+        loadBookRooms()
 
         // 글 카테고리 선택(탭) 버튼 클릭
         binding.homeSortBtn.setOnClickListener(onClickTab)
@@ -137,20 +136,18 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
     // 책방 추가 버튼 리스너
     private val onClickCreateRoom = View.OnClickListener {
+
+        // 중복 클릭 방지
+        ApplicationClass.mLastClickTime.apply{
+            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                return@OnClickListener
+            }
+            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+        }
+
         val dialog = CreateBookDialog(context!!)
         val fragmentManager = childFragmentManager
         dialog.show(fragmentManager, "create_room")
-
-        // dialog.dialog의 NullPointerExeption을 막는다
-        fragmentManager.executePendingTransactions()
-        dialog.dialog?.setOnDismissListener {
-            // 책방 새로고침
-            showLoadingDialog(context!!)
-            when(binding.homeSortTxt.text.toString()){
-                "최신글" -> HomeService(this).tryGetNewest()
-                "인기글" -> HomeService(this).tryGetPopular()
-            }
-        }
     }
 
     // 최신글 필터링 적용
@@ -256,7 +253,6 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             //실패
             else -> Log.d("로그", "최신순 책방 불러오기 실패, message: ${response.message}")
         }
-
     }
 
     // 인기순 책방 불러오기 통신 실패
@@ -322,5 +318,25 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             }
         }
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // 책방을 만든 후 홈으로 돌아왔을 때 -> 새로고침
+        if(requestCode == CreateBookDialog.BOOK_CREATED_CODE && resultCode == Activity.RESULT_OK){
+            Log.d("로그", "request: $requestCode , result: $resultCode , data: ${data?.data}")
+
+            // 책방 목록 새로고침
+            loadBookRooms()
+        }
+    }
+
+    fun loadBookRooms(){
+        showLoadingDialog(context!!)
+        when(binding.homeSortTxt.text.toString()){
+            "최신글" -> HomeService(this).tryGetNewest()
+            "인기글" -> HomeService(this).tryGetPopular()
+        }
     }
 }

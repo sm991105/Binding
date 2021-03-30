@@ -1,6 +1,7 @@
 package com.medium.binding.src.main.home
 
 import android.content.Intent
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.medium.binding.R
 import com.medium.binding.src.main.home.models.NewestResult
 import com.medium.binding.src.main.home.models.PopularResult
 import com.makeramen.roundedimageview.RoundedImageView
+import com.medium.binding.config.ApplicationClass
 import com.medium.binding.src.main.home.room.HomeRoomActivity
 import kotlinx.android.synthetic.main.item_book.view.*
 
@@ -68,6 +70,15 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
                 .into(bookImg)
 
             view.setOnClickListener {
+
+                // 중복 클릭 방지
+                ApplicationClass.mLastClickTime.apply{
+                    if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                        return@setOnClickListener
+                    }
+                    this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                }
+
                 val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)
                 bookRoomIntent.putExtra("bookIdx", bookData.bookIdx)
                 homeFragment.startActivity(bookRoomIntent)
@@ -85,6 +96,20 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
                 .error(R.drawable.icon_app)
                 .placeholder(R.drawable.icon_app)
                 .into(bookImg)
+
+            view.setOnClickListener {
+
+                ApplicationClass.mLastClickTime.apply{
+                    if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                        return@setOnClickListener
+                    }
+                    this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                }
+
+                val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)
+                bookRoomIntent.putExtra("bookIdx", bookData.bookIdx)
+                homeFragment.startActivity(bookRoomIntent)
+            }
         }
     }
 

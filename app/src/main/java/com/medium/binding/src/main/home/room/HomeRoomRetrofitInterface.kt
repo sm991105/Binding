@@ -1,12 +1,10 @@
 package com.medium.binding.src.main.home.room
 
 import com.medium.binding.config.BaseResponse
+import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.GetCommentsResponse
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.PATCH
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface HomeRoomRetrofitInterface {
 
@@ -27,4 +25,10 @@ interface HomeRoomRetrofitInterface {
     // 댓글 북마크 상태 수정
     @PATCH("/contents/{contentsIdx}/bookmark")
     fun patchWBookmark(@Path("contentsIdx") contentsIdx: Int): Call<BaseResponse>
+
+    // 책방 글 발행
+    @POST("/books/{bookIdx}/contents")
+    fun postComments(@Path("bookIdx") bookIdx: Int,
+                     @Body params: CommentsBody
+    ): Call<BaseResponse>
 }

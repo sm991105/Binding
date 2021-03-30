@@ -56,11 +56,12 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
     // 다음 아이콘을 클릭하면 로그인 화면으로 이동한다.
     private val onNextClick = View.OnClickListener {
 
-        // 중복 클릭 방지
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
-            return@OnClickListener
+        ApplicationClass.mLastClickTime.apply{
+            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                return@OnClickListener
+            }
+            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
         }
-        mLastClickTime = SystemClock.elapsedRealtime();
 
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivity(loginIntent)

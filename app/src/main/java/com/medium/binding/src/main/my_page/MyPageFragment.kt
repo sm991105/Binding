@@ -2,12 +2,14 @@ package com.medium.binding.src.main.my_page
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.medium.binding.R
+import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentMyPageBinding
 import com.medium.binding.src.main.my_page.models.*
@@ -34,6 +36,8 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        writingFlag = 0
 
         fontKr = ResourcesCompat.getFont(context!!, R.font.notosanskrregular)!!
         fontBold = ResourcesCompat.getFont(context!!, R.font.notosanskrbold)!!
@@ -84,7 +88,7 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
 
                 // 리사이클러 뷰 교체
                 binding.myPageRecyclerMine.visibility = View.VISIBLE
-                binding.myPageRecyclerBookmark.visibility = View.INVISIBLE
+                binding.myPageRecyclerBookmark.visibility = View.GONE
             }
         }
 
@@ -94,15 +98,15 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
                 writingFlag = 1
 
                 // 글씨 위에 점 교체
-                binding.myPagePostDotBookmark.visibility = View.VISIBLE
                 binding.myPagePostDotMine.visibility = View.INVISIBLE
+                binding.myPagePostDotBookmark.visibility = View.VISIBLE
 
                 // 텍스트 폰트 변경
                 binding.myPagePostMine.typeface = fontKr
                 binding.myPagePostBookmark.typeface = fontBold
 
                 // 리사이클러 뷰 교체
-                binding.myPageRecyclerMine.visibility = View.INVISIBLE
+                binding.myPageRecyclerMine.visibility = View.GONE
                 binding.myPageRecyclerBookmark.visibility = View.VISIBLE
             }
         }
@@ -112,6 +116,15 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
 
     // 설정 버튼 클릭
     private val onClickSettings = View.OnClickListener {
+
+        // 중복 클릭 방지
+        ApplicationClass.mLastClickTime.apply {
+            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                return@OnClickListener
+            }
+            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+        }
+
         val settingsFragment = SettingsFragment(this)
         val cFragmentManager = childFragmentManager
         cFragmentManager.beginTransaction().apply{
@@ -147,7 +160,7 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
 
                 // 유저 정보
                 // 프로필 사진, 닉네임, 이메일
-                userInfo.get(0).apply {
+                userInfo[0].apply {
                     this@MyPageFragment.userImgUrl = this.userImgUrl
 
                     Glide.with(this@MyPageFragment)

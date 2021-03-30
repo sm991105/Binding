@@ -2,6 +2,7 @@ package com.medium.binding.src.main.home.room
 
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseResponse
+import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.GetCommentsResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -68,6 +69,27 @@ class HomeRoomService(val view: HomeRoomActivityView) {
 
                 override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                     view.onPatchWBookmarkFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
+
+    // 책방 글 발행 API 실행 (네트워크 통신)
+    fun tryPostComments(bookIdx: Int, commentsBody: CommentsBody){
+
+        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
+            HomeRoomRetrofitInterface::class.java)
+
+        homeRoomRetrofitInterface.postComments(bookIdx, commentsBody)
+            .enqueue(object : Callback<BaseResponse> {
+
+                override fun onResponse(call: Call<BaseResponse>,
+                                        response: Response<BaseResponse>
+                ) {
+                    view.onPostCommentsSuccess(response.body() as BaseResponse)
+                }
+
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    view.onPostCommentsFailure(t.message ?: "통신 오류")
                 }
             })
     }

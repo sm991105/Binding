@@ -18,7 +18,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/cancel" />
+            android:src="@drawable/cancel"
+            android:background="@drawable/ripple_effect_oval"/>
 
         <TextView
             android:id="@+id/home_room_create_title"
@@ -27,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:fontFamily="@font/notosanskrbold"
+            android:includeFontPadding="false"
             android:text="글쓰기"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="15dp" />
@@ -37,6 +39,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:fontFamily="@font/notosanskrregular"
+            android:includeFontPadding="false"
+            android:background="@drawable/ripple_effect_oval"
+            android:gravity="center"
             android:text="발행"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="13dp" />

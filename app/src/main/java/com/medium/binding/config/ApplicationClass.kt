@@ -8,6 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 // 앱이 실행될때 1번만 실행이 됩니다.
 class ApplicationClass : Application() {
@@ -36,6 +37,9 @@ class ApplicationClass : Application() {
 
         // 유저 인덱스
         var userIdx: Int = -1
+
+        // 버튼 중복클릭 방지용
+        var mLastClickTime = AtomicLong()
     }
 
     // 앱이 처음 생성되는 순간, SP를 새로 만들어주고, 레트로핏 인스턴스를 생성합니다.
@@ -47,6 +51,8 @@ class ApplicationClass : Application() {
         initRetrofitInstance()
 
         userStorage = FirebaseStorage.getInstance()
+
+        mLastClickTime.set(0)
     }
 
     // 레트로핏 인스턴스를 생성하고, 레트로핏에 각종 설정값들을 지정해줍니다.

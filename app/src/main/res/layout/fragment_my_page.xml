@@ -142,11 +142,10 @@
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/my_page_recycler_mine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/my_page_post"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:orientation="horizontal"
@@ -155,11 +154,10 @@
 
             <!-- 북마크글의 recyclerview 입니다 -->
             <androidx.recyclerview.widget.RecyclerView
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/my_page_recycler_bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/my_page_post"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:orientation="horizontal"
@@ -170,7 +168,6 @@
                 android:id="@+id/my_page_bookshelf_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/my_page_recycler_mine"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="10dp"
                 android:background="#dadada" />

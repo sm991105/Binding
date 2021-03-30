@@ -1,6 +1,7 @@
 package com.medium.binding.src.main.home.room
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -8,17 +9,20 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.medium.binding.MainActivity
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.databinding.ActivityHomeRoomBinding
+import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.models.GetCommentsResponse
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import kotlinx.android.synthetic.main.item_bookmark_store.*
 
-class HomeRoomActivity : BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
+class HomeRoomActivity:
+    BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
 HomeRoomActivityView{
 
     companion object{
@@ -38,6 +42,8 @@ HomeRoomActivityView{
     private var bookTitle: String? = null
 
     lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -311,13 +317,14 @@ HomeRoomActivityView{
         when(item.itemId){
             R.id.menu_home_room_toolbar_write -> {
                 supportFragmentManager.beginTransaction()
-                    .add(R.id.home_room_frm, HomeCreateFragment())
-                    .addToBackStack("HomeCreate")
+                    .add(R.id.home_room_frm, HomeCreateFragment(this))
+                        .addToBackStack("HomeCreate")
                     .commitAllowingStateLoss()
             }
         }
         return super.onOptionsItemSelected(item)
     }
+    
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount > 0){
@@ -326,4 +333,43 @@ HomeRoomActivityView{
             super.onBackPressed()
         }
     }
+
+    override fun onClickPub(commentsBody: CommentsBody){
+        showLoadingDialog(this)
+        HomeRoomService(this).tryPostComments(bookIdx!!, commentsBody)
+    }
+
+    override fun onPostCommentsSuccess(response: BaseResponse) {
+        Log.d("로그", "onPostCommentsSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code) {
+            1000 -> {
+                showCustomToast("글이 발행되었습니다")
+                super.onBackPressed()
+                showLoadingDialog(this)
+                HomeRoomService(this).tryGetNewestWR(bookIdx!!)
+                setResult(RESULT_OK)
+            }
+
+            2001 -> showCustomToast("5자 이상 적어주세요")
+
+            else -> {
+                Log.d("로그", "onPostCommentsFailure() called, message: ${response.message}")
+
+                showCustomToast("글 발행 중 에러가 발생했습니다\n" +
+                        "에러가 계속되면 관리자에게 문의주세요.")
+            }
+        }
+    }
+
+    override fun onPostCommentsFailure(message: String) {
+        Log.d("로그", "onPostCommentsFailure() called, message: $message")
+        dismissLoadingDialog()
+
+        showCustomToast("글 발행 중 에러가 발생했습니다\n" +
+                "에러가 계속되면 관리자에게 문의주세요.")
+    }
+
+
 }

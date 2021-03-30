@@ -23,6 +23,8 @@ import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.src.main.home.create_room.models.CreateBookBody
+import com.medium.binding.src.main.home.create_room.models.CreateBookResponse
+import com.medium.binding.src.main.home.room.HomeRoomActivity
 import com.medium.binding.util.LoadingDialog
 import java.io.File
 
@@ -30,8 +32,12 @@ import java.io.File
 class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
     lateinit var mLoadingDialog: LoadingDialog
 
-    private val IMAGE_CHOOSE = 1000
-    private val PERMISSION_CODE = 1001
+    companion object {
+        const val IMAGE_CHOOSE = 1000       // 갤러리서 이미지 선택 요청
+        const val PERMISSION_CODE = 1001    // READ_EXTERNAL_STORAGE 권한 요청
+        const val BOOK_CREATED_CODE = 1000       // 책방 만듦
+    }
+
 
     private var db = ApplicationClass.userStorage.reference.child("test2")
 
@@ -106,9 +112,6 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
         btnCreate.setOnClickListener {
             val bookNameStr = bookName.text.toString()
             val authorStr = author.text.toString()
-            Log.d("로그", "bookNameStr: $bookNameStr , authorStr: $authorStr ," +
-                    " storageUrl: $storageUrl"
-            )
 
             if(bookNameStr.isBlank()){
                 wrongTxt1.visibility = View.VISIBLE
@@ -125,9 +128,9 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
 
             if(bookNameStr.isNotBlank() && authorStr.isNotBlank() && isImgAdded){
                 showLoadingDialog(context!!)
-                val mThread = Thread(Runnable{
+                val mThread = Thread {
                     storeAndCall()
-                })
+                }
                 mThread.run()
             }
         }
@@ -203,10 +206,10 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
             }
             // 접근 권한이 있으면 chooseImg() 실행
             else{
-                chooseImg();
+                chooseImg()
             }
         }else{
-            chooseImg();
+            chooseImg()
         }
     }
 
@@ -388,7 +391,7 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
         }
     }
 
-    override fun onPostBookSuccess(response: BaseResponse) {
+    override fun onPostBookSuccess(response: CreateBookResponse) {
         Log.d("로그", "onPostBookSuccess() called, response: $response")
         dismissLoadingDialog()
 
@@ -396,8 +399,12 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
 
             // 성공
             1000 -> {
-                showCustomToast("책방 만들기 성공!")
-                dismiss()
+                val homeRoomIntent = Intent(context, HomeRoomActivity::class.java)
+                homeRoomIntent.putExtra("bookIdx", response.bookIdx)
+                parentFragment?.let{
+                    activity?.startActivityFromFragment(it, homeRoomIntent, BOOK_CREATED_CODE)
+                    dismiss()
+                }
             }
 
             // 책 제목을 입력해주세요
