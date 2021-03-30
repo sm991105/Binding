@@ -62,7 +62,7 @@ HomeRoomActivityView{
         binding.homeRoomSortTab.clipToOutline = true
 
         // 코멘트 어댑터
-        commentsRecyclerAdapter = CommentsRecyclerAdapter(this)
+        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this)
         binding.homeRoomRecycler.apply {
             adapter = commentsRecyclerAdapter
             layoutManager = LinearLayoutManager(
@@ -279,14 +279,14 @@ HomeRoomActivityView{
             binding.homeRoomTextTitle.text = this
         }
 
+        result.removeAt(0)
+        commentsRecyclerAdapter.updateList(result)
+
         // 댓글이 없으면 종료
         if(result.size <= 1){
             return
         }
 
-        result.removeAt(0)
-
-        commentsRecyclerAdapter.updateList(result)
         binding.homeRoomSortTab.visibility = View.INVISIBLE
 
         // 탭 Text 설정
@@ -452,10 +452,64 @@ HomeRoomActivityView{
         HomeRoomService(this).tryGetNewestWR(bookIdx!!)
     }
 
+    // 통신에서 책방이 없다고 올 때
     private fun whenBookRoomRemoved(){
         showCustomToast("해당 책방이 존재하지 않습니다")
         setResult(HomeFragment.BOOK_REMOVED)
-        finish()
+    }
+
+    // 다이얼로그에서 글 삭제버튼을 눌렀을 때
+    override fun confirmRemove(contentIdx: Int) {
+        HomeRoomService(this).tryDeleteComments(bookIdx!!, contentIdx)
+    }
+
+    // 책방 글 삭제 통신 성공
+    override fun onDeleteCommentsSuccess(response: BaseResponse) {
+        Log.d("로그", "onDeleteCommentsSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code) {
+            1000 -> {
+                Log.d("로그", "onDeleteCommentsSuccess - 글 삭제")
+                commentsRecyclerAdapter.removeDialog.dismiss()
+                showCustomToast("글이 삭제되었습니다")
+                showLoadingDialog(this)
+                HomeRoomService(this).tryGetNewestWR(bookIdx!!)
+            }
+
+            2001 -> showCustomToast("5자 이상 적어주세요")
+
+            3000 -> {
+                showCustomToast("해당 책방이 존재하지 않습니다")
+                setResult(HomeFragment.BOOK_REMOVED)
+                finish()
+            }
+
+            3001 -> {
+                showCustomToast("해당 글이 존재하지 않습니다")
+                showLoadingDialog(this)
+                HomeRoomService(this).tryGetNewestWR(bookIdx!!)
+            }
+
+            else -> {
+                Log.d("로그", "onDeleteCommentsSuccess() called, message: ${response.message}")
+
+                showCustomToast("글 삭제 중 에러가 발생했습니다\n" +
+                        "에러가 계속되면 관리자에게 문의주세요.")
+                setResult(HomeFragment.BOOK_REMOVED)
+            }
+        }
+    }
+
+    // 책방 글 삭제 통신 실패
+    override fun onDeleteCommentsFailure(message: String) {
+        Log.d("로그", "onDeleteCommentsFailure() called, message: $message")
+        dismissLoadingDialog()
+        commentsRecyclerAdapter.removeDialog.dismiss()
+
+        showCustomToast("글 삭제 중 에러가 발생했습니다\n" +
+                "에러가 계속되면 관리자에게 문의주세요.")
+        setResult(HomeFragment.BOOK_REMOVED)
     }
 
     override fun onBackPressed() {

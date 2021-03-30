@@ -1,4 +1,4 @@
-package com.medium.binding.src.main.my_page.settings.logout
+package com.medium.binding.src.main.home.room.remove
 
 import android.app.Dialog
 import android.content.Context
@@ -13,9 +13,8 @@ import android.widget.Button
 import androidx.annotation.NonNull
 import com.medium.binding.R
 
-class LogoutDialog(@NonNull mContext: Context,
-private val confirm: View.OnClickListener,
-private val cancel: View.OnClickListener): Dialog(mContext) {
+class RemoveDialog(@NonNull mContext: Context,
+                   private val confirm: View.OnClickListener): Dialog(mContext) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +22,7 @@ private val cancel: View.OnClickListener): Dialog(mContext) {
         //다이얼로그의 꼭짓점이 짤리는부분 방지.
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        setContentView(R.layout.dialog_logout)
+        setContentView(R.layout.dialog_remove)
 
         // 다이얼로그 크기 설정
         val params: WindowManager.LayoutParams = this.window?.attributes!!
@@ -39,10 +38,12 @@ private val cancel: View.OnClickListener): Dialog(mContext) {
         this.window?.attributes = params
 
         // 버튼 이벤트
-        val btnCancel: Button = findViewById(R.id.dialog_logout_no)
-        val btnLogout: Button = findViewById(R.id.dialog_logout_yes)
+        val btnCancel: Button = findViewById(R.id.dialog_remove_no)
+        val btnRemove: Button = findViewById(R.id.dialog_remove_yes)
 
-        btnCancel.setOnClickListener(cancel)
-        btnLogout.setOnClickListener(confirm)
+        btnCancel.setOnClickListener{
+            dismiss()
+        }
+        btnRemove.setOnClickListener(confirm)
     }
 }

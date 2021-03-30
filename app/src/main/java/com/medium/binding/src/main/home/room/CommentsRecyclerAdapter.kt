@@ -1,5 +1,7 @@
 package com.medium.binding.src.main.home.room
 
+import android.content.Context
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +15,18 @@ import com.makeramen.roundedimageview.RoundedImageView
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
+import com.medium.binding.src.main.home.room.remove.RemoveDialog
+import com.medium.binding.util.OnClickRemoveComments
 import kotlinx.android.synthetic.main.item_post.view.*
 
-class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
+class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity: HomeRoomActivity
 ): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>() {
 
     private var commentsList = ArrayList<CommentsResult>()
+
+    private var targetContentIdx = -1
+
+    lateinit var removeDialog: RemoveDialog
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -80,19 +88,53 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
 
                 // 수정 버튼 -> 글 발행 창 실행
                 edit.setOnClickListener {
+
+                    // 중복 클릭 방지
+                    ApplicationClass.mLastClickTime.apply{
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                            return@setOnClickListener
+                        }
+                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    }
+
                     homeRoomActivity.supportFragmentManager.beginTransaction()
                         .add(R.id.home_room_frm, HomeCreateFragment(homeRoomActivity,
                             commentsData.contents!!, HomeRoomActivity.COMMENTS_EDIT, commentsData.contentsIdx!!))
                         .addToBackStack("HomeCreate")
                         .commitAllowingStateLoss()
                 }
-                delete.setOnClickListener{}     // 삭제 버튼
+                // 삭제 버튼
+                delete.setOnClickListener{
+
+                    // 중복 클릭 방지
+                    ApplicationClass.mLastClickTime.apply{
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                            return@setOnClickListener
+                        }
+                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    }
+
+                    // 삭제 다이얼로그
+                    removeDialog = RemoveDialog(context, confirmRemove)
+                    targetContentIdx = commentsData.contentsIdx ?: -1
+                    removeDialog.show()
+                }
             }else{
                 report.visibility = View.VISIBLE
                 edit.visibility = View.INVISIBLE
                 delete.visibility = View.INVISIBLE
 
-                report.setOnClickListener {  }  // 신고 버튼
+                // 신고 버튼
+                report.setOnClickListener {
+
+                    // 중복 클릭 방지
+                    ApplicationClass.mLastClickTime.apply{
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                            return@setOnClickListener
+                        }
+                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    }
+                }
             }
 
             // 글 내용
@@ -124,5 +166,14 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
     fun updateItem(pos: Int, bookmark: Int){
         commentsList[pos].isBookMark = bookmark
         notifyItemChanged(pos)
+    }
+
+    // 삭제 확인 버튼
+    val confirmRemove = View.OnClickListener {
+        if(targetContentIdx != -1){
+            homeRoomActivity.confirmRemove(targetContentIdx)
+        }else{
+            homeRoomActivity.showCustomToast("잠시 후 다시 시도해주세요.")
+        }
     }
 }

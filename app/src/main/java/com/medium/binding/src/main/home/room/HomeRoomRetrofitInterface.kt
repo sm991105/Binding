@@ -38,4 +38,10 @@ interface HomeRoomRetrofitInterface {
                      @Path("contentsIdx") contentsIdx: Int,
                      @Body params: CommentsBody
     ): Call<BaseResponse>
+
+    // 책방 글 삭제
+    @DELETE("/books/{bookIdx}/contents/{contentsIdx}")
+    fun deleteComments(@Path("bookIdx") bookIdx: Int,
+                      @Path("contentsIdx") contentsIdx: Int
+    ): Call<BaseResponse>
 }

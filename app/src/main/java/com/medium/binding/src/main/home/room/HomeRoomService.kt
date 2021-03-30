@@ -114,4 +114,25 @@ class HomeRoomService(val view: HomeRoomActivityView) {
                 }
             })
     }
+
+    // 책방 글 삭제 API 실행 (네트워크 통신)
+    fun tryDeleteComments(bookIdx: Int, contentsIdx: Int){
+
+        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
+            HomeRoomRetrofitInterface::class.java)
+
+        homeRoomRetrofitInterface.deleteComments(bookIdx, contentsIdx)
+            .enqueue(object : Callback<BaseResponse> {
+
+                override fun onResponse(call: Call<BaseResponse>,
+                                        response: Response<BaseResponse>
+                ) {
+                    view.onDeleteCommentsSuccess(response.body() as BaseResponse)
+                }
+
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    view.onDeleteCommentsFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
 }
