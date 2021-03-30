@@ -30,13 +30,14 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
     private var bookStoreIdx = 0    // 프래그먼트 이동할 때 받은, 클릭된 현 서점의 인덱스
 
     private lateinit var imagesList: ArrayList<BookStoreImages> // 이미지들의 인덱스, URL이 담긴 리스트
+    private var webAddress: String? = null
     private var isBookMarked = 0    // 1이면 마크, 0이면 노마크
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // 프래그먼트용 테마 적용
         val contextThemeWrapper = ContextThemeWrapper(activity, R.style.StoreDetailTheme)
         val mInflater = inflater.cloneInContext(contextThemeWrapper)
@@ -88,7 +89,7 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
     private val onClickWebAddress = View.OnClickListener {
 
         //특정 페이지만 띄울때 사용
-        val instagramPageID = String.format("${binding.storeDetailWebAddress.text}/")
+        val instagramPageID = String.format("$webAddress/")
         var instagramPostID = "" //게시글을 까지 보여주고싶다면 이변수를 활용
         // 만약 특정페이지 url이 있다면 게시글 url값을 초기화
         if (instagramPageID != "") instagramPostID = ""
@@ -112,14 +113,10 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
 
         when(response.code){
             1000 -> {
-                Log.d(
-                    "로그", "서점 상세 조회 성공, code: ${response.code} , " +
-                            "message: ${response.message}"
-                )
-
                 val result = response.result
 
                 val bookStoreInfo = result.bookStoreInfo[0]
+                Log.d("로그", "조회 성공, address: ${bookStoreInfo.siteAddress}")
                 imagesList = result.images
 
                 // 첫 사진을 대표사진으로 설정, 나머지는 순서대로 소개 내용 이후에 출력
@@ -131,10 +128,11 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                             .error(R.drawable.icon_app)
                             .into(binding.storeDetailCover)
                     }
+
+                    // 본문 사진
                     val viewId = resources.getIdentifier(
                         "store_detail_img_$idx", "id", context?.packageName)
                     val imgView: ImageView? = activity?.findViewById(viewId)
-                    Log.d("로그", "viewId: $viewId , imgView: $imgView")
                     imgView?.let {
                         it.visibility = View.VISIBLE
                         Glide.with(this)
@@ -163,7 +161,21 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                         binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
                     }
                     binding.storeDetailLocationTxt.text = it.location
-                    binding.storeDetailWebAddress.text = it.siteAddress
+
+                    this.webAddress = it.siteAddress
+                    // 인스타 주소 -> "@계정"으로 변환해서 출력
+                    it.siteAddress.apply{
+                        val startIdx = this.indexOf("/",9) + 1
+                        val tempIdx = this.indexOf("/", startIdx)
+                        val lastIdx: Int = if(tempIdx >= startIdx){
+                            tempIdx-1
+                        }else{
+                            this.lastIndex
+                        }
+                        binding.storeDetailWebAddress.text =
+                            String.format("@${this.substring(startIdx..lastIdx)}")
+                    }
+
                     binding.storeDetailPhoneTxt.text = it.phoneNumber
                     if(it.storeInfo != "-1"){
                         binding.storeDetailInfo.text = it.storeInfo
