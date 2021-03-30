@@ -52,6 +52,8 @@ class ApplicationClass : Application() {
 
         userStorage = FirebaseStorage.getInstance()
 
+        userIdx = sSharedPreferences.getInt("userIdx", -1)
+
         mLastClickTime.set(0)
     }
 

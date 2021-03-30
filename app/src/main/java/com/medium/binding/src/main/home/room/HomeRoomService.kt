@@ -93,4 +93,25 @@ class HomeRoomService(val view: HomeRoomActivityView) {
                 }
             })
     }
+
+    // 책방 글 수정 API 실행 (네트워크 통신)
+    fun tryPatchComments(bookIdx: Int, contentsIdx: Int, commentsBody: CommentsBody){
+
+        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
+            HomeRoomRetrofitInterface::class.java)
+
+        homeRoomRetrofitInterface.patchComments(bookIdx, contentsIdx, commentsBody)
+            .enqueue(object : Callback<BaseResponse> {
+
+                override fun onResponse(call: Call<BaseResponse>,
+                                        response: Response<BaseResponse>
+                ) {
+                    view.onPatchCommentsSuccess(response.body() as BaseResponse)
+                }
+
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    view.onPatchCommentsFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
 }

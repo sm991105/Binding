@@ -108,7 +108,7 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
 
                 val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)
                 bookRoomIntent.putExtra("bookIdx", bookData.bookIdx)
-                homeFragment.startActivity(bookRoomIntent)
+                homeFragment.startActivityForResult(bookRoomIntent, HomeFragment.BOOK_ENTERED_CODE)
             }
         }
     }

@@ -27,6 +27,13 @@ interface HomeRoomActivityView {
 
     fun onPostCommentsFailure(message: String)
 
-    // 책방 글 발행할 때, HomeCreateFragment에서 발행 버튼 누를 때 호출할 함수
-    fun onClickPub(commentsBody: CommentsBody)
+    // 책방 글 수정 콜백 함수
+    fun onPatchCommentsSuccess(response: BaseResponse)
+
+    fun onPatchCommentsFailure(message: String)
+
+    // 책방 글 발행, 수정할 때, HomeCreateFragment에서 발행 버튼 누를 때 호출할 함수
+    // commentsFlag - 발행: 0 , 수정: 1
+    // 수정할 떄 contentsIdx가 필요하다
+    fun onClickPub(commentsBody: CommentsBody, commentsFlag: Int, contentsIdx: Int)
 }

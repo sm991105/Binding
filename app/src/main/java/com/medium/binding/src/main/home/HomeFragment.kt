@@ -26,6 +26,13 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     FragmentHomeBinding::bind,
     R.layout.fragment_home
 ), HomeFragmentView, SearchView.OnQueryTextListener{
+
+    companion object{
+        const val BOOK_ENTERED_CODE = 2000  // 책방 열기
+
+        const val BOOK_REMOVED = 1000   // 삭제된 책방
+    }
+
     private val sp = ApplicationClass.sSharedPreferences
 
     private var newestBooksList = ArrayList<NewestResult>()
@@ -330,9 +337,14 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             // 책방 목록 새로고침
             loadBookRooms()
         }
+        // 책방에 들어갔다 나왔는데 책방이 삭제됐을 떄
+        else if(requestCode == BOOK_ENTERED_CODE && resultCode == BOOK_REMOVED){
+            loadBookRooms()
+        }
     }
 
-    fun loadBookRooms(){
+    // 서버에서 책방을 가져온다
+    private fun loadBookRooms(){
         showLoadingDialog(context!!)
         when(binding.homeSortTxt.text.toString()){
             "최신글" -> HomeService(this).tryGetNewest()

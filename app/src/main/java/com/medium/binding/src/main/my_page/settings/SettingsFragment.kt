@@ -79,10 +79,11 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
         startActivity(pwIntent)
     }
 
-    // 로그아웃 다이얼로그에 전달할 버튼 리스너
+    // 로그아웃 다이얼로그에 전달할 로그아웃 버튼 리스너
     private val confirmLogout = View.OnClickListener {
         sp.edit().apply{
             this.putString(ApplicationClass.X_ACCESS_TOKEN, null)
+            this.putInt("userIdx", -1)
             this.putString("pw", null).apply()
         }
 
@@ -92,7 +93,7 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
         activity!!.finish()
     }
 
-    // 로그아웃 다이얼로그에 전달할 버튼 리스너
+    // 로그아웃 다이얼로그에 전달할 취소 버튼 리스너
     private val cancelLogout = View.OnClickListener{
         logoutDialog.dismiss()
     }

@@ -12,6 +12,7 @@ import com.medium.binding.R
 import com.makeramen.roundedimageview.RoundedImageView
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.src.main.home.models.CommentsResult
+import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import kotlinx.android.synthetic.main.item_post.view.*
 
 class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
@@ -51,7 +52,6 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
         private val edit: TextView = itemView.item_post_edit                // 수정 - 자기 글일 때만
         private val delete: TextView = itemView.item_post_delete            // 삭제 - 자기 글일 때만
 
-        // 최신글
         fun bindCommentsValue(commentsData: CommentsResult, itemPos: Int){
 
             // 북마크
@@ -78,7 +78,14 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
                 edit.visibility = View.VISIBLE
                 delete.visibility = View.VISIBLE
 
-                edit.setOnClickListener {  }    // 수정 버튼
+                // 수정 버튼 -> 글 발행 창 실행
+                edit.setOnClickListener {
+                    homeRoomActivity.supportFragmentManager.beginTransaction()
+                        .add(R.id.home_room_frm, HomeCreateFragment(homeRoomActivity,
+                            commentsData.contents!!, HomeRoomActivity.COMMENTS_EDIT, commentsData.contentsIdx!!))
+                        .addToBackStack("HomeCreate")
+                        .commitAllowingStateLoss()
+                }
                 delete.setOnClickListener{}     // 삭제 버튼
             }else{
                 report.visibility = View.VISIBLE
@@ -95,7 +102,6 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
             markEmpty.setOnClickListener{
                 commentsData.contentsIdx?.let{
                     homeRoomActivity.showLoadingDialog(homeRoomActivity)
-                    Log.d("로그", "itemPos: $itemPos")
                     HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
                 }
             }
@@ -103,7 +109,6 @@ class CommentsRecyclerAdapter(private val homeRoomActivity: HomeRoomActivity
             markFilled.setOnClickListener {
                 commentsData.contentsIdx?.let {
                     homeRoomActivity.showLoadingDialog(homeRoomActivity)
-                    Log.d("로그", "itemPos: $itemPos")
                     HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
                 }
             }

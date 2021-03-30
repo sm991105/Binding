@@ -31,4 +31,11 @@ interface HomeRoomRetrofitInterface {
     fun postComments(@Path("bookIdx") bookIdx: Int,
                      @Body params: CommentsBody
     ): Call<BaseResponse>
+
+    // 책방 글 수정
+    @PATCH("/books/{bookIdx}/contents/{contentsIdx}")
+    fun patchComments(@Path("bookIdx") bookIdx: Int,
+                     @Path("contentsIdx") contentsIdx: Int,
+                     @Body params: CommentsBody
+    ): Call<BaseResponse>
 }
