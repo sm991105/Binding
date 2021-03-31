@@ -161,7 +161,6 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     // 오른쪽 리스트뷰 아이템을 선택했을 때
     private val onSmallClick = AdapterView.OnItemClickListener { parent, view, position, id ->
         val location = (view as TextView).text.toString()
-        Log.d("로그", "location2: $location")
 
         if(view.isActivated) {
             selectedLocation = location
@@ -209,9 +208,5 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    fun showCustomToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

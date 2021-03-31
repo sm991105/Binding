@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -113,11 +114,11 @@ class CreateBookDialog() : DialogFragment(), CreateBookView {
             val bookNameStr = bookName.text.toString()
             val authorStr = author.text.toString()
 
-            if(bookNameStr.isBlank()){
+            if(bookNameStr.isBlank() || bookNameStr.length > 20){
                 wrongTxt1.visibility = View.VISIBLE
                 bookName.visibility = View.INVISIBLE
             }
-            if(authorStr.isBlank()){
+            if(authorStr.isBlank() || authorStr.length > 20){
                 wrongTxt2.visibility = View.VISIBLE
                 author.visibility = View.INVISIBLE
             }
@@ -126,7 +127,10 @@ class CreateBookDialog() : DialogFragment(), CreateBookView {
                 guideTxt.visibility = View.INVISIBLE
             }
 
-            if(bookNameStr.isNotBlank() && authorStr.isNotBlank() && isImgAdded){
+            if((bookNameStr.isNotBlank() && bookNameStr.length <= 20)
+                && (authorStr.isNotBlank() && authorStr.length <= 20 )
+                && isImgAdded
+            ){
                 showLoadingDialog(context!!)
                 val mThread = Thread {
                     storeAndCall()
@@ -181,6 +185,25 @@ class CreateBookDialog() : DialogFragment(), CreateBookView {
         wrongTxt1.setOnClickListener(onClickWrong1)
         wrongTxt2.setOnClickListener(onClickWrong2)
     }
+
+    /*private val pwdWatcher = object: TextWatcher {
+        override fun afterTextChanged(s: Editable?) {}
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            when(isValidPwd(s.toString())){
+
+                // 비밀번호가 형식이 올바르지 않을 때
+                false -> {
+                    binding.join2WrongPw.text = String.format("비밀번호가 올바르지 않습니다")
+                    binding.join2WrongPw.visibility = View.VISIBLE
+                }
+
+                true -> binding.join2WrongPw.visibility = View.INVISIBLE
+            }
+        }
+    }*/
 
     // 책 제목 에러 문구 클릭 -> 에러문구 사라지고, 다시 입력창이 나타난다
     private val onClickWrong1 = View.OnClickListener {
@@ -403,13 +426,13 @@ class CreateBookDialog() : DialogFragment(), CreateBookView {
             }
 
             // 책 제목을 입력해주세요
-            2000 -> {
+            2000, 2003 -> {
                 wrongTxt1.visibility = View.VISIBLE
                 bookName.visibility = View.INVISIBLE
             }
 
             // 저자를 입력해주세요
-            2001 -> {
+            2001, 2004 -> {
                 wrongTxt2.visibility = View.VISIBLE
                 author.visibility = View.INVISIBLE
             }
@@ -451,6 +474,11 @@ class CreateBookDialog() : DialogFragment(), CreateBookView {
     }
 
     fun showCustomToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+        val toast = Toast.makeText(activity, message, Toast.LENGTH_SHORT)
+        val group:ViewGroup = toast.view as ViewGroup
+        val messageTxtView: TextView = group.getChildAt(0) as TextView
+        messageTxtView.includeFontPadding = false
+
+        toast.show()
     }
 }

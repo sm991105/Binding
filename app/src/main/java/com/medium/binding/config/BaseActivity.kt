@@ -2,7 +2,11 @@ package com.medium.binding.config
 
 import android.content.Context
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
@@ -38,6 +42,11 @@ abstract class BaseActivity<B : ViewBinding>(private val inflate: (LayoutInflate
 
     // 토스트를 쉽게 띄울 수 있게 해줌.
     fun showCustomToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        val toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        val group:ViewGroup = toast.view as ViewGroup
+        val messageTxtView: TextView = group.getChildAt(0) as TextView
+        messageTxtView.includeFontPadding = false
+
+        toast.show()
     }
 }
