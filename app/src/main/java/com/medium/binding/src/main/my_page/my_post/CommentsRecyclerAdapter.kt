@@ -123,6 +123,11 @@ class CommentsRecyclerAdapter(val mContext: Context,
 
             }
 
+            // 북마크 되어있으면 표시
+            if(writing.isBookMark == 1){
+                markFilled.visibility = View.VISIBLE
+            }
+
         }
 
         override fun onClickRemove() {
