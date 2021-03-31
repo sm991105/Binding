@@ -34,6 +34,7 @@ class ApplicationClass : Application() {
 
         var isEdited = false    // 프로필 변경 플래그
         var isMarkEdited = false    // 북마크 변경 플래그
+        var isCommentsChanged = false
 
         // 유저 인덱스
         var userIdx: Int = -1

@@ -45,7 +45,7 @@ interface HomeRoomActivityView {
     // 책방 글 삭제 버튼 콜백 함수
     fun confirmRemove(contentsIdx: Int)
 
-    // 책방 글 삭제 Retrofit 콜백 함수
+    // 책방 글 신고 Retrofit 콜백 함수
     fun onPostReportSuccess(response: BaseResponse)
 
     fun onPostReportFailure(message: String)

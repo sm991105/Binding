@@ -1,6 +1,7 @@
 package com.medium.binding.src.main.my_page.my_post
 
 import android.content.Context
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +12,21 @@ import com.bumptech.glide.Glide
 import com.makeramen.roundedimageview.RoundedImageView
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
+import com.medium.binding.src.main.home.room.remove.RemoveDialog
+import com.medium.binding.src.main.home.room.report.ReportDialog
 import com.medium.binding.src.main.my_page.models.CommentsWriting
+import com.medium.binding.util.Comments
 import kotlinx.android.synthetic.main.item_post.view.*
 
 
-class CommentsRecyclerAdapter(val mContext: Context):
+class CommentsRecyclerAdapter(val mContext: Context,
+                              val commentsListener: Comments.ClickListener):
     RecyclerView.Adapter<CommentsRecyclerAdapter.WritingViewHolder>() {
 
     private var writingList = arrayListOf<CommentsWriting>()
+
+    var removeDialog: RemoveDialog? = null
+    var reportDialog: ReportDialog? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -38,7 +46,8 @@ class CommentsRecyclerAdapter(val mContext: Context):
         holder.bindValue(writingList[position])
     }
 
-    inner class WritingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class WritingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+    Comments.AdapterRemoveListener, Comments.AdapterReportListener{
         private val item: View = itemView
         private val nickname: TextView = itemView.item_post_nickname        // 유저 닉네임
         private val userImg: RoundedImageView = itemView.item_post_photo    // 유저 이미지
@@ -49,6 +58,7 @@ class CommentsRecyclerAdapter(val mContext: Context):
         private val delete: TextView = itemView.item_post_delete            // 삭제
         private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 ON 됨
         private val markEmpty: ImageView = itemView.item_post_bookmark_empty  // 북마크 OFF 됨
+        var contentsIdx: Int = -1
 
         fun bindValue(writing: CommentsWriting){
             // 프로필 사진
@@ -65,8 +75,25 @@ class CommentsRecyclerAdapter(val mContext: Context):
 
             // 유저가 쓴 글이면 수정, 삭제 가능
             if(ApplicationClass.userIdx == writing.userIdx){
+
+                // 수정 버튼
                 edit.setOnClickListener {  }
-                delete.setOnClickListener {  }
+
+                // 삭제 버튼
+                delete.setOnClickListener {
+
+                    // 중복 클릭 방지
+                    ApplicationClass.mLastClickTime.apply {
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
+                            return@setOnClickListener
+                        }
+                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    }
+
+                    contentsIdx = writing.contentsIdx ?: -1
+                    removeDialog = RemoveDialog(mContext, this)
+                    removeDialog?.show()
+                }
             }
             // 다른 유저 글이면 신고, 북마크 설정/해제 가능
             else{
@@ -74,13 +101,36 @@ class CommentsRecyclerAdapter(val mContext: Context):
                 delete.visibility = View.INVISIBLE
                 report.visibility = View.VISIBLE
 
-                report.setOnClickListener {  }
+                report.setOnClickListener {
+
+                    // 중복 클릭 방지
+                    ApplicationClass.mLastClickTime.apply {
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
+                            return@setOnClickListener
+                        }
+                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    }
+
+                    contentsIdx = writing.contentsIdx ?: -1
+                    // 신고 다이얼로그
+                    reportDialog = ReportDialog(mContext, this)
+                    reportDialog?.show()
+
+                }
 
                 markFilled.setOnClickListener {  }
                 markEmpty.setOnClickListener {  }
 
             }
 
+        }
+
+        override fun onClickRemove() {
+            commentsListener.onClickRemove(contentsIdx)
+        }
+
+        override fun onClickReport(reportReason: String) {
+            commentsListener.onClickReport(reportReason, contentsIdx)
         }
     }
 

@@ -17,12 +17,12 @@ import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.home.room.remove.RemoveDialog
 import com.medium.binding.src.main.home.room.report.ReportDialog
-import com.medium.binding.util.OnClickRemoveComments
+import com.medium.binding.util.Comments
 import kotlinx.android.synthetic.main.item_post.view.*
 
 class CommentsRecyclerAdapter(val context: Context,
                               private val homeRoomActivity: HomeRoomActivity,
-                              private val activityDialogListener: HomeRoomDialogListener
+                              private val commentsListener: Comments.ClickListener
 ): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>(){
 
     private var commentsList = ArrayList<CommentsResult>()
@@ -53,7 +53,7 @@ class CommentsRecyclerAdapter(val context: Context,
     }
 
     inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-    ReportDialogListener, RemoveDialogListener {
+        Comments.AdapterReportListener, Comments.AdapterRemoveListener {
         private val markEmpty: ImageView = itemView.item_post_bookmark_empty    // 북마크 안한 거
         private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 한 거
         private val comments: TextView = itemView.item_post_text            // 글 내용
@@ -174,11 +174,11 @@ class CommentsRecyclerAdapter(val context: Context,
 
         // 신고하기 버튼 -> ReportDialog에서 실행할 콜백함수
         override fun onClickReport(reportReason: String) {
-            activityDialogListener.onClickReport(reportReason, contentIdx)
+            commentsListener.onClickReport(reportReason, contentIdx)
         }
 
         override fun onClickRemove() {
-            activityDialogListener.onClickRemove(contentIdx)
+            commentsListener.onClickRemove(contentIdx)
         }
     }
 

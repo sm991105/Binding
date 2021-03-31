@@ -5,23 +5,16 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.NonNull
 import com.medium.binding.R
-import com.medium.binding.databinding.ActivityMainBinding
-import com.medium.binding.databinding.DialogRemoveBinding
 import com.medium.binding.databinding.DialogReportBinding
-import com.medium.binding.databinding.LayoutBottomSheetBinding
-import com.medium.binding.src.main.home.room.ReportDialogListener
+import com.medium.binding.util.Comments
 
 class ReportDialog(@NonNull val mContext: Context,
-                   private val activityListener: ReportDialogListener): Dialog(mContext) {
+                   private val reportListener: Comments.AdapterReportListener): Dialog(mContext) {
     lateinit var binding: DialogReportBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +53,7 @@ class ReportDialog(@NonNull val mContext: Context,
                 Toast.makeText(mContext, "신고사유를 5~500자로 입력해주세요",
                     Toast.LENGTH_SHORT).show()
             }else{
-                activityListener.onClickReport(reason)
+                reportListener.onClickReport(reason)
             }
         }
     }

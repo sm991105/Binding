@@ -5,17 +5,15 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
 import androidx.annotation.NonNull
 import com.medium.binding.R
-import com.medium.binding.src.main.home.room.RemoveDialogListener
+import com.medium.binding.util.Comments
 
 class RemoveDialog(@NonNull mContext: Context,
-                   private val activityListener: RemoveDialogListener): Dialog(mContext) {
+                   private val removeListener: Comments.AdapterRemoveListener): Dialog(mContext) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +44,7 @@ class RemoveDialog(@NonNull mContext: Context,
             dismiss()
         }
         btnRemove.setOnClickListener{
-            activityListener.onClickRemove()
+            removeListener.onClickRemove()
         }
     }
 }

@@ -18,11 +18,12 @@ import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.models.GetCommentsResponse
 import com.medium.binding.src.main.home.models.ReportBody
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
+import com.medium.binding.util.Comments
 import kotlinx.android.synthetic.main.item_bookmark_store.*
 
 class HomeRoomActivity:
     BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
-HomeRoomActivityView, HomeRoomDialogListener{
+HomeRoomActivityView, Comments.ClickListener{
 
     companion object{
         // 뒤로가기 2번 눌러 종료할 때 사용
@@ -44,8 +45,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,8 +58,8 @@ HomeRoomActivityView, HomeRoomDialogListener{
         binding.homeRoomSortTab.clipToOutline = true
 
         // 코멘트 어댑터
-        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this,
-            this
+        commentsRecyclerAdapter = CommentsRecyclerAdapter(
+            this, this, this
         )
         binding.homeRoomRecycler.apply {
             adapter = commentsRecyclerAdapter
@@ -437,8 +436,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
                 showLoadingDialog(this)
                 HomeRoomService(this).tryGetNewestWR(bookIdx!!)
             }
-
-            2001 -> showCustomToast("5자 이상 적어주세요")
 
             3000 -> {
                 showCustomToast("해당 책방이 존재하지 않습니다")

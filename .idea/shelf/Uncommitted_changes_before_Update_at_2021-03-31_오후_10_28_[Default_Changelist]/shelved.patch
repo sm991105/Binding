@@ -1,0 +1,608 @@
+Index: app/src/main/java/com/medium/binding/src/main/my_page/my_post/MyPostFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.my_page.my_post\r\n\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.BaseFragment\r\nimport com.medium.binding.databinding.FragmentMyPostBinding\r\nimport com.medium.binding.src.main.my_page.models.UserCommentsResponse\r\n\r\n\r\nclass MyPostFragment(private val writingFlag: Int):\r\n    BaseFragment<FragmentMyPostBinding>(\r\n        FragmentMyPostBinding::bind,\r\n        R.layout.fragment_my_post\r\n), MyPostFragmentView {\r\n\r\n    companion object{\r\n        const val MY_POST = 0\r\n        const val BOOKMARK_POST = 1\r\n    }\r\n\r\n    private lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter\r\n\r\n    private var bookIdx: Int? = -1\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        commentsRecyclerAdapter = CommentsRecyclerAdapter(context!!)\r\n        // 리사이클러뷰 초기화\r\n        binding.myPostRecycler.apply {\r\n            this.adapter = commentsRecyclerAdapter\r\n            this.layoutManager = LinearLayoutManager(\r\n                context,\r\n                LinearLayoutManager.VERTICAL, false\r\n            )\r\n        }\r\n\r\n        // 내가 쓴 글 목록을 불러온다\r\n        bookIdx = arguments?.getInt(\"bookIdx\", -1)\r\n        showLoadingDialog(context!!)\r\n        Log.d(\"로그\", \"flag: $writingFlag\")\r\n        if(bookIdx != null && bookIdx != -1){\r\n\r\n            // 내가 쓴 글을 타고 들어왔을 때\r\n           if(writingFlag == MY_POST){\r\n                MyPostService(this).tryGetUserComments(bookIdx!!)\r\n           }\r\n\r\n           // 북마크한 글을 타고 들어왔을 때\r\n           else{\r\n                MyPostService(this).tryGetMarkComments(bookIdx!!)\r\n           }\r\n        }else{\r\n            dismissLoadingDialog()\r\n\r\n            showCustomToast(\"내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\\n\" +\r\n                    \"에러가 계속되면 관리자에게 문의해주세요\"\r\n            )\r\n            activity?.onBackPressed()\r\n        }\r\n\r\n\r\n        // 뒤로가기\r\n        binding.myPostLeft.setOnClickListener{\r\n            activity?.onBackPressed()\r\n        }\r\n    }\r\n\r\n    // 내가 쓴 글 API 통신 성공\r\n    override fun onGetUserCommentsSuccess(response: UserCommentsResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n\r\n            1000 -> {\r\n                val result = response.result\r\n\r\n                binding.myPostTitle.text = result.book[0].bookName  // 책 이름 반영\r\n                commentsRecyclerAdapter.updateList(result.writing)   // 리사이클러뷰에 데이터 전달\r\n            }\r\n\r\n            // 해당 책방이 사라짐\r\n            2000 -> {\r\n                showCustomToast(\"해당 책방이 현재 존재하지 않습니다\")\r\n                activity?.onBackPressed()\r\n            }\r\n\r\n            // 책 방에 내 글이 없다\r\n            4000 -> {\r\n                showCustomToast(\"해당 책방에 내가 쓴 글이 존재하지 않습니다,\\n\" +\r\n                        \"에러가 계속되면 관리자에게 문의해주세요\")\r\n            }\r\n\r\n            else -> {\r\n                showCustomToast(\"내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\\n\" +\r\n                        \"에러가 계속되면 관리자에게 문의해주세요\"\r\n                )\r\n                activity?.onBackPressed()\r\n            }\r\n        }\r\n    }\r\n\r\n    // 내가 쓴 글 API 통신 실패\r\n    override fun onGetUserCommentsFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요\"\r\n        )\r\n        activity?.onBackPressed()\r\n\r\n    }\r\n\r\n    // 북마크한 글 API 통신 성공\r\n    override fun onGetMarkCommentsSuccess(response: UserCommentsResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n\r\n            1000 -> {\r\n                val result = response.result\r\n\r\n                binding.myPostTitle.text = result.book[0].bookName  // 책 이름 반영\r\n                commentsRecyclerAdapter.updateList(result.writing)   // 리사이클러뷰에 데이터 전달\r\n            }\r\n\r\n            // 해당 책방이 사라짐\r\n            2000 -> {\r\n                showCustomToast(\"해당 책방이 현재 존재하지 않습니다\")\r\n                activity?.onBackPressed()\r\n            }\r\n\r\n            // 책 방에 내 글이 없다\r\n            4000 -> {\r\n                showCustomToast(\"해당 책방에 북마크한 글이 존재하지 않습니다,\\n\" +\r\n                        \"에러가 계속되면 관리자에게 문의해주세요\")\r\n                activity?.onBackPressed()\r\n            }\r\n\r\n            else -> {\r\n                showCustomToast(\"북마크한 글 정보를 받아오던 중 에러가 발생했습니다\\n\" +\r\n                        \"에러가 계속되면 관리자에게 문의해주세요\"\r\n                )\r\n                activity?.onBackPressed()\r\n            }\r\n        }\r\n    }\r\n\r\n    // 내가 쓴 글 API 통신 실패\r\n    override fun onGetMarkCommentsFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"북마크한 글 정보를 받아오던 중 에러가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요\"\r\n        )\r\n        activity?.onBackPressed()\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/my_page/my_post/MyPostFragment.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/my_page/my_post/MyPostFragment.kt	(date 1617197275799)
+@@ -5,16 +5,20 @@
+ import android.view.View
+ import androidx.recyclerview.widget.LinearLayoutManager
+ import com.medium.binding.R
++import com.medium.binding.config.ApplicationClass
+ import com.medium.binding.config.BaseFragment
++import com.medium.binding.config.BaseResponse
+ import com.medium.binding.databinding.FragmentMyPostBinding
++import com.medium.binding.src.main.home.models.ReportBody
+ import com.medium.binding.src.main.my_page.models.UserCommentsResponse
++import com.medium.binding.util.Comments
+ 
+ 
+ class MyPostFragment(private val writingFlag: Int):
+     BaseFragment<FragmentMyPostBinding>(
+         FragmentMyPostBinding::bind,
+         R.layout.fragment_my_post
+-), MyPostFragmentView {
++), MyPostFragmentView, Comments.CommentsView, Comments.ClickListener {
+ 
+     companion object{
+         const val MY_POST = 0
+@@ -28,7 +32,7 @@
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
+-        commentsRecyclerAdapter = CommentsRecyclerAdapter(context!!)
++        commentsRecyclerAdapter = CommentsRecyclerAdapter(context!!, this)
+         // 리사이클러뷰 초기화
+         binding.myPostRecycler.apply {
+             this.adapter = commentsRecyclerAdapter
+@@ -84,15 +88,12 @@
+ 
+             // 해당 책방이 사라짐
+             2000 -> {
+-                showCustomToast("해당 책방이 현재 존재하지 않습니다")
++                showCustomToast("해당 책방이 존재하지 않습니다")
+                 activity?.onBackPressed()
+             }
+ 
+             // 책 방에 내 글이 없다
+-            4000 -> {
+-                showCustomToast("해당 책방에 내가 쓴 글이 존재하지 않습니다,\n" +
+-                        "에러가 계속되면 관리자에게 문의해주세요")
+-            }
++            4000 -> showCustomToast("책방에 내가 쓴 글이 존재하지 않습니다")
+ 
+             else -> {
+                 showCustomToast("내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\n" +
+@@ -123,20 +124,31 @@
+             1000 -> {
+                 val result = response.result
+ 
+-                binding.myPostTitle.text = result.book[0].bookName  // 책 이름 반영
++                binding.myPostTitle.text = result.book[0].bookName   // 책 이름 반영
+                 commentsRecyclerAdapter.updateList(result.writing)   // 리사이클러뷰에 데이터 전달
+             }
+ 
+             // 해당 책방이 사라짐
+             2000 -> {
++
++                // 책방 글 수정,삭제 후에 호출했으면, 새로고침을 한다
++                if(ApplicationClass.isCommentsChanged){
++                    commentsRecyclerAdapter.updateList(response.result.writing)
++                }
+                 showCustomToast("해당 책방이 현재 존재하지 않습니다")
++                ApplicationClass.isEdited = true
+                 activity?.onBackPressed()
+             }
+ 
+             // 책 방에 내 글이 없다
+             4000 -> {
+-                showCustomToast("해당 책방에 북마크한 글이 존재하지 않습니다,\n" +
+-                        "에러가 계속되면 관리자에게 문의해주세요")
++
++                // 책방 글 수정,삭제 후에 호출했으면, 새로고침을 한다
++                if(ApplicationClass.isCommentsChanged){
++                    commentsRecyclerAdapter.updateList(response.result.writing)
++                }
++                showCustomToast("북마크한 글이 현재 존재하지 않습니다")
++                ApplicationClass.isEdited = true
+                 activity?.onBackPressed()
+             }
+ 
+@@ -147,6 +159,7 @@
+                 activity?.onBackPressed()
+             }
+         }
++        ApplicationClass.isCommentsChanged = false
+     }
+ 
+     // 내가 쓴 글 API 통신 실패
+@@ -159,4 +172,116 @@
+         activity?.onBackPressed()
+ 
+     }
++
++    // 다이얼로그에서 삭제 버튼을 누르면, 어댑터에서 실행할 콜백 함수
++    override fun onClickRemove(contentsIdx: Int) {
++        // 글 삭제 요청
++        if(contentsIdx != -1){
++            Comments.CommentsService(this).tryDeleteComments(bookIdx!!, contentsIdx)
++        }else{
++            showCustomToast("글 삭제를 요청하던 중 오류가 발생했습니다\n" +
++                    "네트워크 확인 후 오류가 계속되면 관리자에게 문의해주세요.")
++        }
++    }
++
++    // 내가 쓴 책방 글 삭제 통신 성공
++    override fun onDeleteCommentsSuccess(response: BaseResponse) {
++        dismissLoadingDialog()
++        commentsRecyclerAdapter.removeDialog?.dismiss()
++
++        when(response.code) {
++            1000 -> {
++                ApplicationClass.isCommentsChanged = true
++                showCustomToast("글이 삭제되었습니다")
++                context?.let{
++                    showLoadingDialog(context!!)
++                MyPostService(this).tryGetUserComments(bookIdx!!)}  // 새로고침
++            }
++
++            3000 -> {
++                showCustomToast("해당 책방이 존재하지 않습니다")
++                ApplicationClass.isEdited = true
++                activity?.onBackPressed()
++            }
++
++            3001 -> {
++                showCustomToast("해당 글이 존재하지 않습니다")
++                context?.let{
++                    showLoadingDialog(context!!)
++                    MyPostService(this).tryGetUserComments(bookIdx!!)}  // 새로고침
++            }
++
++            else -> {
++                showCustomToast("글 삭제 중 오류가 발생했습니다\n" +
++                        "오류가 계속되면 관리자에게 문의주세요.")
++            }
++        }
++    }
++
++    // 내가 쓴 책방 글 삭제 통신 실패
++    override fun onDeleteCommentsFailure(message: String) {
++        dismissLoadingDialog()
++        commentsRecyclerAdapter.removeDialog?.dismiss()
++
++        showCustomToast("글 삭제 중 오류가 발생했습니다\n" +
++                "오류가 계속되면 관리자에게 문의주세요.")
++    }
++
++    // 다이얼로그에서 신고 버튼을 누르면, 어댑터에서 실행할 콜백 함수
++    override fun onClickReport(reportReason: String, contentIdx: Int) {
++        if(contentIdx != -1){
++            val reportBody = ReportBody(reportReason)
++            Comments.CommentsService(this).tryPostReport(bookIdx!!, contentIdx, reportBody)
++        }else{
++            showCustomToast("글 신고 중 오류가 발생했습니다\n" +
++                    "오류가 계속되면 관리자에게 문의주세요")
++        }
++    }
++
++    // 책방 글 신고 통신 성공
++    override fun onPostReportSuccess(response: BaseResponse) {
++        dismissLoadingDialog()
++
++        when(response.code) {
++            1000 -> {
++                commentsRecyclerAdapter.reportDialog?.dismiss()
++                showCustomToast("글이 신고되었습니다")
++            }
++
++            2001 -> showCustomToast("5자 이상 적어주세요")
++
++            2002 -> showCustomToast("500자 이하로 입력하세요")
++
++            3000 -> {
++                showCustomToast("해당 책방이 이제 존재하지 않습니다")
++                commentsRecyclerAdapter.reportDialog?.dismiss()
++                ApplicationClass.isEdited = true
++            }
++
++            3001 -> {
++                showCustomToast("해당 글이 이제 존재하지 않습니다")
++                showLoadingDialog(context!!)
++                ApplicationClass.isCommentsChanged = true
++                MyPostService(this).tryGetUserComments(bookIdx!!)
++            }
++
++            3004 -> {
++                showCustomToast("이미 신고한 글입니다")
++            }
++
++            else -> {
++                showCustomToast("글 신고 중 오류가 발생했습니다\n" +
++                        "오류가 계속되면 관리자에게 문의주세요.")
++            }
++        }
++    }
++
++    // 책방 글 신고 통신 실패
++    override fun onPostReportFailure(message: String) {
++        dismissLoadingDialog()
++        commentsRecyclerAdapter.reportDialog?.dismiss()
++
++        showCustomToast("글 신고 중 오류가 발생했습니다\n" +
++                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/src/main/home/room/report/ReportDialog.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.home.room.report\r\n\r\nimport android.app.Dialog\r\nimport android.content.Context\r\nimport android.graphics.Color\r\nimport android.graphics.drawable.ColorDrawable\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport android.view.Window\r\nimport android.view.WindowManager\r\nimport android.widget.Button\r\nimport android.widget.EditText\r\nimport android.widget.Toast\r\nimport androidx.annotation.NonNull\r\nimport com.medium.binding.R\r\nimport com.medium.binding.databinding.ActivityMainBinding\r\nimport com.medium.binding.databinding.DialogRemoveBinding\r\nimport com.medium.binding.databinding.DialogReportBinding\r\nimport com.medium.binding.databinding.LayoutBottomSheetBinding\r\nimport com.medium.binding.src.main.home.room.ReportDialogListener\r\n\r\nclass ReportDialog(@NonNull val mContext: Context,\r\n                   private val activityListener: ReportDialogListener): Dialog(mContext) {\r\n    lateinit var binding: DialogReportBinding\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        //다이얼로그의 꼭짓점이 짤리는부분 방지.\r\n        window?.requestFeature(Window.FEATURE_NO_TITLE)\r\n        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))\r\n        setContentView(R.layout.dialog_report)\r\n\r\n        // 다이얼로그 크기 설정\r\n        val params: WindowManager.LayoutParams = this.window?.attributes!!\r\n        val widthSize = ((context.resources.displayMetrics.widthPixels) * 0.88).toInt()\r\n        val density: Float = context.resources.displayMetrics.density   // 기기 density\r\n        val maxWidthPx = (360 * density + 0.5).toInt()      // 360dp -> 픽셀로 변환\r\n        if(widthSize > maxWidthPx){\r\n            params.width = maxWidthPx\r\n        }else{\r\n            params.width = widthSize\r\n        }\r\n        params.height = WindowManager.LayoutParams.WRAP_CONTENT\r\n        this.window?.attributes = params\r\n\r\n        binding = DialogReportBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        // 아니요\r\n        binding.dialogReportNo.setOnClickListener{\r\n            dismiss()\r\n        }\r\n        // 신고하기\r\n        binding.dialogReportYes.setOnClickListener{\r\n            val reason = binding.dialogReportReason.text.toString()\r\n\r\n            if(reason.length < 5 || reason.length > 500){\r\n                Toast.makeText(mContext, \"신고사유를 5~500자로 입력해주세요\",\r\n                    Toast.LENGTH_SHORT).show()\r\n            }else{\r\n                activityListener.onClickReport(reason)\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/report/ReportDialog.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/report/ReportDialog.kt	(date 1617191104818)
+@@ -5,23 +5,16 @@
+ import android.graphics.Color
+ import android.graphics.drawable.ColorDrawable
+ import android.os.Bundle
+-import android.util.Log
+-import android.view.View
+ import android.view.Window
+ import android.view.WindowManager
+-import android.widget.Button
+-import android.widget.EditText
+ import android.widget.Toast
+ import androidx.annotation.NonNull
+ import com.medium.binding.R
+-import com.medium.binding.databinding.ActivityMainBinding
+-import com.medium.binding.databinding.DialogRemoveBinding
+ import com.medium.binding.databinding.DialogReportBinding
+-import com.medium.binding.databinding.LayoutBottomSheetBinding
+-import com.medium.binding.src.main.home.room.ReportDialogListener
++import com.medium.binding.util.Comments
+ 
+ class ReportDialog(@NonNull val mContext: Context,
+-                   private val activityListener: ReportDialogListener): Dialog(mContext) {
++                   private val reportListener: Comments.AdapterReportListener): Dialog(mContext) {
+     lateinit var binding: DialogReportBinding
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+@@ -60,7 +53,7 @@
+                 Toast.makeText(mContext, "신고사유를 5~500자로 입력해주세요",
+                     Toast.LENGTH_SHORT).show()
+             }else{
+-                activityListener.onClickReport(reason)
++                reportListener.onClickReport(reason)
+             }
+         }
+     }
+Index: app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.home.room\r\n\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.Menu\r\nimport android.view.MenuItem\r\nimport android.view.MotionEvent\r\nimport android.view.View\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.ApplicationClass\r\nimport com.medium.binding.config.BaseActivity\r\nimport com.medium.binding.config.BaseResponse\r\nimport com.medium.binding.databinding.ActivityHomeRoomBinding\r\nimport com.medium.binding.src.main.home.HomeFragment\r\nimport com.medium.binding.src.main.home.models.CommentsBody\r\nimport com.medium.binding.src.main.home.models.CommentsResult\r\nimport com.medium.binding.src.main.home.models.GetCommentsResponse\r\nimport com.medium.binding.src.main.home.models.ReportBody\r\nimport com.medium.binding.src.main.home.room.create.HomeCreateFragment\r\nimport kotlinx.android.synthetic.main.item_bookmark_store.*\r\n\r\nclass HomeRoomActivity:\r\n    BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),\r\nHomeRoomActivityView, HomeRoomDialogListener{\r\n\r\n    companion object{\r\n        // 뒤로가기 2번 눌러 종료할 때 사용\r\n        private const val FINISH_INTERVAL_TIME: Long = 2000\r\n        private const val ORDER_BY_BOOKMARK: Int = 0\r\n        private const val ORDER_BY_NEWEST: Int = 1\r\n        private var sortFlag: Int = ORDER_BY_BOOKMARK   // 0 - 북마크순, 1 - 최신순\r\n        private const val BOOKMARK_ON: Int = 1\r\n        private const val BOOKMARK_OFF: Int = 0\r\n        const val COMMENTS_CREATE: Int = 0      // 글 발행\r\n        const val COMMENTS_EDIT: Int = 1        // 글 수정\r\n    }\r\n\r\n    // 뒤로가기 2번 눌러 종료할 때 사용\r\n    private var backPressedTime: Long = 0\r\n\r\n    private var bookIdx: Int? = null\r\n    private var bookTitle: String? = null\r\n\r\n    lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter\r\n\r\n\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        setResult(RESULT_OK)\r\n\r\n        // 액션 바 설정\r\n        setSupportActionBar(binding.homeRoomToolbar)\r\n        supportActionBar?.setDisplayShowTitleEnabled(false)\r\n\r\n        // 정렬탭 레이아웃 테두리 둥글게 만들기 위함\r\n        binding.homeRoomSortTab.clipToOutline = true\r\n\r\n        // 코멘트 어댑터\r\n        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this,\r\n            this\r\n        )\r\n        binding.homeRoomRecycler.apply {\r\n            adapter = commentsRecyclerAdapter\r\n            layoutManager = LinearLayoutManager(\r\n                this@HomeRoomActivity,\r\n                LinearLayoutManager.VERTICAL, false\r\n            )\r\n        }\r\n\r\n        // 불러올 책방 인덱스\r\n        bookIdx = intent.extras?.getInt(\"bookIdx\")\r\n        bookIdx?.let {\r\n            showLoadingDialog(this)\r\n            HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n        }\r\n\r\n        // 뒤로가기 버튼\r\n        binding.homeRoomLeft.setOnClickListener {\r\n            super.onBackPressed()\r\n        }\r\n\r\n        // 정렬 탭 버튼\r\n        binding.homeRoomSortBtn.setOnClickListener(onClickSort)\r\n        // 정렬 버튼\r\n        binding.homeRoomSortBookmark.setOnClickListener(onClickSortBookmark)\r\n        binding.homeRoomSortNewest.setOnClickListener(onClickSortNewest)\r\n\r\n        binding.homeRoomRecycler.setOnClickListener {\r\n            if (binding.homeRoomSortTab.visibility == View.VISIBLE) {\r\n                binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n            }\r\n        }\r\n    }\r\n\r\n    // 정렬 탭 버튼 리스너\r\n    private val onClickSort = View.OnClickListener {\r\n        binding.homeRoomSortTab.apply{\r\n            if(this.visibility == View.INVISIBLE){\r\n                this.visibility = View.VISIBLE\r\n            }else{\r\n                this.visibility = View.INVISIBLE\r\n            }\r\n        }\r\n    }\r\n\r\n    // 북마크순 정렬 버튼 리스너\r\n    private val onClickSortBookmark = View.OnClickListener {\r\n        if(sortFlag != ORDER_BY_BOOKMARK){\r\n            showLoadingDialog(this)\r\n            HomeRoomService(this).tryGetMarkedWR(bookIdx!!)\r\n        }else{\r\n            binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n        }\r\n    }\r\n\r\n    // 최신순 정렬 버튼 리스너\r\n    private val onClickSortNewest = View.OnClickListener {\r\n        if(sortFlag != ORDER_BY_NEWEST){\r\n            showLoadingDialog(this)\r\n            HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n        }else{\r\n            binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n        }\r\n    }\r\n\r\n    // 두 번 눌러 앱 종료\r\n    private fun finishOnBackPressed() {\r\n        val tempTime: Long = System.currentTimeMillis()       // 현재 시간과 1970년 1월 1일 시간 차\r\n        val intervalTime: Long = tempTime - backPressedTime\r\n\r\n        if(intervalTime >= 0 && FINISH_INTERVAL_TIME >= intervalTime){\r\n            super.onBackPressed()\r\n        }else{\r\n            backPressedTime = tempTime\r\n            showCustomToast(\"뒤로 버튼을 한번 더 누르시면 종료됩니다.\")\r\n        }\r\n    }\r\n\r\n    // 책방 댓글 최신순 불러오기 통신 성공\r\n    override fun onGetNewestWRSuccess(response: GetCommentsResponse) {\r\n        val result = response.result\r\n\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 성공\r\n            1000 -> doWhenSuccess(result, ORDER_BY_NEWEST)\r\n\r\n            // 책방이 없어졌으면 메시지를 띄우고 홈으로 나간다\r\n            3000 -> whenBookRoomRemoved()\r\n\r\n            else -> {\r\n                showCustomToast(\"책방 글을 불러오던 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n                finish()\r\n            }\r\n        }\r\n    }\r\n\r\n    // 책방 댓글 최신순 불러오기 통신 실패\r\n    override fun onGetNewestWRFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"책방 글을 불러오던 중 오류가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 에러가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n        finish()\r\n    }\r\n\r\n    // 책방 댓글 북마크순 불러오기 통신 성공\r\n    override fun onGetMarkedWRSuccess(response: GetCommentsResponse) {\r\n        val result = response.result\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n            // 성공\r\n            1000 -> doWhenSuccess(result, ORDER_BY_BOOKMARK)\r\n\r\n            // 삭제된 책방이면 메시지를 띄우고 나간다\r\n            3000 -> whenBookRoomRemoved()\r\n\r\n            else -> {\r\n                showCustomToast(\"책방 글을 불러오던 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n                finish()\r\n            }\r\n        }\r\n    }\r\n\r\n    // 책방 댓글 북마크순 불러오기 통신 실패\r\n    override fun onGetMarkedWRFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"책방 글을 불러오던 중 에러가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 에러가 계속되면 관리자에게 문의주세요.\")\r\n    }\r\n\r\n    // 글 북마크 수정 통신 성공\r\n    override fun onPatchWBookmarkSuccess(response: BaseResponse, itemPos: Int) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code){\r\n\r\n            // 성공(추가 or ON)\r\n            in 1000..1001 -> {\r\n                commentsRecyclerAdapter.updateItem(itemPos, BOOKMARK_ON)\r\n            }\r\n\r\n            // 성공(해제)\r\n            1002 -> {\r\n                commentsRecyclerAdapter.updateItem(itemPos, BOOKMARK_OFF)\r\n            }\r\n\r\n            // 책방이 사라졌으면 메시지를 띄우고 홈으로 나간다\r\n            3001 -> whenBookRoomRemoved()\r\n\r\n            else-> {\r\n                showCustomToast(\"북마크 수정 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n\r\n        }\r\n    }\r\n\r\n    // 글 북마크 수정 통신 실패\r\n    override fun onPatchWBookmarkFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"북마크 수정 중 오류가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n        finish()\r\n    }\r\n\r\n    // 책방 글 조회 성공 -> 제목, 책방 댓글을 보여준다\r\n    private fun doWhenSuccess(result: ArrayList<CommentsResult>, mSortFlag: Int){\r\n        bookTitle = result[0].bookName\r\n\r\n        // 책 제목\r\n        with(bookTitle){\r\n            binding.homeRoomTitle.text = this\r\n            binding.homeRoomTextTitle.text = this\r\n        }\r\n\r\n        result.removeAt(0)\r\n        commentsRecyclerAdapter.updateList(result)\r\n\r\n        // 댓글이 없으면 종료\r\n        if(result.size <= 1){\r\n            return\r\n        }\r\n\r\n        binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n\r\n        // 탭 Text 설정\r\n        when(mSortFlag){\r\n            ORDER_BY_BOOKMARK -> {\r\n                binding.homeRoomSortText.text = String.format(\"북마크순\")\r\n                sortFlag = ORDER_BY_BOOKMARK\r\n\r\n            }\r\n            ORDER_BY_NEWEST -> {\r\n                binding.homeRoomSortText.text = String.format(\"최신순\")\r\n                sortFlag = ORDER_BY_NEWEST\r\n            }\r\n        }\r\n    }\r\n\r\n    // 화면을 터치하면 정렬탭이 닫힌다\r\n    override fun onTouchEvent(event: MotionEvent?): Boolean {\r\n        event?.let {\r\n            when (it.actionMasked) {\r\n                MotionEvent.ACTION_DOWN -> {\r\n                    if(binding.homeRoomSortTab.visibility == View.VISIBLE){\r\n                        binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n                    }\r\n            }\r\n        }\r\n        return true\r\n    }\r\n\r\n        if(binding.homeRoomSortTab.visibility == View.VISIBLE){\r\n            binding.homeRoomSortTab.visibility = View.INVISIBLE\r\n            return false\r\n        }\r\n\r\n        return super.onTouchEvent(event)\r\n    }\r\n\r\n    override fun onCreateOptionsMenu(menu: Menu?): Boolean {\r\n\r\n        val inflater = menuInflater\r\n        inflater.inflate(R.menu.menu_home_room_toolbar, menu)\r\n\r\n        return true\r\n    }\r\n\r\n    // 툴바 아이템 눌렀을 떄\r\n    override fun onOptionsItemSelected(item: MenuItem): Boolean {\r\n        when(item.itemId){\r\n            R.id.menu_home_room_toolbar_write -> {\r\n                supportFragmentManager.beginTransaction()\r\n                    .add(R.id.home_room_frm, HomeCreateFragment(\r\n                        this, \"\", COMMENTS_CREATE, -1))\r\n                    .addToBackStack(\"HomeCreate\")\r\n                    .commitAllowingStateLoss()\r\n            }\r\n        }\r\n        return super.onOptionsItemSelected(item)\r\n    }\r\n\r\n    // 책방 글쓰는 화면에서 발행버튼을 눌렀을 떄\r\n    override fun onClickPub(commentsBody: CommentsBody, commentsFlag: Int, contentsIdx: Int){\r\n        showLoadingDialog(this)\r\n\r\n        when(commentsFlag){\r\n\r\n            // 글 발행\r\n            COMMENTS_CREATE-> HomeRoomService(this).tryPostComments(bookIdx!!, commentsBody)\r\n\r\n            // 글 수정\r\n            COMMENTS_EDIT -> {\r\n                HomeRoomService(this).tryPatchComments(bookIdx!!, contentsIdx, commentsBody)\r\n            }\r\n\r\n        }\r\n    }\r\n\r\n    // 글 발행 통신 성공\r\n    override fun onPostCommentsSuccess(response: BaseResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code) {\r\n            1000 -> {\r\n                showCustomToast(\"글이 발행되었습니다\")\r\n                reflectCommentsUpdate()\r\n            }\r\n\r\n            2001 -> showCustomToast(\"5자 이상 적어주세요\")\r\n\r\n            else -> {\r\n                showCustomToast(\"글 발행 중 에러가 발생했습니다\\n\" +\r\n                        \"에러가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n        }\r\n    }\r\n\r\n    // 글 발행 통신 실패\r\n    override fun onPostCommentsFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"글 발행 중 오류가 발생했습니다\\n\" +\r\n                \"오류가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n    }\r\n\r\n    // 글 수정 통신 성공\r\n    override fun onPatchCommentsSuccess(response: BaseResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code) {\r\n            1000 -> {\r\n                showCustomToast(\"글이 수정되었습니다\")\r\n                reflectCommentsUpdate()\r\n            }\r\n\r\n            2001 -> showCustomToast(\"5자 이상 적어주세요\")\r\n\r\n            3000 -> {\r\n                showCustomToast(\"해당 책방이 존재하지 않습니다\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n\r\n            3001 -> {\r\n                showCustomToast(\"해당 글이 존재하지 않습니다\")\r\n                reflectCommentsUpdate()\r\n            }\r\n\r\n            else -> {\r\n                showCustomToast(\"글 발행 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n        }\r\n    }\r\n\r\n    // 글 수정 통신 실패\r\n    override fun onPatchCommentsFailure(message: String) {\r\n        dismissLoadingDialog()\r\n\r\n        showCustomToast(\"글 수정 중 오류가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n    }\r\n\r\n    // 글 발행 or 수정사항 반영\r\n    private fun reflectCommentsUpdate(){\r\n        super.onBackPressed()\r\n        showLoadingDialog(this)\r\n        HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n    }\r\n\r\n    // 통신에서 책방이 없다고 올 때\r\n    private fun whenBookRoomRemoved(){\r\n        showCustomToast(\"해당 책방이 존재하지 않습니다\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n    }\r\n\r\n    override fun onClickRemove(contentIdx: Int) {\r\n        if(contentIdx != -1){\r\n            HomeRoomService(this).tryDeleteComments(bookIdx!!, contentIdx)\r\n        }else{\r\n            showCustomToast(\"잠시 후 다시 시도해주세요.\")\r\n        }\r\n    }\r\n\r\n    // 다이얼로그에서 글 삭제버튼을 눌렀을 때\r\n    override fun confirmRemove(contentsIdx: Int) {\r\n        HomeRoomService(this).tryDeleteComments(bookIdx!!, contentsIdx)\r\n    }\r\n\r\n    // 책방 글 삭제 통신 성공\r\n    override fun onDeleteCommentsSuccess(response: BaseResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code) {\r\n            1000 -> {\r\n                commentsRecyclerAdapter.removeDialog.dismiss()\r\n                showCustomToast(\"글이 삭제되었습니다\")\r\n                showLoadingDialog(this)\r\n                HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n            }\r\n\r\n            2001 -> showCustomToast(\"5자 이상 적어주세요\")\r\n\r\n            3000 -> {\r\n                showCustomToast(\"해당 책방이 존재하지 않습니다\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n                finish()\r\n            }\r\n\r\n            3001 -> {\r\n                showCustomToast(\"해당 글이 존재하지 않습니다\")\r\n                showLoadingDialog(this)\r\n                HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n            }\r\n\r\n            else -> {\r\n                showCustomToast(\"글 삭제 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n        }\r\n    }\r\n\r\n    // 책방 글 삭제 통신 실패\r\n    override fun onDeleteCommentsFailure(message: String) {\r\n        dismissLoadingDialog()\r\n        commentsRecyclerAdapter.removeDialog.dismiss()\r\n\r\n        showCustomToast(\"글 삭제 중 에러가 발생했습니다\\n\" +\r\n                \"에러가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n    }\r\n\r\n    override fun onClickReport(reportReason: String, contentIdx: Int) {\r\n        if(contentIdx != -1){\r\n            val reportBody = ReportBody(reportReason)\r\n            HomeRoomService(this).tryPostReport(bookIdx!!, contentIdx, reportBody)\r\n        }else{\r\n            showCustomToast(\"잠시 후 다시 시도해주세요.\")\r\n        }\r\n    }\r\n\r\n    // 책방 글 신고 통신 성공\r\n    override fun onPostReportSuccess(response: BaseResponse) {\r\n        dismissLoadingDialog()\r\n\r\n        when(response.code) {\r\n            1000 -> {\r\n                commentsRecyclerAdapter.reportDialog.dismiss()\r\n                showCustomToast(\"글이 신고되었습니다\")\r\n            }\r\n\r\n            2001 -> showCustomToast(\"5자 이상 적어주세요\")\r\n\r\n            2002 -> showCustomToast(\"500자 이하로 입력하세요\")\r\n\r\n            3000 -> {\r\n                showCustomToast(\"해당 책방이 존재하지 않습니다\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n                finish()\r\n            }\r\n\r\n            3001 -> {\r\n                showCustomToast(\"해당 글이 존재하지 않습니다\")\r\n                showLoadingDialog(this)\r\n                HomeRoomService(this).tryGetNewestWR(bookIdx!!)\r\n            }\r\n\r\n            3004 -> {\r\n                showCustomToast(\"이미 신고한 글입니다\")\r\n            }\r\n\r\n            else -> {\r\n                showCustomToast(\"글 신고 중 오류가 발생했습니다\\n\" +\r\n                        \"오류가 계속되면 관리자에게 문의주세요.\")\r\n                setResult(HomeFragment.BOOK_REMOVED)\r\n            }\r\n        }\r\n    }\r\n\r\n    // 책방 글 신고 통신 실패\r\n    override fun onPostReportFailure(message: String) {\r\n        dismissLoadingDialog()\r\n        commentsRecyclerAdapter.reportDialog.dismiss()\r\n\r\n        showCustomToast(\"글 신고 중 오류가 발생했습니다\\n\" +\r\n                \"네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.\")\r\n        setResult(HomeFragment.BOOK_REMOVED)\r\n    }\r\n\r\n    override fun onBackPressed() {\r\n        if(supportFragmentManager.backStackEntryCount > 0){\r\n            supportFragmentManager.popBackStack()\r\n        }else{\r\n            super.onBackPressed()\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivity.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivity.kt	(date 1617191104831)
+@@ -18,11 +18,12 @@
+ import com.medium.binding.src.main.home.models.GetCommentsResponse
+ import com.medium.binding.src.main.home.models.ReportBody
+ import com.medium.binding.src.main.home.room.create.HomeCreateFragment
++import com.medium.binding.util.Comments
+ import kotlinx.android.synthetic.main.item_bookmark_store.*
+ 
+ class HomeRoomActivity:
+     BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
+-HomeRoomActivityView, HomeRoomDialogListener{
++HomeRoomActivityView, Comments.ClickListener{
+ 
+     companion object{
+         // 뒤로가기 2번 눌러 종료할 때 사용
+@@ -44,8 +45,6 @@
+ 
+     lateinit var commentsRecyclerAdapter: CommentsRecyclerAdapter
+ 
+-
+-
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+ 
+@@ -59,8 +58,8 @@
+         binding.homeRoomSortTab.clipToOutline = true
+ 
+         // 코멘트 어댑터
+-        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this,
+-            this
++        commentsRecyclerAdapter = CommentsRecyclerAdapter(
++            this, this, this
+         )
+         binding.homeRoomRecycler.apply {
+             adapter = commentsRecyclerAdapter
+@@ -438,8 +437,6 @@
+                 HomeRoomService(this).tryGetNewestWR(bookIdx!!)
+             }
+ 
+-            2001 -> showCustomToast("5자 이상 적어주세요")
+-
+             3000 -> {
+                 showCustomToast("해당 책방이 존재하지 않습니다")
+                 setResult(HomeFragment.BOOK_REMOVED)
+Index: app/src/main/java/com/medium/binding/src/main/my_page/my_post/CommentsRecyclerAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.my_page.my_post\r\n\r\nimport android.content.Context\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.ImageView\r\nimport android.widget.TextView\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.bumptech.glide.Glide\r\nimport com.makeramen.roundedimageview.RoundedImageView\r\nimport com.medium.binding.R\r\nimport com.medium.binding.config.ApplicationClass\r\nimport com.medium.binding.src.main.my_page.models.CommentsWriting\r\nimport kotlinx.android.synthetic.main.item_post.view.*\r\n\r\n\r\nclass CommentsRecyclerAdapter(val mContext: Context):\r\n    RecyclerView.Adapter<CommentsRecyclerAdapter.WritingViewHolder>() {\r\n\r\n    private var writingList = arrayListOf<CommentsWriting>()\r\n\r\n    override fun onCreateViewHolder(\r\n        parent: ViewGroup,\r\n        viewType: Int\r\n    ): CommentsRecyclerAdapter.WritingViewHolder {\r\n        val viewHolder = WritingViewHolder(\r\n            LayoutInflater.from(parent.context)\r\n                .inflate(R.layout.item_post, parent, false)\r\n        )\r\n        return viewHolder\r\n    }\r\n\r\n\r\n    override fun getItemCount() = writingList.size\r\n\r\n    override fun onBindViewHolder(holder: CommentsRecyclerAdapter.WritingViewHolder, position: Int) {\r\n        holder.bindValue(writingList[position])\r\n    }\r\n\r\n    inner class WritingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {\r\n        private val item: View = itemView\r\n        private val nickname: TextView = itemView.item_post_nickname        // 유저 닉네임\r\n        private val userImg: RoundedImageView = itemView.item_post_photo    // 유저 이미지\r\n        private val postedDate: TextView = itemView.item_post_date          // 포스팅 데이트\r\n        private val contents: TextView = itemView.item_post_text            // 유저 글\r\n        private val report: TextView = itemView.item_post_report            // 신고\r\n        private val edit: TextView = itemView.item_post_edit                // 수정\r\n        private val delete: TextView = itemView.item_post_delete            // 삭제\r\n        private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 ON 됨\r\n        private val markEmpty: ImageView = itemView.item_post_bookmark_empty  // 북마크 OFF 됨\r\n\r\n        fun bindValue(writing: CommentsWriting){\r\n            // 프로필 사진\r\n            if(writing.userImgUrl != \"-1\"){\r\n                Glide.with(mContext)\r\n                    .load(writing.userImgUrl)\r\n                    .error(R.drawable.icon_app)\r\n                    .into(userImg)\r\n            }\r\n\r\n            nickname.text = writing.nickname    // 닉네임\r\n            postedDate.text = writing.createdAt // 포스팅 날짜\r\n            contents.text = writing.contents    // 글\r\n\r\n            // 유저가 쓴 글이면 수정, 삭제 가능\r\n            if(ApplicationClass.userIdx == writing.userIdx){\r\n                edit.setOnClickListener {  }\r\n                delete.setOnClickListener {  }\r\n            }\r\n            // 다른 유저 글이면 신고, 북마크 설정/해제 가능\r\n            else{\r\n                edit.visibility = View.INVISIBLE\r\n                delete.visibility = View.INVISIBLE\r\n                report.visibility = View.VISIBLE\r\n\r\n                report.setOnClickListener {  }\r\n\r\n                markFilled.setOnClickListener {  }\r\n                markEmpty.setOnClickListener {  }\r\n\r\n            }\r\n\r\n        }\r\n    }\r\n\r\n\r\n    fun updateList(newList: ArrayList<CommentsWriting>){\r\n        writingList = newList\r\n        this.notifyDataSetChanged()\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/my_page/my_post/CommentsRecyclerAdapter.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/my_page/my_post/CommentsRecyclerAdapter.kt	(date 1617194747699)
+@@ -1,6 +1,7 @@
+ package com.medium.binding.src.main.my_page.my_post
+ 
+ import android.content.Context
++import android.os.SystemClock
+ import android.view.LayoutInflater
+ import android.view.View
+ import android.view.ViewGroup
+@@ -11,15 +12,22 @@
+ import com.makeramen.roundedimageview.RoundedImageView
+ import com.medium.binding.R
+ import com.medium.binding.config.ApplicationClass
++import com.medium.binding.src.main.home.room.remove.RemoveDialog
++import com.medium.binding.src.main.home.room.report.ReportDialog
+ import com.medium.binding.src.main.my_page.models.CommentsWriting
++import com.medium.binding.util.Comments
+ import kotlinx.android.synthetic.main.item_post.view.*
+ 
+ 
+-class CommentsRecyclerAdapter(val mContext: Context):
++class CommentsRecyclerAdapter(val mContext: Context,
++                              val commentsListener: Comments.ClickListener):
+     RecyclerView.Adapter<CommentsRecyclerAdapter.WritingViewHolder>() {
+ 
+     private var writingList = arrayListOf<CommentsWriting>()
+ 
++    var removeDialog: RemoveDialog? = null
++    var reportDialog: ReportDialog? = null
++
+     override fun onCreateViewHolder(
+         parent: ViewGroup,
+         viewType: Int
+@@ -38,7 +46,8 @@
+         holder.bindValue(writingList[position])
+     }
+ 
+-    inner class WritingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
++    inner class WritingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
++    Comments.AdapterRemoveListener, Comments.AdapterReportListener{
+         private val item: View = itemView
+         private val nickname: TextView = itemView.item_post_nickname        // 유저 닉네임
+         private val userImg: RoundedImageView = itemView.item_post_photo    // 유저 이미지
+@@ -49,6 +58,7 @@
+         private val delete: TextView = itemView.item_post_delete            // 삭제
+         private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 ON 됨
+         private val markEmpty: ImageView = itemView.item_post_bookmark_empty  // 북마크 OFF 됨
++        var contentsIdx: Int = -1
+ 
+         fun bindValue(writing: CommentsWriting){
+             // 프로필 사진
+@@ -65,8 +75,25 @@
+ 
+             // 유저가 쓴 글이면 수정, 삭제 가능
+             if(ApplicationClass.userIdx == writing.userIdx){
++
++                // 수정 버튼
+                 edit.setOnClickListener {  }
+-                delete.setOnClickListener {  }
++
++                // 삭제 버튼
++                delete.setOnClickListener {
++
++                    // 중복 클릭 방지
++                    ApplicationClass.mLastClickTime.apply {
++                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
++                            return@setOnClickListener
++                        }
++                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
++                    }
++
++                    contentsIdx = writing.contentsIdx ?: -1
++                    removeDialog = RemoveDialog(mContext, this)
++                    removeDialog?.show()
++                }
+             }
+             // 다른 유저 글이면 신고, 북마크 설정/해제 가능
+             else{
+@@ -74,13 +101,36 @@
+                 delete.visibility = View.INVISIBLE
+                 report.visibility = View.VISIBLE
+ 
+-                report.setOnClickListener {  }
++                report.setOnClickListener {
++
++                    // 중복 클릭 방지
++                    ApplicationClass.mLastClickTime.apply {
++                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
++                            return@setOnClickListener
++                        }
++                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
++                    }
++
++                    contentsIdx = writing.contentsIdx ?: -1
++                    // 신고 다이얼로그
++                    reportDialog = ReportDialog(mContext, this)
++                    reportDialog?.show()
++
++                }
+ 
+                 markFilled.setOnClickListener {  }
+                 markEmpty.setOnClickListener {  }
+ 
+             }
+ 
++        }
++
++        override fun onClickRemove() {
++            commentsListener.onClickRemove(contentsIdx)
++        }
++
++        override fun onClickReport(reportReason: String) {
++            commentsListener.onClickReport(reportReason, contentsIdx)
+         }
+     }
+ 
+Index: app/src/main/java/com/medium/binding/src/main/home/room/CommentsRecyclerAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.home.room\r\n\r\nimport android.content.Context\r\nimport android.os.SystemClock\r\nimport android.util.Log\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.ImageView\r\nimport android.widget.TextView\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.bumptech.glide.Glide\r\nimport com.medium.binding.R\r\nimport com.makeramen.roundedimageview.RoundedImageView\r\nimport com.medium.binding.config.ApplicationClass\r\nimport com.medium.binding.src.main.home.models.CommentsResult\r\nimport com.medium.binding.src.main.home.room.create.HomeCreateFragment\r\nimport com.medium.binding.src.main.home.room.remove.RemoveDialog\r\nimport com.medium.binding.src.main.home.room.report.ReportDialog\r\nimport com.medium.binding.util.OnClickRemoveComments\r\nimport kotlinx.android.synthetic.main.item_post.view.*\r\n\r\nclass CommentsRecyclerAdapter(val context: Context,\r\n                              private val homeRoomActivity: HomeRoomActivity,\r\n                              private val activityDialogListener: HomeRoomDialogListener\r\n): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>(){\r\n\r\n    private var commentsList = ArrayList<CommentsResult>()\r\n\r\n    private var targetContentIdx = -1\r\n\r\n    lateinit var removeDialog: RemoveDialog\r\n    lateinit var reportDialog: ReportDialog\r\n\r\n    override fun onCreateViewHolder(\r\n        parent: ViewGroup,\r\n        viewType: Int\r\n    ): CommentsRecyclerAdapter.CommentsHolder {\r\n        val viewHolder = CommentsHolder(LayoutInflater.from(parent.context)\r\n                .inflate(R.layout.item_post, parent, false)\r\n        )\r\n        return viewHolder\r\n    }\r\n\r\n\r\n    override fun getItemCount() = commentsList.size\r\n\r\n\r\n    override fun onBindViewHolder(holder: CommentsRecyclerAdapter.CommentsHolder, position: Int) {\r\n\r\n        // 사용자 선택에 따라 최신글 or 인기글 데이터 연결\r\n        holder.bindCommentsValue(commentsList[position], position)\r\n    }\r\n\r\n    inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView),\r\n    ReportDialogListener, RemoveDialogListener {\r\n        private val markEmpty: ImageView = itemView.item_post_bookmark_empty    // 북마크 안한 거\r\n        private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 한 거\r\n        private val comments: TextView = itemView.item_post_text            // 글 내용\r\n        private val postDate: TextView = itemView.item_post_date            // 글 쓴 날짜\r\n        private val nickname: TextView = itemView.item_post_nickname        // 닉네임\r\n        private val userImg: RoundedImageView = itemView.item_post_photo    // 프로필 사진\r\n        private val report: TextView = itemView.item_post_report            // 신고\r\n        private val edit: TextView = itemView.item_post_edit                // 수정 - 자기 글일 때만\r\n        private val delete: TextView = itemView.item_post_delete            // 삭제 - 자기 글일 때만\r\n        var contentIdx: Int = -1\r\n\r\n        fun bindCommentsValue(commentsData: CommentsResult, itemPos: Int) {\r\n\r\n            // 북마크\r\n            if (commentsData.isBookMark == 1) {\r\n                markFilled.visibility = View.VISIBLE\r\n            } else {\r\n                markFilled.visibility = View.INVISIBLE\r\n            }\r\n\r\n            postDate.text = commentsData.createdAt      // 글 쓴 날짜\r\n            nickname.text = commentsData.nickname       // 닉네임\r\n            // 프로필 사진이 있으면 적용\r\n            if (commentsData.userImgUrl != \"-1\") {\r\n                Glide.with(homeRoomActivity)\r\n                    .load(commentsData.userImgUrl)\r\n                    .error(R.drawable.icon_app)\r\n                    .into(userImg)\r\n            }\r\n\r\n            // 자기 글이면 수정, 삭제 버튼, 아니면 신고 버튼 보이게 함\r\n            // 버튼 리스너\r\n            if (commentsData.userIdx == ApplicationClass.userIdx) {\r\n                report.visibility = View.INVISIBLE\r\n                edit.visibility = View.VISIBLE\r\n                delete.visibility = View.VISIBLE\r\n\r\n                // 수정 버튼 -> 글 발행 창 실행\r\n                edit.setOnClickListener {\r\n\r\n                    // 중복 클릭 방지\r\n                    ApplicationClass.mLastClickTime.apply {\r\n                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {\r\n                            return@setOnClickListener\r\n                        }\r\n                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())\r\n                    }\r\n\r\n                    homeRoomActivity.supportFragmentManager.beginTransaction()\r\n                        .add(\r\n                            R.id.home_room_frm, HomeCreateFragment(\r\n                                homeRoomActivity,\r\n                                commentsData.contents!!,\r\n                                HomeRoomActivity.COMMENTS_EDIT,\r\n                                commentsData.contentsIdx!!\r\n                            )\r\n                        )\r\n                        .addToBackStack(\"HomeCreate\")\r\n                        .commitAllowingStateLoss()\r\n                }\r\n                // 삭제 버튼\r\n                delete.setOnClickListener {\r\n\r\n                    // 중복 클릭 방지\r\n                    ApplicationClass.mLastClickTime.apply {\r\n                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {\r\n                            return@setOnClickListener\r\n                        }\r\n                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())\r\n                    }\r\n\r\n                    // 삭제 다이얼로그\r\n                    contentIdx = commentsData.contentsIdx ?: -1\r\n                    removeDialog = RemoveDialog(context, this)\r\n                    removeDialog.show()\r\n                }\r\n            } else {\r\n                report.visibility = View.VISIBLE\r\n                edit.visibility = View.INVISIBLE\r\n                delete.visibility = View.INVISIBLE\r\n\r\n                // 신고 버튼\r\n                report.setOnClickListener {\r\n\r\n                    // 중복 클릭 방지\r\n                    ApplicationClass.mLastClickTime.apply {\r\n                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {\r\n                            return@setOnClickListener\r\n                        }\r\n                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())\r\n                    }\r\n\r\n                    contentIdx = commentsData.contentsIdx ?: -1\r\n                    // 신고 다이얼로그\r\n                    reportDialog = ReportDialog(context, this)\r\n                    reportDialog.show()\r\n                }\r\n            }\r\n\r\n            // 글 내용\r\n            comments.text = commentsData.contents\r\n\r\n            // 북마크 설정\r\n            markEmpty.setOnClickListener {\r\n                commentsData.contentsIdx?.let {\r\n                    homeRoomActivity.showLoadingDialog(homeRoomActivity)\r\n                    HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)\r\n                }\r\n            }\r\n            // 북마크 해제\r\n            markFilled.setOnClickListener {\r\n                commentsData.contentsIdx?.let {\r\n                    homeRoomActivity.showLoadingDialog(homeRoomActivity)\r\n                    HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)\r\n                }\r\n            }\r\n        }\r\n\r\n        // 신고하기 버튼 -> ReportDialog에서 실행할 콜백함수\r\n        override fun onClickReport(reportReason: String) {\r\n            activityDialogListener.onClickReport(reportReason, contentIdx)\r\n        }\r\n\r\n        override fun onClickRemove() {\r\n            activityDialogListener.onClickRemove(contentIdx)\r\n        }\r\n    }\r\n\r\n    fun updateList(nList: ArrayList<CommentsResult>){\r\n        commentsList = nList\r\n        notifyDataSetChanged()\r\n    }\r\n\r\n    // 1. 북마크 수정\r\n    fun updateItem(pos: Int, bookmark: Int){\r\n        commentsList[pos].isBookMark = bookmark\r\n        notifyItemChanged(pos)\r\n    }\r\n\r\n    // 삭제 확인 버튼 리스너\r\n    val confirmRemove = View.OnClickListener {\r\n        if(targetContentIdx != -1){\r\n            homeRoomActivity.confirmRemove(targetContentIdx)\r\n        }else{\r\n            homeRoomActivity.showCustomToast(\"잠시 후 다시 시도해주세요.\")\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/CommentsRecyclerAdapter.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/CommentsRecyclerAdapter.kt	(date 1617191104856)
+@@ -17,12 +17,12 @@
+ import com.medium.binding.src.main.home.room.create.HomeCreateFragment
+ import com.medium.binding.src.main.home.room.remove.RemoveDialog
+ import com.medium.binding.src.main.home.room.report.ReportDialog
+-import com.medium.binding.util.OnClickRemoveComments
++import com.medium.binding.util.Comments
+ import kotlinx.android.synthetic.main.item_post.view.*
+ 
+ class CommentsRecyclerAdapter(val context: Context,
+                               private val homeRoomActivity: HomeRoomActivity,
+-                              private val activityDialogListener: HomeRoomDialogListener
++                              private val commentsListener: Comments.ClickListener
+ ): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>(){
+ 
+     private var commentsList = ArrayList<CommentsResult>()
+@@ -53,7 +53,7 @@
+     }
+ 
+     inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+-    ReportDialogListener, RemoveDialogListener {
++        Comments.AdapterReportListener, Comments.AdapterRemoveListener {
+         private val markEmpty: ImageView = itemView.item_post_bookmark_empty    // 북마크 안한 거
+         private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 한 거
+         private val comments: TextView = itemView.item_post_text            // 글 내용
+@@ -174,11 +174,11 @@
+ 
+         // 신고하기 버튼 -> ReportDialog에서 실행할 콜백함수
+         override fun onClickReport(reportReason: String) {
+-            activityDialogListener.onClickReport(reportReason, contentIdx)
++            commentsListener.onClickReport(reportReason, contentIdx)
+         }
+ 
+         override fun onClickRemove() {
+-            activityDialogListener.onClickRemove(contentIdx)
++            commentsListener.onClickRemove(contentIdx)
+         }
+     }
+ 
+Index: app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomDialogListener.kt
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
+@@ -1,7 +0,0 @@
+-package com.medium.binding.src.main.home.room
+-
+-interface HomeRoomDialogListener {
+-    fun onClickReport(reportReason: String, contentIdx: Int)
+-
+-    fun onClickRemove(contentIdx: Int)
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/src/main/home/room/ReportDialogListener.kt
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/ReportDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/ReportDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
+@@ -1,5 +0,0 @@
+-package com.medium.binding.src.main.home.room
+-
+-interface ReportDialogListener {
+-    fun onClickReport(reportReason: String)
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/src/main/home/room/RemoveDialogListener.kt
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/RemoveDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/RemoveDialogListener.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
+@@ -1,5 +0,0 @@
+-package com.medium.binding.src.main.home.room
+-
+-interface RemoveDialogListener {
+-    fun onClickRemove()
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/util/OnClickRemoveComments.kt
+===================================================================
+--- app/src/main/java/com/medium/binding/util/OnClickRemoveComments.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/util/OnClickRemoveComments.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
+@@ -1,7 +0,0 @@
+-package com.medium.binding.util
+-
+-import android.view.View
+-
+-abstract class OnClickRemoveComments(val contentIdx: Int): View.OnClickListener {
+-
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/config/ApplicationClass.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.config\r\n\r\nimport android.app.Application\r\nimport android.content.SharedPreferences\r\nimport com.google.firebase.storage.FirebaseStorage\r\nimport okhttp3.OkHttpClient\r\nimport okhttp3.logging.HttpLoggingInterceptor\r\nimport retrofit2.Retrofit\r\nimport retrofit2.converter.gson.GsonConverterFactory\r\nimport java.util.concurrent.TimeUnit\r\nimport java.util.concurrent.atomic.AtomicLong\r\n\r\n// 앱이 실행될때 1번만 실행이 됩니다.\r\nclass ApplicationClass : Application() {\r\n    // 테스트 서버 주소\r\n    val API_URL = \"https://test.liyusang1.site/\"\r\n\r\n    // 실 서버 주소\r\n    // val API_URL = \"https://test.liyusang1.site/\"\r\n\r\n    // 코틀린의 전역변수 문법\r\n    companion object {\r\n        // 만들어져있는 SharedPreferences 를 사용해야합니다. 재생성하지 않도록 유념해주세요\r\n        lateinit var sSharedPreferences: SharedPreferences\r\n\r\n        // JWT Token Header 키 값\r\n        val X_ACCESS_TOKEN = \"X-ACCESS-TOKEN\"\r\n\r\n        // Retrofit 인스턴스, 앱 실행시 한번만 생성하여 사용합니다.\r\n        lateinit var sRetrofit: Retrofit\r\n\r\n        // 파이어베이스 저장소\r\n        lateinit var userStorage: FirebaseStorage\r\n\r\n        var isEdited = false    // 프로필 변경 플래그\r\n        var isMarkEdited = false    // 북마크 변경 플래그\r\n\r\n        // 유저 인덱스\r\n        var userIdx: Int = -1\r\n\r\n        // 버튼 중복클릭 방지용\r\n        var mLastClickTime = AtomicLong()\r\n    }\r\n\r\n    // 앱이 처음 생성되는 순간, SP를 새로 만들어주고, 레트로핏 인스턴스를 생성합니다.\r\n    override fun onCreate() {\r\n        super.onCreate()\r\n        sSharedPreferences =\r\n            applicationContext.getSharedPreferences(\"BINDING_APP\", MODE_PRIVATE)\r\n        // 레트로핏 인스턴스 생성\r\n        initRetrofitInstance()\r\n\r\n        userStorage = FirebaseStorage.getInstance()\r\n\r\n        userIdx = sSharedPreferences.getInt(\"userIdx\", -1)\r\n\r\n        mLastClickTime.set(0)\r\n    }\r\n\r\n    // 레트로핏 인스턴스를 생성하고, 레트로핏에 각종 설정값들을 지정해줍니다.\r\n    // 연결 타임아웃시간은 5초로 지정이 되어있고, HttpLoggingInterceptor를 붙여서 어떤 요청이 나가고 들어오는지를 보여줍니다.\r\n    private fun initRetrofitInstance() {\r\n        val client: OkHttpClient = OkHttpClient.Builder()\r\n            .readTimeout(5000, TimeUnit.MILLISECONDS)\r\n            .connectTimeout(5000, TimeUnit.MILLISECONDS)\r\n            // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.\r\n            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))\r\n            .addNetworkInterceptor(XAccessTokenInterceptor()) // JWT 자동 헤더 전송\r\n            .build()\r\n\r\n        // sRetrofit 이라는 전역변수에 API url, 인터셉터, Gson을 넣어주고 빌드해주는 코드\r\n        // 이 전역변수로 http 요청을 서버로 보내면 됩니다.\r\n        sRetrofit = Retrofit.Builder()\r\n            .baseUrl(API_URL)\r\n            .client(client)\r\n            .addConverterFactory(GsonConverterFactory.create())\r\n            .build()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/config/ApplicationClass.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/config/ApplicationClass.kt	(date 1617184544474)
+@@ -34,6 +34,7 @@
+ 
+         var isEdited = false    // 프로필 변경 플래그
+         var isMarkEdited = false    // 북마크 변경 플래그
++        var isCommentsChanged = false
+ 
+         // 유저 인덱스
+         var userIdx: Int = -1
+Index: app/src/main/java/com/medium/binding/src/main/home/room/remove/RemoveDialog.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.home.room.remove\r\n\r\nimport android.app.Dialog\r\nimport android.content.Context\r\nimport android.graphics.Color\r\nimport android.graphics.drawable.ColorDrawable\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport android.view.View\r\nimport android.view.Window\r\nimport android.view.WindowManager\r\nimport android.widget.Button\r\nimport androidx.annotation.NonNull\r\nimport com.medium.binding.R\r\nimport com.medium.binding.src.main.home.room.RemoveDialogListener\r\n\r\nclass RemoveDialog(@NonNull mContext: Context,\r\n                   private val activityListener: RemoveDialogListener): Dialog(mContext) {\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        //다이얼로그의 꼭짓점이 짤리는부분 방지.\r\n        window?.requestFeature(Window.FEATURE_NO_TITLE)\r\n        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))\r\n        setContentView(R.layout.dialog_remove)\r\n\r\n        // 다이얼로그 크기 설정\r\n        val params: WindowManager.LayoutParams = this.window?.attributes!!\r\n        val widthSize = ((context.resources.displayMetrics.widthPixels) * 0.88).toInt()\r\n        val density: Float = context.resources.displayMetrics.density   // 기기 density\r\n        val maxWidthPx = (360 * density + 0.5).toInt()      // 360dp -> 픽셀로 변환\r\n        if(widthSize > maxWidthPx){\r\n            params.width = maxWidthPx\r\n        }else{\r\n            params.width = widthSize\r\n        }\r\n        params.height = WindowManager.LayoutParams.WRAP_CONTENT\r\n        this.window?.attributes = params\r\n\r\n        // 버튼 이벤트\r\n        val btnCancel: Button = findViewById(R.id.dialog_remove_no)\r\n        val btnRemove: Button = findViewById(R.id.dialog_remove_yes)\r\n\r\n        btnCancel.setOnClickListener{\r\n            dismiss()\r\n        }\r\n        btnRemove.setOnClickListener{\r\n            activityListener.onClickRemove()\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/remove/RemoveDialog.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/remove/RemoveDialog.kt	(date 1617190316905)
+@@ -5,17 +5,15 @@
+ import android.graphics.Color
+ import android.graphics.drawable.ColorDrawable
+ import android.os.Bundle
+-import android.util.Log
+-import android.view.View
+ import android.view.Window
+ import android.view.WindowManager
+ import android.widget.Button
+ import androidx.annotation.NonNull
+ import com.medium.binding.R
+-import com.medium.binding.src.main.home.room.RemoveDialogListener
++import com.medium.binding.util.Comments
+ 
+ class RemoveDialog(@NonNull mContext: Context,
+-                   private val activityListener: RemoveDialogListener): Dialog(mContext) {
++                   private val removeListener: Comments.AdapterRemoveListener): Dialog(mContext) {
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+@@ -46,7 +44,7 @@
+             dismiss()
+         }
+         btnRemove.setOnClickListener{
+-            activityListener.onClickRemove()
++            removeListener.onClickRemove()
+         }
+     }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivityView.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.medium.binding.src.main.home.room\r\n\r\nimport android.view.View\r\nimport com.medium.binding.config.BaseResponse\r\nimport com.medium.binding.src.main.home.models.CommentsBody\r\nimport com.medium.binding.src.main.home.models.GetCommentsResponse\r\n\r\ninterface HomeRoomActivityView {\r\n\r\n    // 최신순 책방 댓글 콜백 함수\r\n    fun onGetNewestWRSuccess(response: GetCommentsResponse)\r\n\r\n    fun onGetNewestWRFailure(message: String)\r\n\r\n    // 북마크순 책방 댓글 콜백 함수\r\n    fun onGetMarkedWRSuccess(response: GetCommentsResponse)\r\n\r\n    fun onGetMarkedWRFailure(message: String)\r\n\r\n    // 북마크순 책방 댓글 콜백 함수\r\n    fun onPatchWBookmarkSuccess(response: BaseResponse, itemPos: Int)\r\n\r\n    fun onPatchWBookmarkFailure(message: String)\r\n\r\n    // 책방 글 발행 콜백 함수\r\n    fun onPostCommentsSuccess(response: BaseResponse)\r\n\r\n    fun onPostCommentsFailure(message: String)\r\n\r\n    // 책방 글 수정 콜백 함수\r\n    fun onPatchCommentsSuccess(response: BaseResponse)\r\n\r\n    fun onPatchCommentsFailure(message: String)\r\n\r\n    // 책방 글 발행, 수정할 때, HomeCreateFragment에서 발행 버튼 누를 때 호출할 함수\r\n    // commentsFlag - 발행: 0 , 수정: 1\r\n    // 수정할 떄 contentsIdx가 필요하다\r\n    fun onClickPub(commentsBody: CommentsBody, commentsFlag: Int, contentsIdx: Int)\r\n\r\n    // 책방 글 삭제 Retrofit 콜백 함수\r\n    fun onDeleteCommentsSuccess(response: BaseResponse)\r\n\r\n    fun onDeleteCommentsFailure(message: String)\r\n\r\n    // 책방 글 삭제 버튼 콜백 함수\r\n    fun confirmRemove(contentsIdx: Int)\r\n\r\n    // 책방 글 삭제 Retrofit 콜백 함수\r\n    fun onPostReportSuccess(response: BaseResponse)\r\n\r\n    fun onPostReportFailure(message: String)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivityView.kt	(revision 7b3ea7c6fd42caa34b787bd697f454b547b6578f)
++++ app/src/main/java/com/medium/binding/src/main/home/room/HomeRoomActivityView.kt	(date 1617191104842)
+@@ -45,7 +45,7 @@
+     // 책방 글 삭제 버튼 콜백 함수
+     fun confirmRemove(contentsIdx: Int)
+ 
+-    // 책방 글 삭제 Retrofit 콜백 함수
++    // 책방 글 신고 Retrofit 콜백 함수
+     fun onPostReportSuccess(response: BaseResponse)
+ 
+     fun onPostReportFailure(message: String)
