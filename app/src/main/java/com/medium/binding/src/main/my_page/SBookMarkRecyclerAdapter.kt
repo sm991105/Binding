@@ -49,8 +49,6 @@ class SBookMarkRecyclerAdapter(fragment: MyPageFragment):
         private val bookmark: ImageView = itemView.item_bookmark
 
         fun bindValue(store: SBookMarkData){
-            Log.d("로그", "bindValue() called")
-
             // 북마크 아이콘과 겹치는 부분을 약간 어둡게 처리
             photo.setColorFilter(
                 Color.parseColor("#BDBDBD"),

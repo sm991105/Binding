@@ -53,7 +53,6 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
                 binding.join1Next.performClick()
-                true
             }
             false
         }
@@ -128,14 +127,10 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
     }
     // 서버와 통신 성공
     override fun onGetCheckEmailSuccess(response: BaseResponse, email: String) {
-        Log.d("로그", "onGetCheckEmailFailure() called, response: $response")
-
         when(response.code){
 
             // 사용 가능한 이메일
             1000 -> {
-                Log.d("로그", "사용가능한 이메일, message: ${response.message}")
-
                 // 다음단계 -> 비밀번호 입력 화면으로 이동
                 (activity!! as JoinActivity).moveToJoin2(email)
             }
@@ -148,8 +143,6 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
 
             // 서버에서 이메일 형식 오류로 판정 -> 에러 문구를 보여준다
             else ->{
-                Log.d("로그", "code: ${response.code}, msg: ${response.message}")
-
                 binding.join1BadEmail.visibility = View.VISIBLE
                 binding.join1SameEmail.visibility = View.INVISIBLE
             }
@@ -158,8 +151,6 @@ class Join1Fragment: BaseFragment<FragmentJoin1Binding>(
 
     // 서버 통신 실패
     override fun onGetCheckEmailFailure(message: String) {
-        Log.d("로그", "onGetCheckEmailFailure() called, message: $message")
-
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("에러가 발생했습니다, 네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
     }
 }

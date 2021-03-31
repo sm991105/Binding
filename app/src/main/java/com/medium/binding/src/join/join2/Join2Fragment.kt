@@ -116,7 +116,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
 
         // 비밀번호가 8-20자가 아닐때
         if(pwdString.length < 8 || pwdString.length > 20) {
-            Log.d("로그", "비밀번호 올바르지 않음")
             binding.join2WrongPw.let {
                 it.text = String.format("비밀번호 형식이 맞지 않습니다")
                 it.visibility = View.VISIBLE
@@ -124,7 +123,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         }
         // 비밀번호와 비밀번호 확인이 일치하지 않을 때
         else if(pwdString != pwdChkString) {
-            Log.d("로그", "비밀번호 일치x")
             binding.join2WrongPw.let {
                 it.text = String.format("비밀번호가 맞지 않습니다")
                 it.visibility = View.VISIBLE
@@ -132,7 +130,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         }
         // 형식이 올바르고, 일치하면 다음 화면으로 넘어간다
         else{
-           Log.d("로그", "비밀번호 다음화면, email: $email")
             email?.let { email ->
                 isHere = false
 

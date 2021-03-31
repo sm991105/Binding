@@ -52,7 +52,7 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
     private lateinit var nickname: String
 
     private lateinit var imgDialog: ChangeImageDialog   // 이미지 눌렀을 때 나오는 다이얼로그
-    private var db = ApplicationClass.userStorage.reference.child("test")
+    private var db = ApplicationClass.userStorage.reference.child("user${ApplicationClass.userIdx}")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,14 +90,11 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
     private val onClickDone = View.OnClickListener {
         showLoadingDialog(this)
 
-        Log.d("로그", "done, imgFlag: $imgFlag")
-        Log.d("로그", "nickname: $nickname , changed: ${binding.settingsProfileNickname}")
-
         // 중복 클릭 방지
         if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
             return@OnClickListener
         }
-        mLastClickTime = SystemClock.elapsedRealtime();
+        mLastClickTime = SystemClock.elapsedRealtime()
 
         val nicknameTxt = binding.settingsProfileNickname.text.toString()
         // 닉네임 변경 x
@@ -112,18 +109,12 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
                 // 닉변x , 이미지 삭제
                 IMG_ERASED -> {
-                    Log.d("로그", "완료버튼 - 닉네임 변경x, 이미지 삭제")
-
                     SettingsProfileService(this)
                         .tryPatchProfile(PatchProfileBody("-1", null))
                 }
 
                 // 닉변x , 이미지 변경
-                IMG_CHANGED -> {
-                    Log.d("로그", "완료버튼 - 닉네임 변경x, 이미지 변경")
-
-                    storeAndCall(editedNick = null)
-                }
+                IMG_CHANGED -> storeAndCall(editedNick = null)
             }
         }
         // 닉네임 변경 o
@@ -143,26 +134,19 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
                     // 닉네임만 변경 요청
                     IMG_SAME ->  {
-                        Log.d("로그", "완료버튼 - 닉네임만 변경")
-
                         SettingsProfileService(this)
                             .tryPatchProfile(PatchProfileBody(null, nicknameTxt))
                     }
 
                     // 닉변o , 이미지 삭제
                     IMG_ERASED -> {
-                        Log.d("로그", "완료버튼 - 닉네임 변경o, 이미지 삭제")
-
                         SettingsProfileService(this)
                             .tryPatchProfile(PatchProfileBody("-1", nicknameTxt))
                     }
 
                     // 닉변o, 이미지 변경
-                    IMG_CHANGED -> {
-                        Log.d("로그", "완료버튼 - 닉네임 변경o, 이미지 변경")
+                    IMG_CHANGED -> storeAndCall(editedNick = nicknameTxt)
 
-                        storeAndCall(editedNick = nicknameTxt)
-                    }
                 }
             }
         }
@@ -187,10 +171,10 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
             }
             // 접근 권한이 있으면 chooseImg() 실행
             else{
-                chooseImg();
+                chooseImg()
             }
         }else{
-            chooseImg();
+            chooseImg()
         }
     }
 
@@ -216,7 +200,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
                 SettingsProfileService(this)
                     .tryPatchProfile(PatchProfileBody(downloadUrl.toString(), editedNick))
 
-                Log.d("로그", "downloadUri: $downloadUrl")
             } else {
                 dismissLoadingDialog()
                 showCustomToast(
@@ -257,7 +240,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
     // Q이상에서는 URI를 이미지뷰에 적용
     private fun renderGalleyImg(imgUri: Uri){
         imgPath = getRealPathFromURI(imgUri) ?: return
-        Log.d("로그", "imgPath: $imgPath")
 
         // 버전 Q 이상부터는 저장소를 읽고 쓰는데 제한이 있다고 한다...
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
@@ -302,7 +284,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
                 .asBitmap()
                 .load(bitmap)
                 .into(binding.settingsProfilePhoto)
-            Log.d("로그", "bitmap: $bitmap")
 
             // 플래그에 이미지가 변경됐음을 반영
             imgFlag = IMG_CHANGED
@@ -356,7 +337,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
         // 갤러리에서 사진을 골랐을 때
         if(requestCode == IMAGE_CHOOSE && resultCode == Activity.RESULT_OK){
-            Log.d("로그", "IMAGE_CHOOSE - data?.data: ${data?.data}")
 
             // 이미지뷰에 출력
             if(data != null && data.data != null){
@@ -369,7 +349,6 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
     // 프로필 조회 통신 성공
     override fun onGetProfileSuccess(response: GetProfileResponse) {
-        Log.d("로그", "onGetProfileFailure() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -392,12 +371,8 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
                 }
             }
             else -> {
-                Log.d(
-                    "로그", "프로필 조회 실패, code: ${response.code}, message:" +
-                            " ${response.message}"
-                )
-
-                showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("프로필 조회 중 오류가 발생했습니다," +
+                        " 오류가 계속되면 관리자에게 문의주세요.")
                 finish()
             }
         }
@@ -405,92 +380,27 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
     // 프로필 조회 통신 실패
     override fun onGetProfileFailure(message: String) {
-        Log.d("로그", "onGetProfileFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
-    }
-
-    // 프로필 사진 변경 통신 성공
-    override fun onPatchImgSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchImgSuccess() called, response: $response")
-
-        when(response.isSuccess){
-            true -> {
-                Log.d("로그", "프로필 변경 완료")
-            }
-            false -> {
-                Log.d("로그", "프로필 사진 삭제 실패, message: ${response.message}")
-
-                showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
-            }
-        }
-    }
-
-    // 프로필 사진 변경 통신 실패
-    override fun onPatchImgFailure(message: String) {
-        Log.d("로그", "onPatchImgFailure() called, message: $message")
-
-        showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
-    }
-
-    // 프로필 사진 삭제 통신 성공
-    override fun onDeleteImgSuccess(response: BaseResponse) {
-        Log.d("로그", "onDeleteImgSuccess() called, response: $response")
-
-        when(response.isSuccess){
-
-            // 삭제 완료
-            true -> {
-                binding.settingsProfilePhoto.setImageResource(R.drawable.icon_app)
-                imgDialog.dismiss()
-            }
-            else -> {
-                Log.d("로그", "프로필 사진 삭제 실패, message: ${response.message}")
-
-                showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
-            }
-        }
-    }
-
-    // 프로필 사진 삭제 통신 실패
-    override fun onDeleteImgFailure(message: String) {
-        Log.d("로그", "onDeleteImgFailure() called, message: $message")
-
-        showCustomToast("오류가 발생했습니다, 오류가 계속되면 관리자에게 문의주세요.")
-    }
-
-    // 닉네임 변경 통신 성공
-    override fun onPatchNicknameSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchNicknameSuccess() called, response: $response")
-
-    }
-
-    // 닉네임 변경 통신 실패
-    override fun onPatchNicknameFailure(message: String) {
-        Log.d("로그", "onPatchNicknameFailure() called, message: $message")
-
-        showCustomToast("오류가 발생했습니다, 오류가 반복되면 관리자에게 문의주세요.")
+        showCustomToast("프로필 조회 중오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
     }
 
     // 프로필 변경 통신 성공
     override fun onPatchProfileSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchProfileSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
 
             // 성공
             1000 -> {
-                showCustomToast("프로필 변경 성공")
+                showCustomToast("프로필이 변경되었습니다")
                 ApplicationClass.isEdited = true
                 finish()
             }
 
             // 닉네임 형식 오류
             in 2001..2002 ->{
-                Log.d("로그", "message: ${response.message}")
-
                 binding.settingsProfileWrong.apply{
                     text = String.format("닉네임 형식이 맞지 않습니다")
                     visibility = View.VISIBLE
@@ -499,27 +409,22 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
 
             // 사용중 닉네임
             3001 -> {
-                Log.d("로그", "message: ${response.message}")
-
                 binding.settingsProfileWrong.apply{
                     text = String.format("이미 사용중인 닉네임입니다")
                     visibility = View.VISIBLE
                 }
             }
 
-            else -> {
-                Log.d("로그", "message: ${response.message}")
-
-                showCustomToast("프로필 변경 중 에러가 발생했습니다, 에러가 계속되면 관리자에게 문의해주세요.")
-            }
+            else -> showCustomToast("프로필 변경 중 오류가 발생했습니다, " +
+                    "오류가 계속되면 관리자에게 문의해주세요.")
         }
     }
 
     // 프로필 변경 통신 실패
     override fun onPatchProfileFailure(message: String) {
-        Log.d("로그", "onPatchProfileFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("프로필 변경 중 오류가 발생했습니다, 오류가 반복되면 관리자에게 문의주세요.")
+        showCustomToast("프로필 변경 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 반복되면 관리자에게 문의주세요.")
     }
 }

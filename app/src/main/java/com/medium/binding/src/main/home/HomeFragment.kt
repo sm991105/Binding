@@ -87,13 +87,11 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             object: MenuItem.OnActionExpandListener {
                     // 검색 버튼 눌러서 서치뷰 열렸을 떄
                     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                    Log.d("로그", "onMenuItemActionExpand() called")
                     return true
                 }
 
                 // 서치뷰에서 뒤로가기 버튼 눌렀을 때 -> 원래의 최신순 or 인기순으로 보여준다
                 override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                    Log.d("로그", "onMenuItemActionCollapse() called")
                     when(categoryFlag){
                         0 -> HomeService(this@HomeFragment).tryGetNewest()
                         1 -> HomeService(this@HomeFragment).tryGetPopular()
@@ -152,7 +150,7 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
             this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
         }
 
-        val dialog = CreateBookDialog(context!!)
+        val dialog = CreateBookDialog()
         val fragmentManager = childFragmentManager
         dialog.show(fragmentManager, "create_room")
     }
@@ -208,77 +206,70 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
     // 최신순 책방 불러오기 통신 성공
     override fun onGetNewestSuccess(response: GetNewestResponse) {
-        Log.d("로그", "onGetNewestSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
 
             // 성공
             1000 -> {
-                Log.d("로그", "최신순 책방 불러오기 성공")
-
                 categoryFlag = 0
                 homeRecyclerAdapter.updateNewest(response.result, categoryFlag)
                 sp.edit().putInt("homeCategory", categoryFlag).apply()
             }
 
             // 책방이 없음
-            4000 -> Log.d("로그", "서버에 최신순 책방 데이터가 없음")
+            4000 -> showCustomToast("책방을 등록해주세요!")
 
             //실패
-            else -> Log.d("로그", "최신순 책방 불러오기 실패, message: ${response.message}")
+            else -> showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
+                    "에러가 계속되면 관리자에게 문의해주세요.")
         }
     }
 
     // 최신순 책방 불러오기 통신 실패
     override fun onGetNewestFailure(message: String) {
-        Log.d("로그", "onGetNewestFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("책방을 불러오던 중 에러가 발생했습니다\n" +
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요")
     }
 
     // 인기순 책방 불러오기 통신 성공
     override fun onGetPopularSuccess(response: GetPopularResponse) {
-        Log.d("로그", "onGetPopularSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
 
             // 성공
             1000 -> {
-                Log.d("로그", "인기순 책방 불러오기 성공")
-
                 categoryFlag = 1
                 homeRecyclerAdapter.updatePopular(response.result, categoryFlag)
                 sp.edit().putInt("homeCategory", categoryFlag).apply()
             }
 
             // 책방이 없음
-            4000 -> Log.d("로그", "서버에 최신순 책방 데이터가 없음")
+            4000 -> showCustomToast("책방을 등록해주세요!")
 
             //실패
-            else -> Log.d("로그", "최신순 책방 불러오기 실패, message: ${response.message}")
+            else -> showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
+                    "에러가 계속되면 관리자에게 문의해주세요.")
         }
     }
 
     // 인기순 책방 불러오기 통신 실패
     override fun onGetPopularFailure(message: String) {
-        Log.d("로그", "onGetPopularFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
     }
 
     // 책방 검색 통신 성공
     override fun onGetSearchSuccess(response: GetSearchResponse, query: String?) {
-        Log.d("로그", "onGetSearchSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
             1000 -> {
-                Log.d("로그", "책방 검색 성공, result: ${response.result}")
-
                 // 검색어로 받아오는 데이터 클래스가 NewestResult이기 때문에
                 // 임시로 newest로 설정해서 데이터를 보낸다
                 homeRecyclerAdapter.updateNewest(response.result, 0)
@@ -286,17 +277,15 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
             2003 -> showCustomToast("검색어를 입력해주세요")
 
-            3000 -> {
-                showCustomToast("\"${query}\"를 포함하는 책방이 존재하지 않습니다")
-            }
+            3000 -> showCustomToast("\"${query}\"를 포함하는 책방이 존재하지 않습니다")
 
-            else -> Log.d("로그", "책방 검색 실패, message: ${response.message}")
+            else -> showCustomToast("책방을 검색 중 에러가 발생했습니다, " +
+                    "에러가 계속되면 관리자에게 문의해주세요.")
         }
     }
 
     // 책방 검색 통신 실패
     override fun onGetSearchFailure(message: String) {
-        Log.d("로그", "onGetSearchFailure() called, message: $message")
         dismissLoadingDialog()
 
         showCustomToast("네트워크 확인 후 다시 시도해주세요.")
@@ -304,8 +293,6 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
     // 서치뷰 검색 리스너
     override fun onQueryTextSubmit(query: String?): Boolean {
-        Log.d("로그", "검색 = query: $query")
-
         if(query?.isEmpty()!! || query == ""){
             showCustomToast("검색어를 입력해주세요")
         }else{
@@ -332,8 +319,6 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
         // 책방을 만든 후 홈으로 돌아왔을 때 -> 새로고침
         if(requestCode == CreateBookDialog.BOOK_CREATED_CODE && resultCode == Activity.RESULT_OK){
-            Log.d("로그", "request: $requestCode , result: $resultCode , data: ${data?.data}")
-
             // 책방 목록 새로고침
             loadBookRooms()
         }

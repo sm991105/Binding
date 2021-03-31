@@ -57,10 +57,13 @@ val contentsIdx: Int):
             val contents = binding.homeRoomCreateContent.text.toString()
             if(contents.length < 5){
                 showCustomToast("5자 이상 입력해주세요")
-            }else if(comments == contents) {
+            }
+            // 이전 내용과 같은 내용
+            else if(comments == contents) {
                 activity?.onBackPressed()
-            }else{
-                Log.d("로그", "commentsFlag: $commentsFlag")
+            }
+            // 발행 요청
+            else{
                 val commentsBody = CommentsBody(binding.homeRoomCreateContent.text.toString())
                 homeRoomActivity.onClickPub(commentsBody, commentsFlag, contentsIdx)
             }

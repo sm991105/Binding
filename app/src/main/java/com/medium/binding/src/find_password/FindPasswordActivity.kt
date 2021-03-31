@@ -46,7 +46,6 @@ class FindPasswordActivity:
             if(event.action == KeyEvent.ACTION_DOWN && (keyCode == KeyEvent.KEYCODE_ENTER ||
                     keyCode == KeyEvent.KEYCODE_ENDCALL)){
                 binding.findPwEmail.performClick()
-                true
             }
             false
         }
@@ -57,7 +56,6 @@ class FindPasswordActivity:
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
                 binding.findPwNext.performClick()
-                true
             }
             false
         }
@@ -106,8 +104,6 @@ class FindPasswordActivity:
 
         // 닉네임 형식이 올바르지 않으면 에러 메시지를 보여준다
         if(!isValidNickname(nickname)){
-            Log.d("로그", "nickname: $nickname , isValid: ${isValidNickname(nickname)}")
-
             binding.findPwWrongInfo.let{
                 it.text = String.format("유효하지 않은 닉네임 형식입니다.")
                 it.visibility = View.VISIBLE
@@ -115,8 +111,6 @@ class FindPasswordActivity:
         }
         // 이메일 형식이 올바르지 않을 때
         else if(!isValidEmail(email)){
-            Log.d("로그", "nickname: $email , isValid: ${isValidEmail(email)}")
-
             binding.findPwWrongInfo.let{
                 it.text = String.format("유효하지 않은 이메일 형식입니다.")
                 it.visibility = View.VISIBLE
@@ -124,8 +118,6 @@ class FindPasswordActivity:
         }
         // 형식이 올바르면 비밀번호 찾기 API 호출 -> 임시 비밀번호 발급 요청
         else{
-            Log.d("로그", "비밀번호 찾기 api 호출")
-
             showLoadingDialog(this)
             FindPasswordService(this).tryPostFindPw(email, nickname)
         }
@@ -133,15 +125,12 @@ class FindPasswordActivity:
     }
 
     override fun onPostFindPwSuccess(response: BaseResponse) {
-        Log.d("로그", "onPostFindPwSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
 
             // 성공 -> 임시비밀번호 발급
             1000 -> {
-                Log.d("로그", "회원가입 성공 - message: ${response.message}")
-
                 isHere = false
                 // 임시비밀번호 보냄 완료 화면을 띄운다
                 val mTempPwDialog = TempPasswordDialog(this)
@@ -170,10 +159,9 @@ class FindPasswordActivity:
     }
 
     override fun onPostFindPwFailure(message: String) {
-        Log.d("로그", "onPostFindPwFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("비밀번호  후 다시 시도해주세요.")
     }
 
     // 정규식으로 한글 닉네임 형식 검사

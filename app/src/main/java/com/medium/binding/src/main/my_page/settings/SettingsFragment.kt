@@ -110,12 +110,10 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
     }
 
     override fun onPatchWithdrawSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchWithdrawSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.isSuccess){
             true -> {
-                Log.d("로그", "회원탈퇴 완료")
 
                 // 로그아웃
                 sp.edit().apply{
@@ -130,18 +128,14 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
                     this.finish()
                 }
             }
-            else -> {
-                Log.d("로그", "회원탈퇴 실패, message: ${response.message}")
+            else -> showCustomToast("에러가 발생했습니다, 에러가 계속되면 관리자에게 문의해주세요.")
 
-                showCustomToast("오류가 발생했습니다, 나중에 다시 시도해주세요.")
-            }
         }
     }
 
     override fun onPatchWithdrawFailure(message: String) {
-        Log.d("로그", "onPatchWithdrawFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("에러가 발생했습니다, 네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
     }
 }

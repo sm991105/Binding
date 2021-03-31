@@ -72,7 +72,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
         // 불러올 책방 인덱스
         bookIdx = intent.extras?.getInt("bookIdx")
-        Log.d("로그", "bookIdx: $bookIdx")
         bookIdx?.let {
             showLoadingDialog(this)
             HomeRoomService(this).tryGetNewestWR(bookIdx!!)
@@ -134,7 +133,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
         if(intervalTime >= 0 && FINISH_INTERVAL_TIME >= intervalTime){
             super.onBackPressed()
-            Log.d("로그", "onBackPressed() called")
         }else{
             backPressedTime = tempTime
             showCustomToast("뒤로 버튼을 한번 더 누르시면 종료됩니다.")
@@ -143,31 +141,20 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 댓글 최신순 불러오기 통신 성공
     override fun onGetNewestWRSuccess(response: GetCommentsResponse) {
-        Log.d("로그", "onGetNewestWRSuccess() called, response: $response")
-
         val result = response.result
-        Log.d("로그", "bookName: $result")
 
         dismissLoadingDialog()
 
         when(response.code){
             // 성공
-            1000 -> {
-                Log.d("로그", "최신순 글 조회 성공")
-
-                doWhenSuccess(response.result, ORDER_BY_NEWEST)
-            }
+            1000 -> doWhenSuccess(result, ORDER_BY_NEWEST)
 
             // 책방이 없어졌으면 메시지를 띄우고 홈으로 나간다
             3000 -> whenBookRoomRemoved()
 
             else -> {
-                Log.d("로그", "message: ${response.message}")
-
-                val jwt = ApplicationClass.sSharedPreferences.getString(ApplicationClass.X_ACCESS_TOKEN, null)
-                Log.d("로그", "jwt: $jwt")
-                showCustomToast("책방 글을 불러오던 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("책방 글을 불러오던 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
                 finish()
             }
@@ -176,41 +163,29 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 댓글 최신순 불러오기 통신 실패
     override fun onGetNewestWRFailure(message: String) {
-        Log.d("로그", "onGetNewestWRFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("책방 글을 불러오던 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+        showCustomToast("책방 글을 불러오던 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
         finish()
     }
 
     // 책방 댓글 북마크순 불러오기 통신 성공
     override fun onGetMarkedWRSuccess(response: GetCommentsResponse) {
-        Log.d("로그", "onGetMarkedWRSuccess() called, response: $response")
-
         val result = response.result
-        Log.d("로그", "bookName: $result")
-
         dismissLoadingDialog()
-
 
         when(response.code){
             // 성공
-            1000 -> {
-                Log.d("로그", "북마크순 글 조회 성공")
-
-                doWhenSuccess(response.result, ORDER_BY_BOOKMARK)
-            }
+            1000 -> doWhenSuccess(result, ORDER_BY_BOOKMARK)
 
             // 삭제된 책방이면 메시지를 띄우고 나간다
             3000 -> whenBookRoomRemoved()
 
             else -> {
-                Log.d("로그", "message: ${response.message}")
-
-                showCustomToast("책방 글을 불러오던 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("책방 글을 불러오던 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
                 finish()
             }
@@ -219,16 +194,14 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 댓글 북마크순 불러오기 통신 실패
     override fun onGetMarkedWRFailure(message: String) {
-        Log.d("로그", "onGetMarkedWRFailure() called, message: $message")
         dismissLoadingDialog()
 
         showCustomToast("책방 글을 불러오던 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의주세요.")
     }
 
     // 글 북마크 수정 통신 성공
     override fun onPatchWBookmarkSuccess(response: BaseResponse, itemPos: Int) {
-        Log.d("로그", "onPatchWBookmarkSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -247,10 +220,8 @@ HomeRoomActivityView, HomeRoomDialogListener{
             3001 -> whenBookRoomRemoved()
 
             else-> {
-                Log.d("로그", "북마크 수정 실패, message: ${response.message}")
-
-                showCustomToast("북마크 수정 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("북마크 수정 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
             }
 
@@ -259,11 +230,10 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 글 북마크 수정 통신 실패
     override fun onPatchWBookmarkFailure(message: String) {
-        Log.d("로그", "onPatchWBookmarkFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("북마크 수정 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+        showCustomToast("북마크 수정 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
         finish()
     }
@@ -304,12 +274,9 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 화면을 터치하면 정렬탭이 닫힌다
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d("로그", "onTouchEvent called()")
-
         event?.let {
             when (it.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
-                    Log.d("로그", "ACTION_DOWN")
                     if(binding.homeRoomSortTab.visibility == View.VISIBLE){
                         binding.homeRoomSortTab.visibility = View.INVISIBLE
                     }
@@ -319,11 +286,10 @@ HomeRoomActivityView, HomeRoomDialogListener{
     }
 
         if(binding.homeRoomSortTab.visibility == View.VISIBLE){
-            Log.d("로그", "동작함")
             binding.homeRoomSortTab.visibility = View.INVISIBLE
             return false
         }
-        Log.d("로그", "동작 안함")
+
         return super.onTouchEvent(event)
     }
 
@@ -360,7 +326,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
             // 글 수정
             COMMENTS_EDIT -> {
-                Log.d("로그", "onClickPub - 글 수정")
                 HomeRoomService(this).tryPatchComments(bookIdx!!, contentsIdx, commentsBody)
             }
 
@@ -369,7 +334,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 글 발행 통신 성공
     override fun onPostCommentsSuccess(response: BaseResponse) {
-        Log.d("로그", "onPostCommentsSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code) {
@@ -381,8 +345,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
             2001 -> showCustomToast("5자 이상 적어주세요")
 
             else -> {
-                Log.d("로그", "onPostCommentsFailure() called, message: ${response.message}")
-
                 showCustomToast("글 발행 중 에러가 발생했습니다\n" +
                         "에러가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
@@ -392,22 +354,19 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 글 발행 통신 실패
     override fun onPostCommentsFailure(message: String) {
-        Log.d("로그", "onPostCommentsFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("글 발행 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+        showCustomToast("글 발행 중 오류가 발생했습니다\n" +
+                "오류가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
     }
 
     // 글 수정 통신 성공
     override fun onPatchCommentsSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchCommentsSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code) {
             1000 -> {
-                Log.d("로그", "onPatchCommentsSuccess - 글 수정")
                 showCustomToast("글이 수정되었습니다")
                 reflectCommentsUpdate()
             }
@@ -425,10 +384,8 @@ HomeRoomActivityView, HomeRoomDialogListener{
             }
 
             else -> {
-                Log.d("로그", "onPostCommentsFailure() called, message: ${response.message}")
-
-                showCustomToast("글 발행 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("글 발행 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
             }
         }
@@ -436,11 +393,10 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 글 수정 통신 실패
     override fun onPatchCommentsFailure(message: String) {
-        Log.d("로그", "onPatchCommentsFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("글 수정 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+        showCustomToast("글 수정 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
     }
 
@@ -472,12 +428,10 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 글 삭제 통신 성공
     override fun onDeleteCommentsSuccess(response: BaseResponse) {
-        Log.d("로그", "onDeleteCommentsSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code) {
             1000 -> {
-                Log.d("로그", "onDeleteCommentsSuccess - 글 삭제")
                 commentsRecyclerAdapter.removeDialog.dismiss()
                 showCustomToast("글이 삭제되었습니다")
                 showLoadingDialog(this)
@@ -499,10 +453,8 @@ HomeRoomActivityView, HomeRoomDialogListener{
             }
 
             else -> {
-                Log.d("로그", "onDeleteCommentsSuccess() called, message: ${response.message}")
-
-                showCustomToast("글 삭제 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("글 삭제 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
             }
         }
@@ -510,7 +462,6 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 글 삭제 통신 실패
     override fun onDeleteCommentsFailure(message: String) {
-        Log.d("로그", "onDeleteCommentsFailure() called, message: $message")
         dismissLoadingDialog()
         commentsRecyclerAdapter.removeDialog.dismiss()
 
@@ -530,12 +481,10 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 글 신고 통신 성공
     override fun onPostReportSuccess(response: BaseResponse) {
-        Log.d("로그", "onPostReportSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code) {
             1000 -> {
-                Log.d("로그", "onDeleteCommentsSuccess - 글 신고")
                 commentsRecyclerAdapter.reportDialog.dismiss()
                 showCustomToast("글이 신고되었습니다")
             }
@@ -561,10 +510,8 @@ HomeRoomActivityView, HomeRoomDialogListener{
             }
 
             else -> {
-                Log.d("로그", "onPostReportSuccess() called, message: ${response.message}")
-
-                showCustomToast("글 신고 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("글 신고 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
             }
         }
@@ -572,12 +519,11 @@ HomeRoomActivityView, HomeRoomDialogListener{
 
     // 책방 글 신고 통신 실패
     override fun onPostReportFailure(message: String) {
-        Log.d("로그", "onPostReportFailure() called, message: $message")
         dismissLoadingDialog()
         commentsRecyclerAdapter.reportDialog.dismiss()
 
-        showCustomToast("글 신고 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의주세요.")
+        showCustomToast("글 신고 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
     }
 

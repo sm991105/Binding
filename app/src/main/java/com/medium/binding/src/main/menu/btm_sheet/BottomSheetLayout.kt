@@ -149,9 +149,6 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
 
     // 왼쪽 리스트뷰 아이템을 선택했을때
     private val onBigClick = AdapterView.OnItemClickListener { parent, view, position, id ->
-        val location = (view as TextView).text.toString()
-        Log.d("로그", "location1: $location")
-
         if(view.isActivated){
             bigPos = position
         }else{

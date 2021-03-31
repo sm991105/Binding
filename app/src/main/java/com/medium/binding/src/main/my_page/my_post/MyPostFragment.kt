@@ -71,7 +71,6 @@ class MyPostFragment(private val writingFlag: Int):
 
     // 내가 쓴 글 API 통신 성공
     override fun onGetUserCommentsSuccess(response: UserCommentsResponse) {
-        Log.d("로그", "onGetUserCommentsSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -96,8 +95,6 @@ class MyPostFragment(private val writingFlag: Int):
             }
 
             else -> {
-                Log.d("로그", "onGetUserCommentsSuccess() called, message: ${response.message}")
-
                 showCustomToast("내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\n" +
                         "에러가 계속되면 관리자에게 문의해주세요"
                 )
@@ -108,11 +105,10 @@ class MyPostFragment(private val writingFlag: Int):
 
     // 내가 쓴 글 API 통신 실패
     override fun onGetUserCommentsFailure(message: String) {
-        Log.d("로그", "onGetUserCommentsFailure() called, message: $message")
         dismissLoadingDialog()
 
         showCustomToast("내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의해주세요"
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요"
         )
         activity?.onBackPressed()
 
@@ -120,7 +116,6 @@ class MyPostFragment(private val writingFlag: Int):
 
     // 북마크한 글 API 통신 성공
     override fun onGetMarkCommentsSuccess(response: UserCommentsResponse) {
-        Log.d("로그", "onGetMarkCommentsSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -146,8 +141,6 @@ class MyPostFragment(private val writingFlag: Int):
             }
 
             else -> {
-                Log.d("로그", "onGetMarkCommentsSuccess() called, message: ${response.message}")
-
                 showCustomToast("북마크한 글 정보를 받아오던 중 에러가 발생했습니다\n" +
                         "에러가 계속되면 관리자에게 문의해주세요"
                 )
@@ -158,11 +151,10 @@ class MyPostFragment(private val writingFlag: Int):
 
     // 내가 쓴 글 API 통신 실패
     override fun onGetMarkCommentsFailure(message: String) {
-        Log.d("로그", "onGetMarkCommentsFailure() called, message: $message")
         dismissLoadingDialog()
 
         showCustomToast("북마크한 글 정보를 받아오던 중 에러가 발생했습니다\n" +
-                "에러가 계속되면 관리자에게 문의해주세요"
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요"
         )
         activity?.onBackPressed()
 

@@ -144,7 +144,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
                 val result = response.result
 
                 if(result.size <= 0){
-                    showCustomToast("해당 지역 서점을 제보해주세요!")
+                    showCustomToast("해당 지역 서점을 제보해주세요")
                 }
                 menuRecyclerAdapter.updateList(result)  // 서점 데이터 전달
             }

@@ -55,7 +55,7 @@ class ReportDialog(@NonNull val mContext: Context,
         // 신고하기
         binding.dialogReportYes.setOnClickListener{
             val reason = binding.dialogReportReason.text.toString()
-            Log.d("로그", "reason: $reason")
+
             if(reason.length < 5 || reason.length > 500){
                 Toast.makeText(mContext, "신고사유를 5~500자로 입력해주세요",
                     Toast.LENGTH_SHORT).show()

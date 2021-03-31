@@ -29,7 +29,7 @@ import com.medium.binding.util.LoadingDialog
 import java.io.File
 
 
-class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
+class CreateBookDialog() : DialogFragment(), CreateBookView {
     lateinit var mLoadingDialog: LoadingDialog
 
     companion object {
@@ -39,7 +39,7 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
     }
 
 
-    private var db = ApplicationClass.userStorage.reference.child("test2")
+    private var db = ApplicationClass.userStorage.reference.child("user${ApplicationClass.userIdx}")
 
     private var imgPath: String? = null
     private var storageUrl: String? = null
@@ -239,7 +239,6 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
                         author.text.toString(), storageUrl!!
                     )
                 )
-                Log.d("로그", "storageUrl: $storageUrl")
             } else {
                 dismissLoadingDialog()
                 Toast.makeText(activity, "책 사진을 업로드하는 과정에서 오류가 발생했습니다.\n" +
@@ -278,7 +277,6 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
     // Q이상에서는 URI를 이미지뷰에 적용
     private fun renderGalleyImg(imgUri: Uri){
         imgPath = getRealPathFromURI(imgUri) ?: return
-        Log.d("로그","imgPath: $imgPath")
 
         // 버전 Q 이상부터는 저장소를 읽고 쓰는데 제한이 있다고 한다...
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
@@ -325,7 +323,7 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
             //이미지 뷰에 비트맵 넣기
             Glide.with(this)
                 .asBitmap()
-                .load(imgPath)
+                .load(bitmap)
                 .error(R.drawable.add)
                 .into(imgAdded)
 
@@ -382,8 +380,6 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
 
         // 갤러리에서 사진을 골랐을 때
         if(requestCode == IMAGE_CHOOSE && resultCode == Activity.RESULT_OK){
-            Log.d("로그", "IMAGE_CHOOSE - data?.data: ${data?.data}")
-
             // 이미지뷰에 출력
             if(data != null && data.data != null){
                 renderGalleyImg(data.data!!)
@@ -392,7 +388,6 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
     }
 
     override fun onPostBookSuccess(response: CreateBookResponse) {
-        Log.d("로그", "onPostBookSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -438,10 +433,10 @@ class CreateBookDialog(context: Context) : DialogFragment(), CreateBookView {
     }
 
     override fun onPostBookFailure(message: String) {
-        Log.d("로그", "onPostBookFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("책방을 만들던 중 에러가 발생했습니다.\n에러가 계속되면 관리자에게 문의해주세요.")
+        showCustomToast("책방을 만들던 중 에러가 발생했습니다.\n" +
+                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
     }
 
     fun showLoadingDialog(context: Context) {

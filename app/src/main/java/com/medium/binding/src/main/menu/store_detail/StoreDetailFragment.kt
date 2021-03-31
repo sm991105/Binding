@@ -108,7 +108,6 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
     }
 
     override fun onGetBookStoreSuccess(response: GetBookStoreResponse) {
-        Log.d("로그", "onGetBookStoreSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -116,7 +115,6 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                 val result = response.result
 
                 val bookStoreInfo = result.bookStoreInfo[0]
-                Log.d("로그", "조회 성공, address: ${bookStoreInfo.siteAddress}")
                 imagesList = result.images
 
                 // 첫 사진을 대표사진으로 설정, 나머지는 순서대로 소개 내용 이후에 출력
@@ -182,24 +180,20 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                     }
                 }
             }
-            else -> Log.d(
-                "로그", "서점 상세 조회 실패, code: ${response.code} , " +
-                        "message: ${response.message}"
-            )
+            else -> showCustomToast("서점 정보를 가져오던 중 에러가 발생했습니다, 에러가 계속되면" +
+                    "관리자에게 문의해주세요")
         }
 
     }
 
     override fun onGetBookStoreFailure(message: String) {
-        Log.d("로그", "onGetBookStoreFailure() called, message: $message")
         dismissLoadingDialog()
-
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("서점 정보를 가져오던 중 에러가 발생했습니다, 에러가 계속되면" +
+                "관리자에게 문의해주세요")
     }
 
     // 북마크 수정 API 콜백
     override fun onPatchBookmarkSuccess(response: BaseResponse) {
-        Log.d("로그", "onPatchBookmarkSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -217,15 +211,16 @@ class StoreDetailFragment: Fragment(), StoreDetailFragmentView{
                 binding.storeDetailBookmarkEmpty.visibility = View.VISIBLE
                 ApplicationClass.isMarkEdited = true
             }
-            else -> Log.d("로그", "북마크 수정 실패, message: ${response.message}")
+            else -> showCustomToast("북마크 수정 중 에러가 발생했습니다, 에러가 계속되면" +
+                    "관리자에게 문의해주세요")
         }
     }
 
     override fun onPatchBookmarkFailure(message: String) {
-        Log.d("로그", "onPatchBookmarkFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("북마크 수정 중 에러가 발생했습니다, 에러가 계속되면" +
+                "관리자에게 문의해주세요")
     }
 
     override fun onDestroyView() {

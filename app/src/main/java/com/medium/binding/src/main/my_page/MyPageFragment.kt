@@ -135,7 +135,6 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     }
 
     override fun onGetUserSuccess(response: GetUserResponse) {
-        Log.d("로그", "onGetUserSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
@@ -143,7 +142,6 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
             // 유저 정보 불러오기 성공
             1000 -> {
                 val result = response.result
-                Log.d("로그", "유저 정보 불러오기 성공 - result: $result")
 
                 // 유저 정보
                 val userInfo: ArrayList<InfoData> = result.info
@@ -187,15 +185,12 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
                 // 유저가 북마크한 서점이 있으면 그 데이터를 리사이클러뷰에 넘겨준다
                 if (tempSBookMarkList.isNotEmpty()) {
                     sBookMarkList = tempSBookMarkList[0]
-                    Log.d("로그", "sBookMarkList: $sBookMarkList")
                     sBookMarkAdapter.updateList(sBookMarkList)
                 }
             }
 
             // 실패
             else -> {
-                Log.d("로그", "유저 정보 불러오기 실패 - message: ${response.message}")
-
                 showCustomToast(
                     "프로필 정보를 받아오던 중 에러가 발생했습니다\n" +
                             "에러가 계속되면 관리자에게 문의해주세요"
@@ -206,9 +201,7 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     }
 
     override fun onGetUserFailure(message: String) {
-        Log.d("로그", "onGetUserFailure() called, message: $message")
         dismissLoadingDialog()
-
         showCustomToast("프로필 정보를 받아오던 중 에러가 발생했습니다\n" +
                 "에러가 계속되면 관리자에게 문의해주세요"
         )

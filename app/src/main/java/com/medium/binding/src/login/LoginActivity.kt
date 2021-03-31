@@ -55,7 +55,6 @@ LoginActivityView{
         binding.loginEmail.setOnKeyListener { v, keyCode, event ->
             if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
                 binding.loginPassword.performClick()
-                true
             }
             false
         }
@@ -66,7 +65,6 @@ LoginActivityView{
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
                 binding.loginNext.performClick()
-                true
             }
             false
         }
@@ -133,15 +131,12 @@ LoginActivityView{
 
     // 로그인 API 통신 성공
     override fun onPostLoginSuccess(response: LoginResponse) {
-        Log.d("로그", "onPostLoginSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
 
             // 로그인 성공 -> jwt 저장하고 메인 화면으로 이동
             1000 -> {
-                Log.d("로그", "로그인 성공, jwt: ${response.jwt}")
-
                 // jwt, 패스워드 저장
                 sp.edit().apply {
                     this.putString(ApplicationClass.X_ACCESS_TOKEN, response.jwt)
@@ -159,8 +154,6 @@ LoginActivityView{
 
             // 로그인 실패 -> 에러 문구
             else -> {
-                Log.d("로그","로그인 실패, msg: ${response.message}")
-
                 binding.loginWrongInfo.visibility = View.VISIBLE
             }
         }
@@ -168,9 +161,8 @@ LoginActivityView{
 
     // 로그인 API 통신 실패
     override fun onPostLoginFailure(message: String) {
-        Log.d("로그", "onPostLoginFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("로그인 중 에러가 발생했습니다\n네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
     }
 }

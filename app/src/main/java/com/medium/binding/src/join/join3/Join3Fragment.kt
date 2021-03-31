@@ -50,7 +50,6 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
                 (keyCode == KeyEvent.KEYCODE_ENDCALL || keyCode == KeyEvent.KEYCODE_ENTER)
             ){
                 binding.join3Next.performClick()
-                true
             }
             false
         }
@@ -84,14 +83,10 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
 
     // 회원가입 api 통신 성공
     override fun onPostJoinSuccess(response: BaseResponse) {
-        Log.d("로그", "onPostJoinSuccess() called, response: $response")
-
         when(response.code){
 
             // 회원가입에 성공 -> 로그인 액티비티로 돌아간다
             1000 -> {
-                Log.d("로그", "회원가입 성공 - message: ${response.message}")
-
                 isHere = false
                 // 회원가입 완료 화면을 띄운다
                 val mJoinDialog = JoinDoneDialog(activity as Context, response.isSuccess)
@@ -101,26 +96,20 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
 
             // 닉네임 형식 오류
             in 2007..2009 -> {
-                Log.d("로그", "회원가입 실패 - message: ${response.message}," +
-                        " code: ${response.code}")
-
                 binding.join3WrongNickname.visibility = View.VISIBLE
                 binding.join3SameNickname.visibility = View.INVISIBLE
             }
 
             // 이미 사용중인 닉네임
             3001 -> {
-                Log.d("로그", "회원가입 실패 - message: ${response.message}," +
-                        " code: ${response.code}")
-
                 binding.join3WrongNickname.visibility = View.INVISIBLE
                 binding.join3SameNickname.visibility = View.VISIBLE
             }
 
             // 회원가입 실패
             else -> {
-                Log.d("로그", "회원가입 실패 - message: ${response.message}," +
-                        " code: ${response.code}")
+                showCustomToast("회원가입 요청 시도 중 에러가 발생했습니다, " +
+                        "에러가 계속되면 관리자에게 문의해주세요")
 
                 binding.join3SameNickname.visibility = View.INVISIBLE
             }
@@ -129,8 +118,7 @@ class Join3Fragment: BaseFragment<FragmentJoin3Binding>(
 
     // 회원가입 api 통신 실패
     override fun onPostJoinFailure(message: String) {
-        Log.d("로그", "onPostJoinFailure() called, message: $message")
-
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("회원가입 요청 시도 중 에러가 발생했습니다, " +
+                "에러가 계속되면 관리자에게 문의해주세요")
     }
 }

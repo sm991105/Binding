@@ -136,7 +136,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         if(intervalTime >= 0 && FINISH_INTERVAL_TIME >= intervalTime){
             super.onBackPressed()
-            Log.d("로그", "onBackPressed() called")
         }else{
             backPressedTime = tempTime
             showCustomToast("뒤로 버튼을 한번 더 누르시면 종료됩니다.")
