@@ -75,7 +75,7 @@
 
     <!-- 채워진 북마크입니다 -->
     <ImageView
-        android:visibility="visible"
+        android:visibility="invisible"
         android:id="@+id/item_post_bookmark_filled"
         android:layout_width="40dp"
         android:layout_height="40dp"
