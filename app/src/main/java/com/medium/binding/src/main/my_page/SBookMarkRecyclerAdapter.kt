@@ -66,14 +66,13 @@ class SBookMarkRecyclerAdapter(fragment: MyPageFragment):
 
             // 클릭 -> 서점 화면 여는 기능
             item.setOnClickListener{
-                Log.d("로그", "서점 왜 안열리니?")
                 val fragmentManager = myPageFragment.childFragmentManager
                 val storeDetailFragment = StoreDetailFragment()
                 val idxBundle = Bundle()
                 idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
                 storeDetailFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .addToBackStack("storeDetail")
+                    .addToBackStack("StoreDetail")
                     .add(R.id.my_page_frm, storeDetailFragment)
                     .commitAllowingStateLoss()
             }

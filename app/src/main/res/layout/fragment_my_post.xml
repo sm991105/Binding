@@ -26,20 +26,9 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/my_post_left"
             android:fontFamily="@font/notosanskrbold"
-            android:text="온도차이"
+            android:text=""
             android:textColor="@color/colorPrimaryDark"
             android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/home_sort_popular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/notosanskrbold"
-            android:text="인기글"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="15dp"
-            android:visibility="invisible" />
 
 
         <ImageView
@@ -61,6 +50,7 @@
         android:background="#dadada" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_post_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/my_post_view"

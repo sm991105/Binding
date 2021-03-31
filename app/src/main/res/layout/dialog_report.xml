@@ -17,6 +17,7 @@
         android:textSize="17sp"
         android:textColor="@color/colorPrimaryDark"/>
     <EditText
+        android:id="@+id/dialog_report_reason"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -24,7 +25,8 @@
         android:paddingLeft="10dp"
         android:gravity="center"
         android:hint="사유를 적어주세요"
-        android:background="@null"
+        android:background="@color/colorWhite"
+        android:maxLines="7"
         android:textSize="17sp"
         android:textColor="@color/colorPrimaryDark"/>
     <View

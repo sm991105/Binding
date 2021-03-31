@@ -38,7 +38,7 @@
             android:layout_marginLeft="14dp"
             android:layout_toRightOf="@id/item_post_photo"
             android:fontFamily="@font/notosanskrbold"
-            android:text="뭐가있조"
+            android:text=""
             android:textColor="#343434"
             android:textSize="14dp" />
 
@@ -49,7 +49,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="14dp"
             android:layout_toRightOf="@id/item_post_nickname"
-            android:text="2020.02.07"
+            android:text=""
             android:textColor="@color/ColorPrimaryLight"
             android:textSize="10dp" />
 
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/item_post_info"
         android:layout_marginBottom="15dp"
-        android:text="@string/post_text"
+        android:text=""
         android:textColor="@color/colorPrimaryDark"
         android:textSize="13dp" />
 

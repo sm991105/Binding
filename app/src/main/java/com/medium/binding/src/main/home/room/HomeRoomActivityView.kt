@@ -37,11 +37,16 @@ interface HomeRoomActivityView {
     // 수정할 떄 contentsIdx가 필요하다
     fun onClickPub(commentsBody: CommentsBody, commentsFlag: Int, contentsIdx: Int)
 
-    // 책방 글 삭제 콜백 함수
+    // 책방 글 삭제 Retrofit 콜백 함수
     fun onDeleteCommentsSuccess(response: BaseResponse)
 
     fun onDeleteCommentsFailure(message: String)
 
-    // 책방 글 삭제 콜백 함수
+    // 책방 글 삭제 버튼 콜백 함수
     fun confirmRemove(contentsIdx: Int)
+
+    // 책방 글 삭제 Retrofit 콜백 함수
+    fun onPostReportSuccess(response: BaseResponse)
+
+    fun onPostReportFailure(message: String)
 }

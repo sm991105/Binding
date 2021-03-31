@@ -193,7 +193,14 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
             }
 
             // 실패
-            else -> Log.d("로그", "유저 정보 불러오기 실패 - message: ${response.message}")
+            else -> {
+                Log.d("로그", "유저 정보 불러오기 실패 - message: ${response.message}")
+
+                showCustomToast(
+                    "프로필 정보를 받아오던 중 에러가 발생했습니다\n" +
+                            "에러가 계속되면 관리자에게 문의해주세요"
+                )
+            }
 
         }
     }
@@ -202,7 +209,9 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
         Log.d("로그", "onGetUserFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("프로필 정보를 받아오던 중 에러가 발생했습니다\n" +
+                "에러가 계속되면 관리자에게 문의해주세요"
+        )
     }
 
     // 유저 이미지 url 전달

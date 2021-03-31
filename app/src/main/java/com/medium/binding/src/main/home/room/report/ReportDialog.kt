@@ -10,11 +10,19 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.NonNull
 import com.medium.binding.R
+import com.medium.binding.databinding.ActivityMainBinding
+import com.medium.binding.databinding.DialogRemoveBinding
+import com.medium.binding.databinding.DialogReportBinding
+import com.medium.binding.databinding.LayoutBottomSheetBinding
+import com.medium.binding.src.main.home.room.ReportDialogListener
 
-class ReportDialog(@NonNull mContext: Context,
-                   private val report: View.OnClickListener): Dialog(mContext) {
+class ReportDialog(@NonNull val mContext: Context,
+                   private val activityListener: ReportDialogListener): Dialog(mContext) {
+    lateinit var binding: DialogReportBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +44,24 @@ class ReportDialog(@NonNull mContext: Context,
         }
         params.height = WindowManager.LayoutParams.WRAP_CONTENT
         this.window?.attributes = params
-        // 버튼 이벤트
-        val btnCancel: Button = findViewById(R.id.dialog_remove_no)
-        val btnRemove: Button = findViewById(R.id.dialog_remove_yes)
 
-        btnCancel.setOnClickListener{
+        binding = DialogReportBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 아니요
+        binding.dialogReportNo.setOnClickListener{
             dismiss()
         }
-        btnRemove.setOnClickListener(report)
+        // 신고하기
+        binding.dialogReportYes.setOnClickListener{
+            val reason = binding.dialogReportReason.text.toString()
+            Log.d("로그", "reason: $reason")
+            if(reason.length < 5 || reason.length > 500){
+                Toast.makeText(mContext, "신고사유를 5~500자로 입력해주세요",
+                    Toast.LENGTH_SHORT).show()
+            }else{
+                activityListener.onClickReport(reason)
+            }
+        }
     }
 }

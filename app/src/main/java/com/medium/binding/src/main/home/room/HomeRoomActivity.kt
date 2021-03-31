@@ -1,7 +1,5 @@
 package com.medium.binding.src.main.home.room
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -9,7 +7,6 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.medium.binding.MainActivity
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseActivity
@@ -19,12 +16,13 @@ import com.medium.binding.src.main.home.HomeFragment
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.models.GetCommentsResponse
+import com.medium.binding.src.main.home.models.ReportBody
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import kotlinx.android.synthetic.main.item_bookmark_store.*
 
 class HomeRoomActivity:
     BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
-HomeRoomActivityView{
+HomeRoomActivityView, HomeRoomDialogListener{
 
     companion object{
         // 뒤로가기 2번 눌러 종료할 때 사용
@@ -36,7 +34,6 @@ HomeRoomActivityView{
         private const val BOOKMARK_OFF: Int = 0
         const val COMMENTS_CREATE: Int = 0      // 글 발행
         const val COMMENTS_EDIT: Int = 1        // 글 수정
-        const val COMMENTS_REMOVE: Int = 2      // 글 삭제
     }
 
     // 뒤로가기 2번 눌러 종료할 때 사용
@@ -62,7 +59,9 @@ HomeRoomActivityView{
         binding.homeRoomSortTab.clipToOutline = true
 
         // 코멘트 어댑터
-        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this)
+        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, this,
+            this
+        )
         binding.homeRoomRecycler.apply {
             adapter = commentsRecyclerAdapter
             layoutManager = LinearLayoutManager(
@@ -458,9 +457,17 @@ HomeRoomActivityView{
         setResult(HomeFragment.BOOK_REMOVED)
     }
 
+    override fun onClickRemove(contentIdx: Int) {
+        if(contentIdx != -1){
+            HomeRoomService(this).tryDeleteComments(bookIdx!!, contentIdx)
+        }else{
+            showCustomToast("잠시 후 다시 시도해주세요.")
+        }
+    }
+
     // 다이얼로그에서 글 삭제버튼을 눌렀을 때
-    override fun confirmRemove(contentIdx: Int) {
-        HomeRoomService(this).tryDeleteComments(bookIdx!!, contentIdx)
+    override fun confirmRemove(contentsIdx: Int) {
+        HomeRoomService(this).tryDeleteComments(bookIdx!!, contentsIdx)
     }
 
     // 책방 글 삭제 통신 성공
@@ -508,6 +515,68 @@ HomeRoomActivityView{
         commentsRecyclerAdapter.removeDialog.dismiss()
 
         showCustomToast("글 삭제 중 에러가 발생했습니다\n" +
+                "에러가 계속되면 관리자에게 문의주세요.")
+        setResult(HomeFragment.BOOK_REMOVED)
+    }
+
+    override fun onClickReport(reportReason: String, contentIdx: Int) {
+        if(contentIdx != -1){
+            val reportBody = ReportBody(reportReason)
+            HomeRoomService(this).tryPostReport(bookIdx!!, contentIdx, reportBody)
+        }else{
+            showCustomToast("잠시 후 다시 시도해주세요.")
+        }
+    }
+
+    // 책방 글 신고 통신 성공
+    override fun onPostReportSuccess(response: BaseResponse) {
+        Log.d("로그", "onPostReportSuccess() called, response: $response")
+        dismissLoadingDialog()
+
+        when(response.code) {
+            1000 -> {
+                Log.d("로그", "onDeleteCommentsSuccess - 글 신고")
+                commentsRecyclerAdapter.reportDialog.dismiss()
+                showCustomToast("글이 신고되었습니다")
+            }
+
+            2001 -> showCustomToast("5자 이상 적어주세요")
+
+            2002 -> showCustomToast("500자 이하로 입력하세요")
+
+            3000 -> {
+                showCustomToast("해당 책방이 존재하지 않습니다")
+                setResult(HomeFragment.BOOK_REMOVED)
+                finish()
+            }
+
+            3001 -> {
+                showCustomToast("해당 글이 존재하지 않습니다")
+                showLoadingDialog(this)
+                HomeRoomService(this).tryGetNewestWR(bookIdx!!)
+            }
+
+            3004 -> {
+                showCustomToast("이미 신고한 글입니다")
+            }
+
+            else -> {
+                Log.d("로그", "onPostReportSuccess() called, message: ${response.message}")
+
+                showCustomToast("글 신고 중 에러가 발생했습니다\n" +
+                        "에러가 계속되면 관리자에게 문의주세요.")
+                setResult(HomeFragment.BOOK_REMOVED)
+            }
+        }
+    }
+
+    // 책방 글 신고 통신 실패
+    override fun onPostReportFailure(message: String) {
+        Log.d("로그", "onPostReportFailure() called, message: $message")
+        dismissLoadingDialog()
+        commentsRecyclerAdapter.reportDialog.dismiss()
+
+        showCustomToast("글 신고 중 에러가 발생했습니다\n" +
                 "에러가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
     }

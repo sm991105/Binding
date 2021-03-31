@@ -1,12 +1,15 @@
 package com.medium.binding.src.main.my_page
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medium.binding.R
+import com.medium.binding.src.main.menu.store_detail.StoreDetailFragment
 import com.medium.binding.src.main.my_page.models.WritingData
+import com.medium.binding.src.main.my_page.my_post.MyPostFragment
 import kotlinx.android.synthetic.main.item_bookshelf.view.*
 
 
@@ -41,17 +44,18 @@ class WritingRecyclerAdapter(fragment: MyPageFragment):
         fun bindValue(writing: WritingData){
             bookName.text = writing.bookName
 
-            // 나중에 클릭 -> 북마크 글 보는 기능
-            /*item.setOnClickListener{
+            //나중에 클릭 -> 북마크 글 보는 기능
+            item.setOnClickListener{
                 val fragmentManager = myPageFragment.childFragmentManager
-                val storeDetailFragment = StoreDetailFragment()
+                val myPostFragment = MyPostFragment()
                 val idxBundle = Bundle()
-                idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
-                storeDetailFragment.arguments = idxBundle
+                idxBundle.putInt("bookIdx", writing.bookIdx)
+                myPostFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .replace(R.id.menu_root, storeDetailFragment)
+                    .addToBackStack("MyPost")
+                    .add(R.id.my_page_frm, myPostFragment)
                     .commitAllowingStateLoss()
-            }*/
+            }
         }
     }
 

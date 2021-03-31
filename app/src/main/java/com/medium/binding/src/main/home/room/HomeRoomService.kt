@@ -4,6 +4,7 @@ import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.GetCommentsResponse
+import com.medium.binding.src.main.home.models.ReportBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -132,6 +133,27 @@ class HomeRoomService(val view: HomeRoomActivityView) {
 
                 override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                     view.onDeleteCommentsFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
+
+    // 책방 글 신고 API 실행 (네트워크 통신)
+    fun tryPostReport(bookIdx: Int, contentsIdx: Int, reportBody: ReportBody){
+
+        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
+            HomeRoomRetrofitInterface::class.java)
+
+        homeRoomRetrofitInterface.postReport(bookIdx, contentsIdx, reportBody)
+            .enqueue(object : Callback<BaseResponse> {
+
+                override fun onResponse(call: Call<BaseResponse>,
+                                        response: Response<BaseResponse>
+                ) {
+                    view.onPostReportSuccess(response.body() as BaseResponse)
+                }
+
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    view.onPostReportFailure(t.message ?: "통신 오류")
                 }
             })
     }

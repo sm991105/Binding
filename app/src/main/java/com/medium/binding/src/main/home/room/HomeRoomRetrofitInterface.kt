@@ -3,6 +3,7 @@ package com.medium.binding.src.main.home.room
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.GetCommentsResponse
+import com.medium.binding.src.main.home.models.ReportBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -43,5 +44,12 @@ interface HomeRoomRetrofitInterface {
     @DELETE("/books/{bookIdx}/contents/{contentsIdx}")
     fun deleteComments(@Path("bookIdx") bookIdx: Int,
                       @Path("contentsIdx") contentsIdx: Int
+    ): Call<BaseResponse>
+
+    // 책방 글 신고
+    @POST("/books/{bookIdx}/contents/{contentsIdx}/report-contents")
+    fun postReport(@Path("bookIdx") bookIdx: Int,
+                   @Path("contentsIdx") contentsIdx: Int,
+                   @Body params: ReportBody
     ): Call<BaseResponse>
 }

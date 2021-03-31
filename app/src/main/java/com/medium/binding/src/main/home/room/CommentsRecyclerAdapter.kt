@@ -16,17 +16,21 @@ import com.medium.binding.config.ApplicationClass
 import com.medium.binding.src.main.home.models.CommentsResult
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.home.room.remove.RemoveDialog
+import com.medium.binding.src.main.home.room.report.ReportDialog
 import com.medium.binding.util.OnClickRemoveComments
 import kotlinx.android.synthetic.main.item_post.view.*
 
-class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity: HomeRoomActivity
-): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>() {
+class CommentsRecyclerAdapter(val context: Context,
+                              private val homeRoomActivity: HomeRoomActivity,
+                              private val activityDialogListener: HomeRoomDialogListener
+): RecyclerView.Adapter<CommentsRecyclerAdapter.CommentsHolder>(){
 
     private var commentsList = ArrayList<CommentsResult>()
 
     private var targetContentIdx = -1
 
     lateinit var removeDialog: RemoveDialog
+    lateinit var reportDialog: ReportDialog
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -48,8 +52,8 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
         holder.bindCommentsValue(commentsList[position], position)
     }
 
-    inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val view: View = itemView
+    inner class CommentsHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+    ReportDialogListener, RemoveDialogListener {
         private val markEmpty: ImageView = itemView.item_post_bookmark_empty    // 북마크 안한 거
         private val markFilled: ImageView = itemView.item_post_bookmark_filled  // 북마크 한 거
         private val comments: TextView = itemView.item_post_text            // 글 내용
@@ -59,20 +63,21 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
         private val report: TextView = itemView.item_post_report            // 신고
         private val edit: TextView = itemView.item_post_edit                // 수정 - 자기 글일 때만
         private val delete: TextView = itemView.item_post_delete            // 삭제 - 자기 글일 때만
+        var contentIdx: Int = -1
 
-        fun bindCommentsValue(commentsData: CommentsResult, itemPos: Int){
+        fun bindCommentsValue(commentsData: CommentsResult, itemPos: Int) {
 
             // 북마크
-            if(commentsData.isBookMark == 1){
+            if (commentsData.isBookMark == 1) {
                 markFilled.visibility = View.VISIBLE
-            }else{
+            } else {
                 markFilled.visibility = View.INVISIBLE
             }
 
             postDate.text = commentsData.createdAt      // 글 쓴 날짜
             nickname.text = commentsData.nickname       // 닉네임
             // 프로필 사진이 있으면 적용
-            if(commentsData.userImgUrl != "-1"){
+            if (commentsData.userImgUrl != "-1") {
                 Glide.with(homeRoomActivity)
                     .load(commentsData.userImgUrl)
                     .error(R.drawable.icon_app)
@@ -81,7 +86,7 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
 
             // 자기 글이면 수정, 삭제 버튼, 아니면 신고 버튼 보이게 함
             // 버튼 리스너
-            if(commentsData.userIdx == ApplicationClass.userIdx){
+            if (commentsData.userIdx == ApplicationClass.userIdx) {
                 report.visibility = View.INVISIBLE
                 edit.visibility = View.VISIBLE
                 delete.visibility = View.VISIBLE
@@ -90,36 +95,42 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
                 edit.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply{
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                    ApplicationClass.mLastClickTime.apply {
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
                             return@setOnClickListener
                         }
                         this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
                     }
 
                     homeRoomActivity.supportFragmentManager.beginTransaction()
-                        .add(R.id.home_room_frm, HomeCreateFragment(homeRoomActivity,
-                            commentsData.contents!!, HomeRoomActivity.COMMENTS_EDIT, commentsData.contentsIdx!!))
+                        .add(
+                            R.id.home_room_frm, HomeCreateFragment(
+                                homeRoomActivity,
+                                commentsData.contents!!,
+                                HomeRoomActivity.COMMENTS_EDIT,
+                                commentsData.contentsIdx!!
+                            )
+                        )
                         .addToBackStack("HomeCreate")
                         .commitAllowingStateLoss()
                 }
                 // 삭제 버튼
-                delete.setOnClickListener{
+                delete.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply{
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                    ApplicationClass.mLastClickTime.apply {
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
                             return@setOnClickListener
                         }
                         this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
                     }
 
                     // 삭제 다이얼로그
-                    removeDialog = RemoveDialog(context, confirmRemove)
-                    targetContentIdx = commentsData.contentsIdx ?: -1
+                    contentIdx = commentsData.contentsIdx ?: -1
+                    removeDialog = RemoveDialog(context, this)
                     removeDialog.show()
                 }
-            }else{
+            } else {
                 report.visibility = View.VISIBLE
                 edit.visibility = View.INVISIBLE
                 delete.visibility = View.INVISIBLE
@@ -128,12 +139,17 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
                 report.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply{
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                    ApplicationClass.mLastClickTime.apply {
+                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
                             return@setOnClickListener
                         }
                         this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
                     }
+
+                    contentIdx = commentsData.contentsIdx ?: -1
+                    // 신고 다이얼로그
+                    reportDialog = ReportDialog(context, this)
+                    reportDialog.show()
                 }
             }
 
@@ -141,8 +157,8 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
             comments.text = commentsData.contents
 
             // 북마크 설정
-            markEmpty.setOnClickListener{
-                commentsData.contentsIdx?.let{
+            markEmpty.setOnClickListener {
+                commentsData.contentsIdx?.let {
                     homeRoomActivity.showLoadingDialog(homeRoomActivity)
                     HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
                 }
@@ -154,6 +170,15 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
                     HomeRoomService(homeRoomActivity).tryPatchWBookmark(it, itemPos)
                 }
             }
+        }
+
+        // 신고하기 버튼 -> ReportDialog에서 실행할 콜백함수
+        override fun onClickReport(reportReason: String) {
+            activityDialogListener.onClickReport(reportReason, contentIdx)
+        }
+
+        override fun onClickRemove() {
+            activityDialogListener.onClickRemove(contentIdx)
         }
     }
 
@@ -168,7 +193,7 @@ class CommentsRecyclerAdapter(val context: Context, private val homeRoomActivity
         notifyItemChanged(pos)
     }
 
-    // 삭제 확인 버튼
+    // 삭제 확인 버튼 리스너
     val confirmRemove = View.OnClickListener {
         if(targetContentIdx != -1){
             homeRoomActivity.confirmRemove(targetContentIdx)

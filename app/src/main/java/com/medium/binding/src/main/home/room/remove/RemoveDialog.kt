@@ -12,9 +12,10 @@ import android.view.WindowManager
 import android.widget.Button
 import androidx.annotation.NonNull
 import com.medium.binding.R
+import com.medium.binding.src.main.home.room.RemoveDialogListener
 
 class RemoveDialog(@NonNull mContext: Context,
-                   private val confirm: View.OnClickListener): Dialog(mContext) {
+                   private val activityListener: RemoveDialogListener): Dialog(mContext) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +45,8 @@ class RemoveDialog(@NonNull mContext: Context,
         btnCancel.setOnClickListener{
             dismiss()
         }
-        btnRemove.setOnClickListener(confirm)
+        btnRemove.setOnClickListener{
+            activityListener.onClickRemove()
+        }
     }
 }
