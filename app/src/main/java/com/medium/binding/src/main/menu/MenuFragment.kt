@@ -112,65 +112,53 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     }
 
     override fun onGetAllStoresSuccess(response: GetStoresResponse) {
-        Log.d("로그", "onGetAllStoresSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
             // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다
             1000 -> {
                 val result = response.result
-                Log.d("로그", "전체 서점 조회 성공 - result: $result")
 
                 // 서점 데이터 전달
                 menuRecyclerAdapter.updateList(result)
             }
 
             else -> {
-                Log.d("로그", "전체 서점 조회 실패 - message: ${response.message}")
-
-                response.message?.let{showCustomToast(it)}
+                showCustomToast("서점정보를 가져오지 못했습니다, 에러가 계속되면 관리자에게 문의해주세요")
             }
         }
     }
 
     override fun onGetAllStoresFailure(message: String) {
-        Log.d("로그", "onGetAllStoresFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("서점정보를 가져오지 못했습니다, 에러가 계속되면 관리자에게 문의해주세요")
     }
 
     override fun onGetLocationStoresSuccess(response: GetStoresResponse) {
-        Log.d("로그", "onGetLocationStoresSuccess() called, response: $response")
         dismissLoadingDialog()
 
         when(response.code){
             // 조회에 성공하면 리사이클러뷰에 서점 데이터를 전달한다
             1000 -> {
                 val result = response.result
-                Log.d("로그", "지역 서점 조회 성공 - result: $result")
 
-                if(result.size > 0){
-                    hasNext = true      // 추가할 데이터 있음
-
-                    menuRecyclerAdapter.updateList(result)  // 서점 데이터 전달
+                if(result.size <= 0){
+                    showCustomToast("해당 지역 서점을 제보해주세요!")
                 }
-
+                menuRecyclerAdapter.updateList(result)  // 서점 데이터 전달
             }
 
             else -> {
-                Log.d("로그", "지역 서점 조회 실패 - message: ${response.message}")
-
                 response.message?.let{showCustomToast(it)}
             }
         }
     }
 
     override fun onGetLocationStoresFailure(message: String) {
-        Log.d("로그", "onGetLocationStoresFailure() called, message: $message")
         dismissLoadingDialog()
 
-        showCustomToast("네트워크 확인 후 다시 시도해주세요.")
+        showCustomToast("서점정보를 가져오지 못했습니다, 에러가 계속되면 관리자에게 문의해주세요")
     }
 
     // 바텀시트에서 선택 -> 지역 서점 가져오기

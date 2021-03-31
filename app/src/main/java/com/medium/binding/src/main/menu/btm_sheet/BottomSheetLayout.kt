@@ -72,7 +72,6 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
             this.addAll(listGyeonggi.subList(1, listGyeonggi.lastIndex))
             this.addAll(listIncheon.subList(1, listIncheon.lastIndex))
         }
-        Log.d("로그", "서울 리스트: $listSeoul , 전체 리스트: $listWhole")
 
         // 첫번째 지역 선택 리스트뷰 설정
         bigLocationList = arrayListOf("전체", "서울", "경기도", "인천")
