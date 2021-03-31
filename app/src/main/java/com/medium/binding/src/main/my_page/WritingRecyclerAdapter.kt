@@ -47,12 +47,12 @@ class WritingRecyclerAdapter(fragment: MyPageFragment):
             //나중에 클릭 -> 북마크 글 보는 기능
             item.setOnClickListener{
                 val fragmentManager = myPageFragment.childFragmentManager
-                val myPostFragment = MyPostFragment()
+                val myPostFragment = MyPostFragment(MyPostFragment.MY_POST)
                 val idxBundle = Bundle()
                 idxBundle.putInt("bookIdx", writing.bookIdx)
                 myPostFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .addToBackStack("MyPost")
+                    .addToBackStack("MyPost0")
                     .add(R.id.my_page_frm, myPostFragment)
                     .commitAllowingStateLoss()
             }

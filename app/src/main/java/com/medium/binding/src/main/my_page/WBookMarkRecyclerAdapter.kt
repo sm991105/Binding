@@ -1,5 +1,6 @@
 package com.medium.binding.src.main.my_page
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medium.binding.R
 import com.medium.binding.src.main.my_page.models.WBookMarkData
+import com.medium.binding.src.main.my_page.my_post.MyPostFragment
 import kotlinx.android.synthetic.main.item_bookshelf.view.*
 
 
@@ -42,16 +44,17 @@ class WBookMarkRecyclerAdapter(fragment: MyPageFragment):
             bookName.text = writing.bookName
 
             // 나중에 클릭 -> 북마크 글 보는 기능
-            /*item.setOnClickListener{
+            item.setOnClickListener {
                 val fragmentManager = myPageFragment.childFragmentManager
-                val storeDetailFragment = StoreDetailFragment()
+                val myPostFragment = MyPostFragment(MyPostFragment.BOOKMARK_POST)
                 val idxBundle = Bundle()
-                idxBundle.putInt("bookStoreIdx", store.bookstoreIdx)
-                storeDetailFragment.arguments = idxBundle
+                idxBundle.putInt("bookIdx", writing.bookIdx)
+                myPostFragment.arguments = idxBundle
                 fragmentManager.beginTransaction()
-                    .replace(R.id.menu_root, storeDetailFragment)
+                    .addToBackStack("MyPost1")
+                    .add(R.id.my_page_frm, myPostFragment)
                     .commitAllowingStateLoss()
-            }*/
+            }
         }
     }
 

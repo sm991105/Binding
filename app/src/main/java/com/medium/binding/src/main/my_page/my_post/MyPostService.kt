@@ -28,4 +28,25 @@ class MyPostService(val view: MyPostFragmentView) {
                 }
             })
     }
+
+    // 유저가 쓴 글 상세 조회 함수(네트워크 통신)
+    fun tryGetMarkComments(bookIdx: Int){
+
+        val myPostRetrofitInterface = ApplicationClass.sRetrofit.create(
+            MyPostRetrofitInterface::class.java)
+
+        myPostRetrofitInterface.getUserMarkComments(bookIdx,0,50)
+            .enqueue(object : Callback<UserCommentsResponse> {
+
+                override fun onResponse(call: Call<UserCommentsResponse>,
+                                        response: Response<UserCommentsResponse>
+                ) {
+                    view.onGetUserCommentsSuccess(response.body() as UserCommentsResponse)
+                }
+
+                override fun onFailure(call: Call<UserCommentsResponse>, t: Throwable) {
+                    view.onGetUserCommentsFailure(t.message ?: "통신 오류")
+                }
+            })
+    }
 }

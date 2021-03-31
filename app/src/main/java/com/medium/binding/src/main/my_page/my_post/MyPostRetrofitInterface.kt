@@ -23,5 +23,5 @@ interface MyPostRetrofitInterface {
         @Path("bookIdx") bookIdx: Int,
         @Query("page") page: Int,
         @Query("limit") limit: Int
-    ): Call<GetUserResponse>
+    ): Call<UserCommentsResponse>
 }

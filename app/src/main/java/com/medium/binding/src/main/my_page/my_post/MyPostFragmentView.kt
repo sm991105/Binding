@@ -8,4 +8,9 @@ interface MyPostFragmentView {
     fun onGetUserCommentsSuccess(response: UserCommentsResponse)
 
     fun onGetUserCommentsFailure(message: String)
+
+    // 북마크 글 조회 콜백 함수
+    fun onGetMarkCommentsSuccess(response: UserCommentsResponse)
+
+    fun onGetMarkCommentsFailure(message: String)
 }

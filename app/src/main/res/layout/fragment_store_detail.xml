@@ -96,6 +96,7 @@
                     android:src="@drawable/home" />
 
                 <TextView
+                    android:background="@drawable/ripple_effect_rect"
                     android:includeFontPadding="false"
                     android:id="@+id/store_detail_web_address"
                     android:layout_width="match_parent"
