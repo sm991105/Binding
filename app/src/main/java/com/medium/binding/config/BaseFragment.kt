@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
@@ -36,7 +37,13 @@ abstract class BaseFragment<B : ViewBinding>(
     }
 
     fun showCustomToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+        val toast = Toast.makeText(activity, message, Toast.LENGTH_SHORT)
+        val group:ViewGroup = toast.view as ViewGroup
+        val messageTxtView: TextView = group.getChildAt(0) as TextView
+        messageTxtView.includeFontPadding = false
+
+        toast.show()
+        // Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     fun showLoadingDialog(context: Context) {

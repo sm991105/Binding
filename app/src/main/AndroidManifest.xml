@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme">
 
         <!-- 스플래시 화면 -->
-        <activity android:name="com.medium.binding.src.splash.SplashActivity">
+        <activity android:name="com.medium.binding.src.splash.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,28 +26,36 @@
         </activity>
 
         <!-- 로그인 화면-->
-        <activity android:name="com.medium.binding.src.login.LoginActivity"/>
+        <activity android:name="com.medium.binding.src.login.LoginActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 회원가입 화면-->
-        <activity android:name="com.medium.binding.src.join.JoinActivity"/>
+        <activity android:name="com.medium.binding.src.join.JoinActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 비밀번호 찾기 화면-->
-        <activity android:name="com.medium.binding.src.find_password.FindPasswordActivity"/>
+        <activity android:name="com.medium.binding.src.find_password.FindPasswordActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 메인 화면 -->
-        <activity android:name="com.medium.binding.src.main.MainActivity"/>
+        <activity android:name="com.medium.binding.src.main.MainActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 책방 화면 -->
-        <activity android:name="com.medium.binding.src.main.home.room.HomeRoomActivity"/>
+        <activity android:name="com.medium.binding.src.main.home.room.HomeRoomActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 마이페이지 세팅 - 프로필 관리 화면-->
-        <activity android:name="com.medium.binding.src.main.my_page.settings.profile.SettingsProfileActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.profile.SettingsProfileActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 마이페이지 세팅 - 비밀번호 변경 화면-->
-        <activity android:name="com.medium.binding.src.main.my_page.settings.password.ChangePWActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.password.ChangePWActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 마이페이지 세팅 - 서점 제보 화면-->
-        <activity android:name="com.medium.binding.src.main.my_page.settings.report.SettingsReportActivity"/>
+        <activity android:name="com.medium.binding.src.main.my_page.settings.report.SettingsReportActivity"
+            android:screenOrientation="portrait"/>
 
     </application>
 
