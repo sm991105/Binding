@@ -49,7 +49,7 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
         fun bindValue(store: StoresResult){
             Glide.with(menuFragment)
                 .load(store.storeImgUrl)
-                .error(R.drawable.jangu)
+                .error(R.drawable.icon_app)
                 .into(photo)
 
             title.text = store.storeName

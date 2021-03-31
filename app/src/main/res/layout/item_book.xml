@@ -26,7 +26,7 @@
         android:layout_width="95dp"
         android:layout_height="95dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/jangu"
+        android:src="@drawable/icon_app"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/item_book_dotted_line"
         app:layout_constraintRight_toRightOf="parent"
