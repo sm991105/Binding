@@ -8,6 +8,7 @@ import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.databinding.FragmentMyPostBinding
+import com.medium.binding.src.main.MainActivity
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.ReportBody
 import com.medium.binding.src.main.home.room.HomeRoomActivity
@@ -89,11 +90,21 @@ class MyPostFragment(private val writingFlag: Int):
             // 해당 책방이 사라짐
             2000 -> {
                 showCustomToast("해당 책방이 존재하지 않습니다")
-                activity?.onBackPressed()
+                (activity as MainActivity).refreshMyPage()
             }
 
             // 책 방에 내 글이 없다
-            4000 -> showCustomToast("책방에 내가 쓴 글이 존재하지 않습니다")
+            4000 -> {
+                // MainActivity에서 뒤로가기 할 때, 마이페이지를 새로고침 할 것인지 판단할 때 사용
+                ApplicationClass.isEdited = true
+
+                if(ApplicationClass.isCommentsChanged){
+                    commentsRecyclerAdapter.updateList(ArrayList())
+                }else{
+                    showCustomToast("책방에 내가 쓴 글이 현재 존재하지 않습니다")
+                    (activity as MainActivity).refreshMyPage()
+                }
+            }
 
             else -> {
                 showCustomToast("내가 쓴 글 정보를 받아오던 중 에러가 발생했습니다\n" +
@@ -102,6 +113,9 @@ class MyPostFragment(private val writingFlag: Int):
                 activity?.onBackPressed()
             }
         }
+
+        ApplicationClass.isCommentsChanged = false
+
     }
 
     // 내가 쓴 글 API 통신 실패
@@ -130,26 +144,15 @@ class MyPostFragment(private val writingFlag: Int):
 
             // 해당 책방이 사라짐
             2000 -> {
-
-                // 책방 글 수정,삭제 후에 호출했으면, 새로고침을 한다
-                if(ApplicationClass.isCommentsChanged){
-                    commentsRecyclerAdapter.updateList(response.result.writing)
-                }
                 showCustomToast("해당 책방이 현재 존재하지 않습니다")
-                ApplicationClass.isEdited = true
-                activity?.onBackPressed()
+                // 마이페이지 새로고침
+                (activity as MainActivity).refreshMyPage()
             }
 
-            // 책 방에 내 글이 없다
+            // 책 방에 북마크한 글이 없다
             4000 -> {
-
-                // 책방 글 수정,삭제 후에 호출했으면, 새로고침을 한다
-                if(ApplicationClass.isCommentsChanged){
-                    commentsRecyclerAdapter.updateList(response.result.writing)
-                }
-                showCustomToast("북마크한 글이 현재 존재하지 않습니다")
-                ApplicationClass.isEdited = true
-                activity?.onBackPressed()
+                showCustomToast("해당 책방에서 북마크한 글이 현재 존재하지 않습니다")
+                (activity as MainActivity).refreshMyPage()
             }
 
             else -> {
@@ -159,7 +162,6 @@ class MyPostFragment(private val writingFlag: Int):
                 activity?.onBackPressed()
             }
         }
-        ApplicationClass.isCommentsChanged = false
     }
 
     // 내가 쓴 글 API 통신 실패
@@ -190,25 +192,15 @@ class MyPostFragment(private val writingFlag: Int):
         commentsRecyclerAdapter.removeDialog?.dismiss()
 
         when(response.code) {
-            1000 -> {
+            1000, 3001 -> {
                 ApplicationClass.isCommentsChanged = true
                 showCustomToast("글이 삭제되었습니다")
-                context?.let{
-                    showLoadingDialog(context!!)
-                MyPostService(this).tryGetUserComments(bookIdx!!)}  // 새로고침
+                MyPostService(this).tryGetUserComments(bookIdx!!) // 새로고침
             }
 
             3000 -> {
                 showCustomToast("해당 책방이 존재하지 않습니다")
-                ApplicationClass.isEdited = true
-                activity?.onBackPressed()
-            }
-
-            3001 -> {
-                showCustomToast("해당 글이 존재하지 않습니다")
-                context?.let{
-                    showLoadingDialog(context!!)
-                    MyPostService(this).tryGetUserComments(bookIdx!!)}  // 새로고침
+                (activity as MainActivity).refreshMyPage()
             }
 
             else -> {
@@ -224,7 +216,7 @@ class MyPostFragment(private val writingFlag: Int):
         commentsRecyclerAdapter.removeDialog?.dismiss()
 
         showCustomToast("글 삭제 중 오류가 발생했습니다\n" +
-                "오류가 계속되면 관리자에게 문의주세요.")
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
     }
 
     // 다이얼로그에서 신고 버튼을 누르면, 어댑터에서 실행할 콜백 함수
@@ -254,12 +246,11 @@ class MyPostFragment(private val writingFlag: Int):
 
             3000 -> {
                 showCustomToast("해당 책방이 이제 존재하지 않습니다")
-                commentsRecyclerAdapter.reportDialog?.dismiss()
-                ApplicationClass.isEdited = true
+                (activity as MainActivity).refreshMyPage()
             }
 
             3001 -> {
-                showCustomToast("해당 글이 이제 존재하지 않습니다")
+                showCustomToast("해당 글이 현재 존재하지 않습니다")
                 showLoadingDialog(context!!)
                 ApplicationClass.isCommentsChanged = true
                 MyPostService(this).tryGetUserComments(bookIdx!!)
@@ -313,24 +304,27 @@ class MyPostFragment(private val writingFlag: Int):
                 activity?.onBackPressed()
 
                 // 새로고침
-                context?.let {
-
-                    if (bookIdx != -1) {
-                        MyPostService(this).tryGetUserComments(bookIdx!!)
-                    } else {
-                        null
-                    }
+                if (bookIdx != -1) {
+                    ApplicationClass.isCommentsChanged = true
+                    MyPostService(this).tryGetUserComments(bookIdx!!)
                 }
             }
 
             2001 -> showCustomToast("5자 이상 적어주세요")
 
             3000 -> {
-                showCustomToast("해당 책방이 이제 존재하지 않습니다")
+                showCustomToast("해당 책방이 현재 존재하지 않습니다")
+                // 마이페이지 새로고침
+                (activity as MainActivity).refreshMyPage()
             }
 
             3001 -> {
                 showCustomToast("해당 글이 존재하지 않습니다, 자세한 사항은 관리자에게 문의해주세요.")
+                // 새로고침
+                if (bookIdx != -1) {
+                    ApplicationClass.isCommentsChanged = true
+                    MyPostService(this).tryGetUserComments(bookIdx!!)
+                }
             }
 
             else -> {

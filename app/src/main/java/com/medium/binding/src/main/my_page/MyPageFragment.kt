@@ -162,15 +162,17 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
                 // 유저 정보
                 // 프로필 사진, 닉네임, 이메일
                 userInfo[0].apply {
-                    this@MyPageFragment.userImgUrl = this.userImgUrl
+                    this@MyPageFragment?.let{
+                        it.userImgUrl = this.userImgUrl
 
-                    Glide.with(this@MyPageFragment)
-                        .load(this.userImgUrl)
-                        .error(R.drawable.icon_app)
-                        .placeholder(R.drawable.icon_app)
-                        .into(binding.myPageProfilePhoto)
-                    binding.myPageProfileName.text = this.nickname
-                    binding.myPageProfileEmail.text = this.email
+                        Glide.with(it)
+                            .load(this.userImgUrl)
+                            .error(R.drawable.icon_app)
+                            .placeholder(R.drawable.icon_app)
+                            .into(binding.myPageProfilePhoto)
+                        binding.myPageProfileName.text = this.nickname
+                        binding.myPageProfileEmail.text = this.email
+                    }
                 }
 
                 // 유저가 쓴 글이 있으면 그 데이터를 리사이클러뷰에 넘겨준다

@@ -1,7 +1,7 @@
 package com.medium.binding.src.main
 
 import android.os.Bundle
-import android.util.Log
+import android.os.SystemClock
 import com.medium.binding.R
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.databinding.ActivityMainBinding
@@ -13,8 +13,6 @@ import com.medium.binding.config.ApplicationClass
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
-    private var isProEdited = false
-
     private var homeFragment: HomeFragment? = null
     private var menuFragment: MenuFragment? = null
     private var myPageFragment: MyPageFragment? = null
@@ -23,8 +21,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private val FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
 
+    lateinit var btmNav: BottomNavigationView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        btmNav = binding.mainBtmNav
 
         // 처음 화면이 켜졌을 때 활성화될 하단 버튼 - 실제 화면이 아닌 버튼에만 적용
         binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_home
@@ -33,7 +36,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         if(homeFragment == null){
             homeFragment = HomeFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.main_frm, HomeFragment())
+                .add(R.id.main_frm, homeFragment!!)
                 .commitAllowingStateLoss()
         }
 
@@ -51,6 +54,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             .commitAllowingStateLoss()
                         return@OnNavigationItemSelectedListener true
                     }
+
                     R.id.menu_main_btm_nav_menu -> {
                         if(menuFragment == null){
                             menuFragment = MenuFragment()
@@ -60,23 +64,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                             .commitAllowingStateLoss()
                         return@OnNavigationItemSelectedListener true
                     }
+
                     R.id.menu_main_btm_nav_my_page -> {
-                        // 설정 화면에서 마이페이지 하단 뷰를 누르면 마이페이지 화면으로 간다
-                        myPageFragment?.let{
-                            if(it.isAdded && it.childFragmentManager.backStackEntryCount > 0) {
-                                it.childFragmentManager.popBackStack()
-                            }else{
-                                null
+                        ApplicationClass.mLastClickTime.apply{
+                            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
+                                return@OnNavigationItemSelectedListener false
+                            }
+                            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                        }
+
+                        if (myPageFragment == null) {
+                            myPageFragment = MyPageFragment()
+                        }
+
+                       // 마이페이지에 ChildFragment가 붙어있으면, 마이페이지로 새로고침해서 이동
+                        myPageFragment!!.apply{
+                            if(this.isAdded && this.childFragmentManager.backStackEntryCount > 0) {
+                                myPageFragment = MyPageFragment()
                             }
                         }
-                            // myPageFragment가 null이면, 생성하고 실행
-                            ?: run{
-                            myPageFragment = MyPageFragment()
-                            supportFragmentManager.beginTransaction()
-                                .replace(R.id.main_frm, myPageFragment!!, "myPage")
-                                .commitAllowingStateLoss()
-                            return@OnNavigationItemSelectedListener true
-                        }
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, myPageFragment!!, "myPage")
+                            .commitAllowingStateLoss()
+                        return@OnNavigationItemSelectedListener true
                     }
                 }
                 false
@@ -93,7 +103,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
             R.id.menu_main_btm_nav_menu -> {
 
-                if(menuFragment!!.childFragmentManager.backStackEntryCount > 0){
+                if(menuFragment?.childFragmentManager?.backStackEntryCount!! > 0){
                     menuFragment!!.childFragmentManager.popBackStack()
                 }else{
                     finishOnBackPressed()
@@ -103,7 +113,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             R.id.menu_main_btm_nav_my_page -> {
 
                 // 마이페이지 프래그먼트에 childFragment가 있으면 childFragment만 종료
-                if(myPageFragment!!.childFragmentManager.backStackEntryCount > 0){
+                if(myPageFragment?.childFragmentManager?.backStackEntryCount!! > 0){
                     myPageFragment!!.childFragmentManager.popBackStack()
 
                     // 프로필 수정됐으면 새로고침
@@ -140,6 +150,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             backPressedTime = tempTime
             showCustomToast("뒤로 버튼을 한번 더 누르시면 종료됩니다.")
         }
+    }
+
+    // 마이페이지 새로고침
+    fun refreshMyPage(){
+        binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_my_page
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, MyPageFragment(), "myPage")
+            .commitAllowingStateLoss()
     }
 
 }
