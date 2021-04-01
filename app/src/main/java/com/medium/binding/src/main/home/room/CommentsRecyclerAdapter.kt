@@ -76,13 +76,13 @@ class CommentsRecyclerAdapter(val context: Context,
 
             postDate.text = commentsData.createdAt      // 글 쓴 날짜
             nickname.text = commentsData.nickname       // 닉네임
-            // 프로필 사진이 있으면 적용
-            if (commentsData.userImgUrl != "-1") {
-                Glide.with(homeRoomActivity)
-                    .load(commentsData.userImgUrl)
-                    .error(R.drawable.icon_app)
-                    .into(userImg)
-            }
+
+            // 프로필 사진
+            Glide.with(homeRoomActivity)
+                .load(commentsData.userImgUrl)
+                .error(R.drawable.icon_app)
+                .into(userImg)
+
 
             // 자기 글이면 수정, 삭제 버튼, 아니면 신고 버튼 보이게 함
             // 버튼 리스너
@@ -130,7 +130,9 @@ class CommentsRecyclerAdapter(val context: Context,
                     removeDialog = RemoveDialog(context, this)
                     removeDialog.show()
                 }
-            } else {
+            }
+            // 다른 사람 글
+            else {
                 report.visibility = View.VISIBLE
                 edit.visibility = View.INVISIBLE
                 delete.visibility = View.INVISIBLE
@@ -191,14 +193,5 @@ class CommentsRecyclerAdapter(val context: Context,
     fun updateItem(pos: Int, bookmark: Int){
         commentsList[pos].isBookMark = bookmark
         notifyItemChanged(pos)
-    }
-
-    // 삭제 확인 버튼 리스너
-    val confirmRemove = View.OnClickListener {
-        if(targetContentIdx != -1){
-            homeRoomActivity.confirmRemove(targetContentIdx)
-        }else{
-            homeRoomActivity.showCustomToast("잠시 후 다시 시도해주세요.")
-        }
     }
 }

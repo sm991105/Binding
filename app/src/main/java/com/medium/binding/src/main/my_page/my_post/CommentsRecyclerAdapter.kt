@@ -12,14 +12,19 @@ import com.bumptech.glide.Glide
 import com.makeramen.roundedimageview.RoundedImageView
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
+import com.medium.binding.src.main.home.models.CommentsBody
+import com.medium.binding.src.main.home.room.HomeRoomActivity
+import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.home.room.remove.RemoveDialog
 import com.medium.binding.src.main.home.room.report.ReportDialog
+import com.medium.binding.src.main.my_page.MyPageFragment
 import com.medium.binding.src.main.my_page.models.CommentsWriting
 import com.medium.binding.util.Comments
 import kotlinx.android.synthetic.main.item_post.view.*
 
 
-class CommentsRecyclerAdapter(val mContext: Context,
+class CommentsRecyclerAdapter(val fragment: MyPostFragment,
+                              val mContext: Context,
                               val commentsListener: Comments.ClickListener):
     RecyclerView.Adapter<CommentsRecyclerAdapter.WritingViewHolder>() {
 
@@ -76,8 +81,19 @@ class CommentsRecyclerAdapter(val mContext: Context,
             // 유저가 쓴 글이면 수정, 삭제 가능
             if(ApplicationClass.userIdx == writing.userIdx){
 
-                // 수정 버튼
-                edit.setOnClickListener {  }
+                // 수정 버튼 -> 수정(발행)창을 연다
+                edit.setOnClickListener {
+                    val myPageFragment = fragment.parentFragment as MyPageFragment
+                    myPageFragment.childFragmentManager.beginTransaction()
+                        .replace(R.id.my_page_frm, HomeCreateFragment(
+                                commentsListener,
+                                writing.contents,
+                                HomeRoomActivity.COMMENTS_EDIT,
+                                writing.contentsIdx)
+                        )
+                        .addToBackStack("HomeCreate")
+                        .commitAllowingStateLoss()
+                }
 
                 // 삭제 버튼
                 delete.setOnClickListener {

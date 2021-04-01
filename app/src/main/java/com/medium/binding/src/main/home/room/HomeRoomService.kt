@@ -4,7 +4,6 @@ import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.GetCommentsResponse
-import com.medium.binding.src.main.home.models.ReportBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,7 +16,7 @@ class HomeRoomService(val view: HomeRoomActivityView) {
         val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRoomRetrofitInterface::class.java)
 
-        homeRoomRetrofitInterface.getNewestWR(bookIdx, 0, 20)
+        homeRoomRetrofitInterface.getNewestWR(bookIdx, 0, 70)
             .enqueue(object : Callback<GetCommentsResponse> {
 
                 override fun onResponse(call: Call<GetCommentsResponse>,
@@ -91,69 +90,6 @@ class HomeRoomService(val view: HomeRoomActivityView) {
 
                 override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                     view.onPostCommentsFailure(t.message ?: "통신 오류")
-                }
-            })
-    }
-
-    // 책방 글 수정 API 실행 (네트워크 통신)
-    fun tryPatchComments(bookIdx: Int, contentsIdx: Int, commentsBody: CommentsBody){
-
-        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
-            HomeRoomRetrofitInterface::class.java)
-
-        homeRoomRetrofitInterface.patchComments(bookIdx, contentsIdx, commentsBody)
-            .enqueue(object : Callback<BaseResponse> {
-
-                override fun onResponse(call: Call<BaseResponse>,
-                                        response: Response<BaseResponse>
-                ) {
-                    view.onPatchCommentsSuccess(response.body() as BaseResponse)
-                }
-
-                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                    view.onPatchCommentsFailure(t.message ?: "통신 오류")
-                }
-            })
-    }
-
-    // 책방 글 삭제 API 실행 (네트워크 통신)
-    fun tryDeleteComments(bookIdx: Int, contentsIdx: Int){
-
-        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
-            HomeRoomRetrofitInterface::class.java)
-
-        homeRoomRetrofitInterface.deleteComments(bookIdx, contentsIdx)
-            .enqueue(object : Callback<BaseResponse> {
-
-                override fun onResponse(call: Call<BaseResponse>,
-                                        response: Response<BaseResponse>
-                ) {
-                    view.onDeleteCommentsSuccess(response.body() as BaseResponse)
-                }
-
-                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                    view.onDeleteCommentsFailure(t.message ?: "통신 오류")
-                }
-            })
-    }
-
-    // 책방 글 신고 API 실행 (네트워크 통신)
-    fun tryPostReport(bookIdx: Int, contentsIdx: Int, reportBody: ReportBody){
-
-        val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(
-            HomeRoomRetrofitInterface::class.java)
-
-        homeRoomRetrofitInterface.postReport(bookIdx, contentsIdx, reportBody)
-            .enqueue(object : Callback<BaseResponse> {
-
-                override fun onResponse(call: Call<BaseResponse>,
-                                        response: Response<BaseResponse>
-                ) {
-                    view.onPostReportSuccess(response.body() as BaseResponse)
-                }
-
-                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                    view.onPostReportFailure(t.message ?: "통신 오류")
                 }
             })
     }

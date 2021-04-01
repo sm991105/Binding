@@ -12,8 +12,11 @@ import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentMyPageBinding
+import com.medium.binding.src.main.home.room.HomeRoomActivity
+import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.my_page.models.*
 import com.medium.binding.src.main.my_page.settings.SettingsFragment
+import com.medium.binding.util.Comments
 import java.util.*
 import kotlin.collections.ArrayList
 

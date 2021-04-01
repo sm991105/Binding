@@ -2,15 +2,12 @@ package com.medium.binding.util
 
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseResponse
+import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.ReportBody
-import com.medium.binding.src.main.home.room.HomeRoomRetrofitInterface
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 class Comments {
 
@@ -24,6 +21,11 @@ class Comments {
         fun onPostReportSuccess(response: BaseResponse)
 
         fun onPostReportFailure(message: String)
+
+        // 책방 글 수정 콜백 함수
+        fun onPatchCommentsSuccess(response: BaseResponse)
+
+        fun onPatchCommentsFailure(message: String)
     }
 
     interface CommentsRetrofitInterface{
@@ -38,6 +40,13 @@ class Comments {
         fun postReport(@Path("bookIdx") bookIdx: Int,
                        @Path("contentsIdx") contentsIdx: Int,
                        @Body params: ReportBody
+        ): Call<BaseResponse>
+
+        // 책방 글 수정
+        @PATCH("/books/{bookIdx}/contents/{contentsIdx}")
+        fun patchComments(@Path("bookIdx") bookIdx: Int,
+                          @Path("contentsIdx") contentsIdx: Int,
+                          @Body params: CommentsBody
         ): Call<BaseResponse>
     }
 
@@ -83,6 +92,27 @@ class Comments {
                     }
                 })
         }
+
+        // 책방 글 수정 API 실행 (네트워크 통신)
+        fun tryPatchComments(bookIdx: Int, contentsIdx: Int, commentsBody: CommentsBody){
+
+            val commentsRetrofitInterface = ApplicationClass.sRetrofit.create(
+                CommentsRetrofitInterface::class.java)
+
+            commentsRetrofitInterface.patchComments(bookIdx, contentsIdx, commentsBody)
+                .enqueue(object : Callback<BaseResponse> {
+
+                    override fun onResponse(call: Call<BaseResponse>,
+                                            response: Response<BaseResponse>
+                    ) {
+                        view.onPatchCommentsSuccess(response.body() as BaseResponse)
+                    }
+
+                    override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                        view.onPatchCommentsFailure(t.message ?: "통신 오류")
+                    }
+                })
+        }
     }
 
     // 홈 or 프래그먼트에서 구현, 어댑터에 전달할 리스너
@@ -92,10 +122,15 @@ class Comments {
 
         // 신고 요청
         fun onClickReport(reportReason: String, contentIdx: Int)
+
+        // 발행,수정 요청
+        // 책방 글 발행, 수정 버튼을 누르면 HomeCreateFragment, MyPostFragment에서 실행할 함수
+        // commentsFlag - 발행: 0 , 수정: 1
+        // 수정할 떄 contentsIdx가 필요하다
+        fun onClickPub(comments: String, commentsFlag: Int, contentsIdx: Int)
     }
 
     // 각 클래스의 어댑터에서 구현, 다이얼로그에 전달할 리스너
-
     interface AdapterRemoveListener{
         fun onClickRemove()
     }

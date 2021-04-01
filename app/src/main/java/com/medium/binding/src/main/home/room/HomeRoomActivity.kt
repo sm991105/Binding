@@ -1,14 +1,12 @@
 package com.medium.binding.src.main.home.room
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medium.binding.R
-import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.databinding.ActivityHomeRoomBinding
@@ -23,7 +21,7 @@ import kotlinx.android.synthetic.main.item_bookmark_store.*
 
 class HomeRoomActivity:
     BaseActivity<ActivityHomeRoomBinding>(ActivityHomeRoomBinding::inflate),
-HomeRoomActivityView, Comments.ClickListener{
+HomeRoomActivityView, Comments.CommentsView, Comments.ClickListener{
 
     companion object{
         // 뒤로가기 2번 눌러 종료할 때 사용
@@ -250,11 +248,6 @@ HomeRoomActivityView, Comments.ClickListener{
         result.removeAt(0)
         commentsRecyclerAdapter.updateList(result)
 
-        // 댓글이 없으면 종료
-        if(result.size <= 1){
-            return
-        }
-
         binding.homeRoomSortTab.visibility = View.INVISIBLE
 
         // 탭 Text 설정
@@ -315,8 +308,9 @@ HomeRoomActivityView, Comments.ClickListener{
     }
 
     // 책방 글쓰는 화면에서 발행버튼을 눌렀을 떄
-    override fun onClickPub(commentsBody: CommentsBody, commentsFlag: Int, contentsIdx: Int){
+    override fun onClickPub(comments: String, commentsFlag: Int, contentsIdx: Int){
         showLoadingDialog(this)
+        val commentsBody = CommentsBody(comments)
 
         when(commentsFlag){
 
@@ -325,9 +319,8 @@ HomeRoomActivityView, Comments.ClickListener{
 
             // 글 수정
             COMMENTS_EDIT -> {
-                HomeRoomService(this).tryPatchComments(bookIdx!!, contentsIdx, commentsBody)
+                Comments.CommentsService(this).tryPatchComments(bookIdx!!, contentsIdx, commentsBody)
             }
-
         }
     }
 
@@ -344,8 +337,8 @@ HomeRoomActivityView, Comments.ClickListener{
             2001 -> showCustomToast("5자 이상 적어주세요")
 
             else -> {
-                showCustomToast("글 발행 중 에러가 발생했습니다\n" +
-                        "에러가 계속되면 관리자에게 문의주세요.")
+                showCustomToast("글 발행 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
                 setResult(HomeFragment.BOOK_REMOVED)
             }
         }
@@ -356,7 +349,7 @@ HomeRoomActivityView, Comments.ClickListener{
         dismissLoadingDialog()
 
         showCustomToast("글 발행 중 오류가 발생했습니다\n" +
-                "오류가 계속되면 관리자에게 문의주세요.")
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
         setResult(HomeFragment.BOOK_REMOVED)
     }
 
@@ -412,17 +405,13 @@ HomeRoomActivityView, Comments.ClickListener{
         setResult(HomeFragment.BOOK_REMOVED)
     }
 
+    // 다이얼로그에서 글 삭제버튼을 눌렀을 때
     override fun onClickRemove(contentIdx: Int) {
         if(contentIdx != -1){
-            HomeRoomService(this).tryDeleteComments(bookIdx!!, contentIdx)
+            Comments.CommentsService(this).tryDeleteComments(bookIdx!!, contentIdx)
         }else{
-            showCustomToast("잠시 후 다시 시도해주세요.")
+            showCustomToast("잠시 후 다시 시도해주세요, 오류가 계속될 경우 관리자에게 문의해주세요")
         }
-    }
-
-    // 다이얼로그에서 글 삭제버튼을 눌렀을 때
-    override fun confirmRemove(contentsIdx: Int) {
-        HomeRoomService(this).tryDeleteComments(bookIdx!!, contentsIdx)
     }
 
     // 책방 글 삭제 통신 성공
@@ -470,7 +459,7 @@ HomeRoomActivityView, Comments.ClickListener{
     override fun onClickReport(reportReason: String, contentIdx: Int) {
         if(contentIdx != -1){
             val reportBody = ReportBody(reportReason)
-            HomeRoomService(this).tryPostReport(bookIdx!!, contentIdx, reportBody)
+            Comments.CommentsService(this).tryPostReport(bookIdx!!, contentIdx, reportBody)
         }else{
             showCustomToast("잠시 후 다시 시도해주세요.")
         }

@@ -2,7 +2,6 @@ package com.medium.binding.src.main.home.room.create
 
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import android.view.View
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
@@ -11,11 +10,13 @@ import com.medium.binding.databinding.FragmentHomeCreateBinding
 import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.room.HomeRoomActivity
 import com.medium.binding.src.main.home.room.HomeRoomActivityView
+import com.medium.binding.util.Comments
 
-class HomeCreateFragment(val homeRoomActivity: HomeRoomActivityView,
-val comments: String,
-val commentsFlag: Int,
-val contentsIdx: Int):
+class HomeCreateFragment(
+    private val publishListener: Comments.ClickListener,
+    private val comments: String,
+    private val commentsFlag: Int,
+    val contentsIdx: Int):
     BaseFragment<FragmentHomeCreateBinding>(
         FragmentHomeCreateBinding::bind,
         R.layout.fragment_home_create
@@ -64,8 +65,8 @@ val contentsIdx: Int):
             }
             // 발행 요청
             else{
-                val commentsBody = CommentsBody(binding.homeRoomCreateContent.text.toString())
-                homeRoomActivity.onClickPub(commentsBody, commentsFlag, contentsIdx)
+                val comments = binding.homeRoomCreateContent.text.toString()
+                publishListener.onClickPub(comments, commentsFlag, contentsIdx)
             }
 
         }

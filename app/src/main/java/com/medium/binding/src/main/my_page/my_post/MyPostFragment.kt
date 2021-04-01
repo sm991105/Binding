@@ -1,7 +1,6 @@
 package com.medium.binding.src.main.my_page.my_post
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medium.binding.R
@@ -9,7 +8,9 @@ import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.config.BaseResponse
 import com.medium.binding.databinding.FragmentMyPostBinding
+import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.models.ReportBody
+import com.medium.binding.src.main.home.room.HomeRoomActivity
 import com.medium.binding.src.main.my_page.models.UserCommentsResponse
 import com.medium.binding.util.Comments
 
@@ -18,7 +19,7 @@ class MyPostFragment(private val writingFlag: Int):
     BaseFragment<FragmentMyPostBinding>(
         FragmentMyPostBinding::bind,
         R.layout.fragment_my_post
-), MyPostFragmentView, Comments.CommentsView, Comments.ClickListener {
+), MyPostFragmentView, Comments.CommentsView, Comments.ClickListener{
 
     companion object{
         const val MY_POST = 0
@@ -32,7 +33,7 @@ class MyPostFragment(private val writingFlag: Int):
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        commentsRecyclerAdapter = CommentsRecyclerAdapter(context!!, this)
+        commentsRecyclerAdapter = CommentsRecyclerAdapter(this, context!!,this)
         // 리사이클러뷰 초기화
         binding.myPostRecycler.apply {
             this.adapter = commentsRecyclerAdapter
@@ -42,10 +43,9 @@ class MyPostFragment(private val writingFlag: Int):
             )
         }
 
-        // 내가 쓴 글 목록을 불러온다
+        // 글 목록을 불러온다
         bookIdx = arguments?.getInt("bookIdx", -1)
         showLoadingDialog(context!!)
-        Log.d("로그", "flag: $writingFlag")
         if(bookIdx != null && bookIdx != -1){
 
             // 내가 쓴 글을 타고 들어왔을 때
@@ -284,4 +284,68 @@ class MyPostFragment(private val writingFlag: Int):
         showCustomToast("글 신고 중 오류가 발생했습니다\n" +
                 "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
     }
+
+    // 책방 글쓰는 화면에서 발행버튼을 눌렀을 떄
+    override fun onClickPub(comments: String, commentsFlag: Int, contentsIdx: Int){
+        context?.let{
+            showLoadingDialog(it)
+            val commentsBody = CommentsBody(comments)
+
+            when(commentsFlag){
+
+                // 글 수정
+                HomeRoomActivity.COMMENTS_EDIT -> {
+                    Comments.CommentsService(this).tryPatchComments(bookIdx!!, contentsIdx, commentsBody)
+                }
+            }
+        }
+    }
+
+    // 글 수정 통신 성공
+    override fun onPatchCommentsSuccess(response: BaseResponse) {
+        dismissLoadingDialog()
+
+        when(response.code) {
+
+            // 글 수정 성공
+            1000 -> {
+                showCustomToast("글이 수정되었습니다")
+                activity?.onBackPressed()
+
+                // 새로고침
+                context?.let {
+
+                    if (bookIdx != -1) {
+                        MyPostService(this).tryGetUserComments(bookIdx!!)
+                    } else {
+                        null
+                    }
+                }
+            }
+
+            2001 -> showCustomToast("5자 이상 적어주세요")
+
+            3000 -> {
+                showCustomToast("해당 책방이 이제 존재하지 않습니다")
+            }
+
+            3001 -> {
+                showCustomToast("해당 글이 존재하지 않습니다, 자세한 사항은 관리자에게 문의해주세요.")
+            }
+
+            else -> {
+                showCustomToast("글 발행 중 오류가 발생했습니다\n" +
+                        "오류가 계속되면 관리자에게 문의주세요.")
+            }
+        }
+    }
+
+    // 글 수정 통신 실패
+    override fun onPatchCommentsFailure(message: String) {
+        dismissLoadingDialog()
+
+        showCustomToast("글 수정 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의주세요.")
+    }
+
 }
