@@ -86,12 +86,4 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
         storeList = newList
         this.notifyDataSetChanged()
     }
-
-    // 데이터 추가
-    fun addList(listAdded: ArrayList<StoresResult>){
-        val startIdx = this.itemCount
-        val addedCount = listAdded.size
-        storeList.addAll(listAdded)
-        this.notifyItemRangeInserted(startIdx, addedCount)
-    }
 }

@@ -84,7 +84,10 @@ class SettingsFragment(private val myPageFragment: MyPageFragmentView): BaseFrag
         sp.edit().apply{
             this.putString(ApplicationClass.X_ACCESS_TOKEN, null)
             this.putInt("userIdx", -1)
-            this.putString("pw", null).apply()
+            this.putString("pw", null)
+            this.putInt("bidPos", 0)
+            this.putInt("smallPos", 0)
+            this.putString("selectedLocation", null).apply()
         }
 
         // 로그인 화면으로 이동

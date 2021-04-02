@@ -1,10 +1,8 @@
 package com.medium.binding.src.join.join2
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.ImageView
 import com.medium.binding.R
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentJoin2Binding
@@ -26,16 +24,11 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
     // 다음 버튼 클릭 -> 포커싱 해제될 때 실행되는 코드를 막기 위한 플래그
     private var isHere = true
 
-    private lateinit var boldLine1: ImageView
-    private lateinit var boldLine2: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        boldLine1 = view.findViewById(R.id.join_2_pw_line_bold)
-        boldLine2 = view.findViewById(R.id.join_2_pw_chk_line_bold)
-
-        isHere = true
+        isHere = true   // 현 프래그먼트(화면)에서 작업중이다
 
         // 전달 받은 이메일 주소
         email = arguments?.getString("email", "temp_jslkap@naver.com")
@@ -80,23 +73,21 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
 
     // 비밀번호 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwd = View.OnFocusChangeListener { v, hasFocus ->
-        when(hasFocus ){
-            true -> boldLine1.visibility = View.VISIBLE
-            false ->
-                if(isHere){
-                    boldLine1.visibility = View.INVISIBLE
-                }
+        when(hasFocus){
+            true -> {
+                binding.join2PwLineBold.visibility = View.VISIBLE
+                binding.join2PwChkLineBold.visibility = View.INVISIBLE
+            }
         }
     }
 
     // 비밀번호 확인 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwdChk = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus){
-            true -> boldLine2.visibility = View.VISIBLE
-            false ->
-                if(isHere){
-                    boldLine2.visibility = View.INVISIBLE
-                }
+            true -> {
+                binding.join2PwChkLineBold.visibility = View.VISIBLE
+                binding.join2PwLineBold.visibility = View.INVISIBLE
+            }
         }
     }
 
@@ -131,8 +122,6 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
         // 형식이 올바르고, 일치하면 다음 화면으로 넘어간다
         else{
             email?.let { email ->
-                isHere = false
-
                 (activity!! as JoinActivity).moveToJoin3(email, pwdString, pwdChkString)
             }
         }
@@ -188,4 +177,9 @@ class Join2Fragment: BaseFragment<FragmentJoin2Binding>(
 
         }
     }*/
+
+    override fun onDestroyView() {
+        isHere = false
+        super.onDestroyView()
+    }
 }

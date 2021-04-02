@@ -2,6 +2,7 @@ package com.medium.binding.src.main
 
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import com.medium.binding.R
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.databinding.ActivityMainBinding
@@ -16,6 +17,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private var homeFragment: HomeFragment? = null
     private var menuFragment: MenuFragment? = null
     private var myPageFragment: MyPageFragment? = null
+
+    private val sp = ApplicationClass.sSharedPreferences
 
     // 뒤로가기 2번 눌러 종료할 때 사용
     private val FINISH_INTERVAL_TIME: Long = 2000
@@ -33,13 +36,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.mainBtmNav.selectedItemId = R.id.menu_main_btm_nav_home
 
         // 홈 프래그먼트로 진입
-        if(homeFragment == null){
-            homeFragment = HomeFragment()
-            supportFragmentManager.beginTransaction()
-                .add(R.id.main_frm, homeFragment!!)
-                .commitAllowingStateLoss()
-        }
+        homeFragment = HomeFragment()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.main_frm, homeFragment!!)
+            .commitAllowingStateLoss()
 
+        menuFragment = MenuFragment()
+        sp.let{
+            MenuFragment.apply{
+                this.bigPos = it.getInt("bigPos", 0)
+                this.smallPos = it.getInt("smallPos", 0)
+                this.selectedLocation = it.getString("selectedLocation", null)
+            }
+        }
 
         // 아이콘 틴트는 셀렉터로 적용
         binding.mainBtmNav.itemIconTintList = null
@@ -56,9 +65,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
 
                     R.id.menu_main_btm_nav_menu -> {
-                        if(menuFragment == null){
-                            menuFragment = MenuFragment()
-                        }
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frm, menuFragment!!, "menu")
                             .commitAllowingStateLoss()
@@ -91,6 +97,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 }
                 false
             })
+
+
     }
 
     // 뒤로가기 눌렀을 때 처리
@@ -158,6 +166,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frm, MyPageFragment(), "myPage")
             .commitAllowingStateLoss()
+    }
+
+    override fun onDestroy() {
+
+        // 마지막 지역 저장
+        sp.edit().let{
+            it.putInt("bigPos", MenuFragment.bigPos)
+            it.putInt("smallPos", MenuFragment.smallPos)
+            it.putString("selectedLocation", MenuFragment.selectedLocation)
+        }.apply()
+        super.onDestroy()
     }
 
 }

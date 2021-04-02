@@ -2,9 +2,7 @@ package com.medium.binding.src.main.menu.btm_sheet
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -12,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medium.binding.R
 import com.medium.binding.databinding.LayoutBottomSheetBinding
+import com.medium.binding.src.main.menu.MenuFragment
 import com.medium.binding.src.main.menu.MenuFragmentView
 import java.util.*
 
@@ -20,10 +19,12 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     private var _binding: LayoutBottomSheetBinding? = null
     private val binding get() = _binding!!
 
-    private var listWhole: ArrayList<String> = ArrayList()
-    private var listSeoul: ArrayList<String> = ArrayList()
-    private var listGyeonggi: ArrayList<String> = ArrayList()
-    private var listIncheon: ArrayList<String> = ArrayList()
+    companion object{
+        private var listWhole: ArrayList<String> = ArrayList()
+        private var listSeoul: ArrayList<String> = ArrayList()
+        private var listGyeonggi: ArrayList<String> = ArrayList()
+        private var listIncheon: ArrayList<String> = ArrayList()
+    }
 
     private lateinit var bigLocationList: ArrayList<String> // 첫번째 지역(시/도) 리스트뷰 데이터
     private lateinit var bigAdapter: ArrayAdapter<String>   // 첫번째 지역 리스트뷰 어댑터
@@ -48,7 +49,6 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
         val params = btmSheetContainer?.layoutParams
         val screenHeight = activity!!.resources.displayMetrics.heightPixels
         params?.height = (screenHeight * 0.66).toInt()
-        // params?.height = BottomSheetBehavior.PEEK_HEIGHT_AUTO
         btmSheetContainer?.layoutParams = params
 
         return btmSheetDialog
@@ -57,48 +57,30 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // default 선택 지역 위한 pos 값들
-        arguments?.let {
-            bigPos = it.getInt("bigPos")
-            smallPos = it.getInt("smallPos")
-        }
-
-        // 지역 smallList들 미리 설정
-        listSeoul.addAll(resources.getStringArray(R.array.Seoul))
-        listGyeonggi.addAll(resources.getStringArray(R.array.Gyeonggi))
-        listIncheon.addAll(resources.getStringArray(R.array.Incheon))
-        listWhole.apply{
-            this.addAll(listSeoul)
-            this.addAll(listGyeonggi.subList(1, listGyeonggi.lastIndex))
-            this.addAll(listIncheon.subList(1, listIncheon.lastIndex))
-        }
+        bigPos = MenuFragment.bigPos
+        smallPos = MenuFragment.smallPos    // 이전에 마지막으로 선택했던 지역 index
+        initLocationList()      // 각 지역 별 smallLocationList 초기화
 
         // 첫번째 지역 선택 리스트뷰 설정
         bigLocationList = arrayListOf("전체", "서울", "경기도", "인천")
         bigAdapter = ArrayAdapter(context!!, R.layout.item_big_location, bigLocationList)
         binding.bottomSheetBigList.adapter = bigAdapter
         binding.bottomSheetBigList.onItemClickListener = onBigClick
-        if(bigPos != -1){
-            binding.bottomSheetBigList.setItemChecked(bigPos, true)     // default 값
-            binding.bottomSheetBigList.setSelection(bigPos)
-        }
+
+        binding.bottomSheetBigList.setItemChecked(bigPos, true)     // default 값
+        binding.bottomSheetBigList.setSelection(bigPos)
 
 
         // 두번째 지역 선택 리스트뷰 설정
         smallLocationList = arrayListOf()
         smallAdapter = ArrayAdapter(context!!, R.layout.item_small_location, smallLocationList)
         binding.bottomSheetSmallList.adapter = smallAdapter
-        // 이전에 선택했던 게 있으면 그 상태로 돌아가고, 없으면 전체를 보여준다
-        if(bigPos != -1){
-            updateSmallListView(bigPos)
-        } else{
-            smallLocationList.addAll(listWhole)
-        }
+        updateSmallListView(bigPos)     // 큰 지역에 따라 작은 지역 리스트 업데이트
         binding.bottomSheetSmallList.onItemClickListener = onSmallClick
-        if(smallPos != -1){
-            binding.bottomSheetSmallList.setItemChecked(smallPos, true)
-            binding.bottomSheetSmallList.setSelection(smallPos)
-        }
+
+        binding.bottomSheetSmallList.setItemChecked(smallPos, true)
+        binding.bottomSheetSmallList.setSelection(smallPos)
+
 
         // 선택완료 버튼
         binding.bottomSheetButton.setOnClickListener(onClickSelect)
@@ -152,7 +134,7 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
         if(view.isActivated){
             bigPos = position
         }else{
-            bigPos = -1
+            bigPos = 0
         }
         // 선택한 지역에 맞게 2번째 리스트뷰 업데이트
         updateSmallListView(position)
@@ -167,7 +149,7 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
             smallPos = position
         }else{
             selectedLocation = null
-            smallPos = -1
+            smallPos = 0
         }
     }
 
@@ -192,6 +174,21 @@ class BottomSheetLayout(private val menuFragmentView: MenuFragmentView): BottomS
             }
         }
         smallAdapter.notifyDataSetChanged()
+    }
+
+    // 지역 리스트 초기화
+    private fun initLocationList(){
+        if(listSeoul.size <= 0){
+            // 지역 smallList들 미리 설정
+            listSeoul.addAll(resources.getStringArray(R.array.Seoul))
+            listGyeonggi.addAll(resources.getStringArray(R.array.Gyeonggi))
+            listIncheon.addAll(resources.getStringArray(R.array.Incheon))
+            listWhole.apply{
+                this.addAll(listSeoul)
+                this.addAll(listGyeonggi.subList(1, listGyeonggi.lastIndex))
+                this.addAll(listIncheon.subList(1, listIncheon.lastIndex))
+            }
+        }
     }
 
 

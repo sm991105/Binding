@@ -17,9 +17,6 @@ import com.medium.binding.src.main.MainActivity
 class LoginActivity: BaseActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),
 LoginActivityView{
 
-    // 다른 화면으로 넘어가는 과정에서 binding이 풀려서 생기는 에러를 막기 위한 플래그
-    private var isHere = true
-
     private val sp = ApplicationClass.sSharedPreferences
 
     private lateinit var email: String
@@ -27,8 +24,6 @@ LoginActivityView{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        isHere = true
 
         // 에러문구를 감춘다
        binding.loginWrongInfo.visibility = View.INVISIBLE
@@ -72,7 +67,6 @@ LoginActivityView{
 
     private val onClickPassword = View.OnClickListener {
         val passwordIntent = Intent(this, FindPasswordActivity::class.java)
-        isHere = false
         startActivity(passwordIntent)
         finish()
     }
@@ -85,13 +79,11 @@ LoginActivityView{
         // 로그인 API 호출
         showLoadingDialog(this)
         LoginService(this).tryPostLogin(email, pwd)
-        // JoinDialog(this, true).show()
     }
 
     // 회원가입을 클릭하면 JoinActivity(회원가입 첫번째 프래그먼트)로 이동한다
     private val onClickJoin = View.OnClickListener{
         val joinIntent = Intent(this, JoinActivity::class.java)
-        isHere = false
         startActivity(joinIntent)
         finish()
     }
@@ -99,33 +91,16 @@ LoginActivityView{
     // 이메일 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusEmail = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus ){
-            true -> {
-                binding.loginEmailLineBold.visibility = View.VISIBLE
-
-                // 키보드 올라온다
-                val manager: InputMethodManager =
-                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                // manager.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
-                manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-
-            }
-            false ->
-                if(isHere){
-                    binding.loginEmailLineBold.visibility = View.INVISIBLE
-                }
+            true -> binding.loginEmailLineBold.visibility = View.VISIBLE
+            false -> binding.loginEmailLineBold.visibility = View.INVISIBLE
         }
     }
 
     // 비밀번호 입력 칸 포커스 -> 밑줄이 굵어진다
     private val onFocusPwd = View.OnFocusChangeListener { v, hasFocus ->
         when(hasFocus){
-            true -> {
-                binding.loginPwLineBold.visibility = View.VISIBLE
-            }
-            false ->
-                if(isHere){
-                    binding.loginPwLineBold.visibility = View.INVISIBLE
-                }
+            true -> binding.loginPwLineBold.visibility = View.VISIBLE
+            false -> binding.loginPwLineBold.visibility = View.INVISIBLE
         }
     }
 
@@ -147,7 +122,6 @@ LoginActivityView{
                 }
 
                 val mainIntent = Intent(this, MainActivity::class.java)
-                isHere = false
                 startActivity(mainIntent)
                 finish()
             }

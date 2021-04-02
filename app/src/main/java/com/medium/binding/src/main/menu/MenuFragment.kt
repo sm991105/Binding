@@ -18,30 +18,24 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     R.layout.fragment_menu
 ), MenuFragmentView{
 
-    private val sp = ApplicationClass.sSharedPreferences
+    companion object{
+        var bigPos: Int = 0
+        var smallPos: Int = 0
+        var selectedLocation: String? = null
+    }
 
     var hasNext = true
     var page: Int = 0
     val limit = 200
     private lateinit var menuRecyclerAdapter: MenuRecyclerViewAdapter
-    private var bigPos = 0      // 큰 지역 리스트뷰 선택된  pos
-    private var smallPos = 0    // 작은 지역 리스트뷰 선택된  pos
-    private var selectedLocation: String? = null   // 선택된 지역
+
     private var selectedLocationList = ArrayList<String>()   // API 호출에 사용할 선택 지역 리스트
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 이전에 선택했던 지역 pos 값, text 값
-        sp.let{
-            bigPos = it.getInt("bigPos", 0)
-            smallPos = it.getInt("smallPos", 0)
-            selectedLocation = it.getString("selectedLocation", null)
-            if(selectedLocation != null){
-                binding.menuLocation.text = selectedLocation
-            }
-
-        }
+        // 마지막으로 선택한 지역
+        binding.menuLocation.text = selectedLocation ?: "전체"
 
         menuRecyclerAdapter = MenuRecyclerViewAdapter(this)
         binding.menuRecycler.adapter = menuRecyclerAdapter
@@ -71,11 +65,16 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
 
     // 처음 화면 진입했을 떄 보여줄 서점들 설정
     private fun initStores(){
+
+        // 전체 - 전체
         if(bigPos == 0 && smallPos == 0){
             // 서점 100몇개 다 가져옴
             showLoadingDialog(context!!)
             MenuService(this).tryGetAllStores(0, limit)
-        }else if(smallPos == 0){
+        }
+
+        // 특정 지역 - 전체
+        else if(smallPos == 0){
             when(bigPos){
                 1 -> {
                     selectedLocationList.clear()
@@ -92,6 +91,8 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
             }
             updateLocationStores(selectedLocationList)
         }
+
+        // 지역 - 지역
         else{
             updateLocationStores(arrayListOf(selectedLocation!!))
         }
@@ -100,12 +101,6 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     // 지역 선택 버튼 클릭 -> Bottom Sheet 보여준다
     private val onClickLocation = View.OnClickListener {
         val btmSheet = BottomSheetLayout(this)
-
-        // 지금 선택되어있는 지역 pos 값 전달
-        val posBundle = Bundle()
-        posBundle.putInt("bigPos", bigPos)
-        posBundle.putInt("smallPos", smallPos)
-        btmSheet.arguments = posBundle
 
         val fragmentManager = childFragmentManager
         btmSheet.show(fragmentManager, "Location")
@@ -132,7 +127,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     override fun onGetAllStoresFailure(message: String) {
         dismissLoadingDialog()
 
-        showCustomToast("서점정보를 가져오지 못했습니다, 에러가 계속되면 관리자에게 문의해주세요")
+        showCustomToast("서점정보를 가져오지 못했습니다, 네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요")
     }
 
     override fun onGetLocationStoresSuccess(response: GetStoresResponse) {
@@ -158,7 +153,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
     override fun onGetLocationStoresFailure(message: String) {
         dismissLoadingDialog()
 
-        showCustomToast("서점정보를 가져오지 못했습니다, 에러가 계속되면 관리자에게 문의해주세요")
+        showCustomToast("서점정보를 가져오지 못했습니다, 네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요")
     }
 
     // 바텀시트에서 선택 -> 지역 서점 가져오기
@@ -182,16 +177,11 @@ class MenuFragment: BaseFragment<FragmentMenuBinding>(
         }
 
         selectedLocation = location
-        sp.edit().putString("selectedLocation", selectedLocation).apply()
     }
 
     // 선택한 BottomSheetLayout의 리스트뷰의 pos 값으로 업데이트
     override fun updateLocationPos(bigPosition: Int, smallPosition: Int) {
         bigPos = bigPosition
         smallPos = smallPosition
-        sp.edit().let{
-            it.putInt("bigPos", bigPos)
-            it.putInt("smallPos", smallPos)
-        }.apply()
     }
 }
