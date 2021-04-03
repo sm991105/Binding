@@ -12,8 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.exifinterface.media.ExifInterface
@@ -22,7 +20,6 @@ import androidx.loader.content.CursorLoader
 import com.bumptech.glide.Glide
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
-import com.medium.binding.config.BaseResponse
 import com.medium.binding.src.main.home.create_room.models.CreateBookBody
 import com.medium.binding.src.main.home.create_room.models.CreateBookResponse
 import com.medium.binding.src.main.home.room.HomeRoomActivity

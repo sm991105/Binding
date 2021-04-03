@@ -12,11 +12,8 @@ import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentMyPageBinding
-import com.medium.binding.src.main.home.room.HomeRoomActivity
-import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.my_page.models.*
 import com.medium.binding.src.main.my_page.settings.SettingsFragment
-import com.medium.binding.util.Comments
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -24,6 +21,10 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     FragmentMyPageBinding::bind,
     R.layout.fragment_my_page
 ), MyPageFragmentView{
+
+    companion object{
+        private var writingFlag = 0     // 0 - 내가 쓴 글 , 1 - 북마크 글
+    }
 
 
     lateinit var sBookMarkAdapter: SBookMarkRecyclerAdapter
@@ -35,12 +36,8 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     lateinit var fontKr: Typeface
     lateinit var fontBold: Typeface
 
-    private var writingFlag = 0     // 0 - 내가 쓴 글 , 1 - 북마크 글
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        writingFlag = 0
 
         fontKr = ResourcesCompat.getFont(context!!, R.font.notosanskrregular)!!
         fontBold = ResourcesCompat.getFont(context!!, R.font.notosanskrbold)!!
@@ -115,6 +112,11 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
         }
 
         binding.myPageBtnSettings.setOnClickListener(onClickSettings)
+
+        /*when(writingFlag){
+            0 -> binding.myPagePostMine.performClick()
+            1 -> binding.myPagePostBookmark.performClick()
+        }*/
     }
 
     // 설정 버튼 클릭
@@ -214,4 +216,24 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
 
     // 유저 이미지 url 전달
     override fun provideImgUrl() = this.userImgUrl
+
+    override fun onStart() {
+        Log.d("로그", "onStart() called")
+        super.onStart()
+    }
+
+    override fun onDestroyView() {
+        Log.d("로그", "onDestroyView() called")
+        super.onDestroyView()
+    }
+
+    override fun onStop() {
+        Log.d("로그", "onStop() called")
+        super.onStop()
+    }
+
+    override fun onResume() {
+        Log.d("로그", "onResume() called")
+        super.onResume()
+    }
 }

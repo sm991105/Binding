@@ -29,8 +29,8 @@ HomeRoomActivityView, Comments.CommentsView, Comments.ClickListener{
         private const val ORDER_BY_BOOKMARK: Int = 0
         private const val ORDER_BY_NEWEST: Int = 1
         private var sortFlag: Int = ORDER_BY_BOOKMARK   // 0 - 북마크순, 1 - 최신순
-        private const val BOOKMARK_ON: Int = 1
-        private const val BOOKMARK_OFF: Int = 0
+        const val BOOKMARK_ON: Int = 1
+        const val BOOKMARK_OFF: Int = 0
         const val COMMENTS_CREATE: Int = 0      // 글 발행
         const val COMMENTS_EDIT: Int = 1        // 글 수정
     }

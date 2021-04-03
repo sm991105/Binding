@@ -38,7 +38,8 @@
 
         <!-- 메인 화면 -->
         <activity android:name="com.medium.binding.src.main.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- 책방 화면 -->
         <activity android:name="com.medium.binding.src.main.home.room.HomeRoomActivity"

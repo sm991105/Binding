@@ -3,6 +3,7 @@ package com.medium.binding.src.main
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
+import android.view.WindowManager
 import com.medium.binding.R
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.databinding.ActivityMainBinding
@@ -58,6 +59,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             BottomNavigationView.OnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.menu_main_btm_nav_home -> {
+
+                        // 하단바랑 책방 만드는 버튼이 위로 올라오지 않도록
+                        window?.setSoftInputMode(
+                            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                        )
+
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frm, homeFragment!!, "home")
                             .commitAllowingStateLoss()
@@ -170,7 +177,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override fun onDestroy() {
 
-        // 마지막 지역 저장
+        // MenuFragment의 마지막 지역 저장
         sp.edit().let{
             it.putInt("bigPos", MenuFragment.bigPos)
             it.putInt("smallPos", MenuFragment.smallPos)
