@@ -59,7 +59,6 @@ class WritingRecyclerAdapter(fragment: MyPageFragment):
         }
     }
 
-
     fun updateList(newList: ArrayList<WritingData>){
         writingList = newList
         this.notifyDataSetChanged()

@@ -7,9 +7,7 @@ import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentHomeCreateBinding
-import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.room.HomeRoomActivity
-import com.medium.binding.src.main.home.room.HomeRoomActivityView
 import com.medium.binding.util.Comments
 
 class HomeCreateFragment(

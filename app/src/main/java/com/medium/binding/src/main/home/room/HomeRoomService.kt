@@ -52,7 +52,7 @@ class HomeRoomService(val view: HomeRoomActivityView) {
             })
     }
 
-    // 최신순 책방 댓글 불러오기 API 실행 (네트워크 통신)
+    // 북마크 수정 API 실행 (네트워크 통신)
     fun tryPatchWBookmark(contentsIdx: Int, itemPos: Int){
 
         val homeRoomRetrofitInterface = ApplicationClass.sRetrofit.create(

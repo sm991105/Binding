@@ -15,7 +15,7 @@ interface HomeRoomActivityView {
 
     fun onGetMarkedWRFailure(message: String)
 
-    // 북마크순 책방 댓글 콜백 함수
+    // 북마크 변경 콜백 함수
     fun onPatchWBookmarkSuccess(response: BaseResponse, itemPos: Int)
 
     fun onPatchWBookmarkFailure(message: String)
