@@ -48,6 +48,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 this.smallPos = it.getInt("smallPos", 0)
                 this.selectedLocation = it.getString("selectedLocation", null)
             }
+            HomeFragment.apply{
+                categoryFlag = it.getInt("homeCategory", ORDER_BY_NEWEST)
+            }
         }
 
         // 아이콘 틴트는 셀렉터로 적용
@@ -175,6 +178,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             it.putInt("bigPos", MenuFragment.bigPos)
             it.putInt("smallPos", MenuFragment.smallPos)
             it.putString("selectedLocation", MenuFragment.selectedLocation)
+            it.putInt("homeCategory", HomeFragment.categoryFlag)
         }.apply()
         super.onDestroy()
     }

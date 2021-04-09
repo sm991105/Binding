@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
@@ -29,36 +30,39 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
     companion object{
         const val BOOK_ENTERED_CODE = 2000  // 책방 열기
-
         const val BOOK_REMOVED = 1000   // 삭제된 책방
+        const val ORDER_BY_NEWEST = 0   // 최신글 순
+        const val ORDER_BY_POPULAR = 1 // 인기글 순
+        var categoryFlag = ORDER_BY_NEWEST // 기본값: 최신글 순
+        const val LIMIT = 5
     }
-
-    private val sp = ApplicationClass.sSharedPreferences
 
     private var newestBooksList = ArrayList<NewestResult>()
     private var popularBooksList = ArrayList<PopularResult>()
-    private var categoryFlag = 0    // 0 - 최신글 / 1 - 인기글
-
     lateinit var homeRecyclerAdapter: HomeRecyclerViewAdapter
 
     private lateinit var mSearchView: SearchView
     private lateinit var searchEditText: EditText
 
+    private var hasMore = true      // 서버에서 불러올 데이터가 더 있는지
+    private var page = 0            // 카테고리 내 현재 페이지
+    private var isLoading = false   // 서버와 통신중인지
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // 최근 적용한 필터가 인기글인지 최신글인지 확인
-        categoryFlag = sp.getInt("homeCategory", 0)
 
         // 책방 리사이클러 뷰 초기화
         homeRecyclerAdapter = HomeRecyclerViewAdapter(this,
             newestBooksList, popularBooksList, categoryFlag
         )
-        binding.homeRecycler.adapter = homeRecyclerAdapter
-        binding.homeRecycler.layoutManager = LinearLayoutManager(
-            context, LinearLayoutManager.VERTICAL, false
-        )
+        binding.homeRecycler.apply{
+            this.adapter = homeRecyclerAdapter
+            this.layoutManager = LinearLayoutManager(
+                context, LinearLayoutManager.VERTICAL, false
+            )
+            this.addOnScrollListener(onRecyclerScroll)  // 무한 스크롤
+        }
 
         // 책방 불러오기
         loadBookRooms()
@@ -93,8 +97,8 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
                 // 서치뷰에서 뒤로가기 버튼 눌렀을 때 -> 원래의 최신순 or 인기순으로 보여준다
                 override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                     when(categoryFlag){
-                        0 -> HomeService(this@HomeFragment).tryGetNewest()
-                        1 -> HomeService(this@HomeFragment).tryGetPopular()
+                        ORDER_BY_NEWEST -> HomeService(this@HomeFragment).tryGetNewest(0)
+                        ORDER_BY_POPULAR -> HomeService(this@HomeFragment).tryGetPopular(0)
                     }
                     return true
                 }
@@ -158,12 +162,18 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     // 최신글 필터링 적용
     private val onClickNewest = View.OnClickListener {
 
-        if(categoryFlag != 0){
+        if(categoryFlag != ORDER_BY_NEWEST){
+
+            // 플래그 변경
+            categoryFlag = ORDER_BY_NEWEST
+            page = 0
+            hasMore = true
+
             // 탭 버튼 글 변경
             binding.homeSortTxt.text = String.format("최신글")
 
-            // 최신글 불러온다 -> sp에 categoryFlag 저장 포함
-            HomeService(this).tryGetNewest()
+            // 최신글 불러온다
+            HomeService(this).tryGetNewest(page)
         }
         // 탭화면 닫는다
         binding.homeSortTab.visibility = View.GONE
@@ -172,12 +182,18 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     // 인기글 필터링 적용
     private val onClickPopular = View.OnClickListener {
 
-        if(categoryFlag != 1){
+        if(categoryFlag != ORDER_BY_POPULAR){
+
+            // 플래그 변경
+            categoryFlag = ORDER_BY_POPULAR
+            page = 0
+            hasMore = true
+
             // 탭 버튼 글 변경
             binding.homeSortTxt.text = String.format("인기글")
 
-            // 인기글 불러온다 -> sp에 categoryFlag 저장 포함
-            HomeService(this).tryGetPopular()
+            // 인기글 불러온다
+            HomeService(this).tryGetPopular(page)
         }
         // 탭화면 닫는다
         binding.homeSortTab.visibility = View.GONE
@@ -212,26 +228,39 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
             // 성공
             1000 -> {
-                categoryFlag = 0
-                homeRecyclerAdapter.updateNewest(response.result, categoryFlag)
-                sp.edit().putInt("homeCategory", categoryFlag).apply()
+                val result = response.result
+                val loadedNum = result.size     // 불러온 데이터 개수
+
+                when(page){
+
+                    // 새로 불러올 때
+                    0 -> homeRecyclerAdapter.updateNewest(result, categoryFlag)
+
+                    // 스크롤에 의해 불러올 때
+                    else -> homeRecyclerAdapter.addNewest(result, loadedNum)
+                }
+
+                page += loadedNum
             }
 
             // 책방이 없음
-            4000 -> showCustomToast("책방을 등록해주세요!")
+            3000 -> hasMore = false
 
-            //실패
+            // 실패
             else -> showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
                     "에러가 계속되면 관리자에게 문의해주세요.")
         }
+
+        isLoading = false
     }
 
     // 최신순 책방 불러오기 통신 실패
     override fun onGetNewestFailure(message: String) {
         dismissLoadingDialog()
+        isLoading = false
 
-        showCustomToast("책방을 불러오던 중 에러가 발생했습니다\n" +
-                "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요")
+        showCustomToast("책방을 불러오던 중 오류가 발생했습니다\n" +
+                "네트워크 확인 후 오류가 계속되면 관리자에게 문의해주세요")
     }
 
     // 인기순 책방 불러오기 통신 성공
@@ -242,23 +271,36 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
 
             // 성공
             1000 -> {
-                categoryFlag = 1
-                homeRecyclerAdapter.updatePopular(response.result, categoryFlag)
-                sp.edit().putInt("homeCategory", categoryFlag).apply()
+                val result = response.result
+                val loadedNum = result.size     // 불러온 데이터 개수
+
+                when(page){
+
+                    // 새로 불러올 때
+                    0 -> homeRecyclerAdapter.updatePopular(result, categoryFlag)
+
+                    // 스크롤에 의해 불러올 때
+                    else -> homeRecyclerAdapter.addPopular(result, loadedNum)
+                }
+
+                page += loadedNum
             }
 
             // 책방이 없음
-            4000 -> showCustomToast("책방을 등록해주세요!")
+            3000 -> hasMore = false
 
             //실패
-            else -> showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
-                    "에러가 계속되면 관리자에게 문의해주세요.")
+            else -> showCustomToast("책방을 불러오던 중 오류가 발생했습니다, " +
+                    "오류가 계속되면 관리자에게 문의해주세요.")
         }
+
+        isLoading = false
     }
 
     // 인기순 책방 불러오기 통신 실패
     override fun onGetPopularFailure(message: String) {
         dismissLoadingDialog()
+        isLoading = false
 
         showCustomToast("책방을 불러오던 중 에러가 발생했습니다, " +
                 "네트워크 확인 후 에러가 계속되면 관리자에게 문의해주세요.")
@@ -307,8 +349,8 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
         // 검색어를 다 지우면 원래 화면으로 돌아간다
         if(newText?.isEmpty()!! || newText == ""){
             when(categoryFlag){
-                0 -> HomeService(this@HomeFragment).tryGetNewest()
-                1 -> HomeService(this@HomeFragment).tryGetPopular()
+                ORDER_BY_NEWEST -> HomeService(this@HomeFragment).tryGetNewest(0)
+                ORDER_BY_POPULAR -> HomeService(this@HomeFragment).tryGetPopular(0)
             }
         }
         return true
@@ -332,8 +374,28 @@ class HomeFragment: BaseFragment<FragmentHomeBinding>(
     private fun loadBookRooms(){
         showLoadingDialog(context!!)
         when(binding.homeSortTxt.text.toString()){
-            "최신글" -> HomeService(this).tryGetNewest()
-            "인기글" -> HomeService(this).tryGetPopular()
+            "최신글" -> HomeService(this).tryGetNewest(0)
+            "인기글" -> HomeService(this).tryGetPopular(0)
+        }
+    }
+
+    private val onRecyclerScroll = object: RecyclerView.OnScrollListener(){
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val lastVisiblePos =    //  화면에 보이는 마지막 아이템 포지션
+                (binding.homeRecycler.layoutManager as LinearLayoutManager)
+                    .findLastCompletelyVisibleItemPosition()
+            val totalLastIdx = homeRecyclerAdapter.itemCount - 1    // 어댑터 아이템 마지막 인덱스
+
+            // 보여줄 아이템이 5개 이하로 남아있을 때
+            if(!isLoading && hasMore && lastVisiblePos + 5 >= totalLastIdx){
+                isLoading = true
+                when(categoryFlag){
+                    ORDER_BY_NEWEST -> HomeService(this@HomeFragment).tryGetNewest(page)
+                    ORDER_BY_POPULAR -> HomeService(this@HomeFragment).tryGetPopular(page)
+                }
+            }
         }
     }
 }

@@ -11,12 +11,12 @@ import retrofit2.Response
 class HomeService(val view: HomeFragmentView) {
 
     // 최신순 책방 불러오기 API 실행 (네트워크 통신)
-    fun tryGetNewest(){
+    fun tryGetNewest(page: Int){
 
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getNewest(0, 100)
+        homeRetrofitInterface.getNewest(page, HomeFragment.LIMIT)
             .enqueue(object : Callback<GetNewestResponse> {
 
                 override fun onResponse(call: Call<GetNewestResponse>,
@@ -32,12 +32,12 @@ class HomeService(val view: HomeFragmentView) {
     }
 
     // 인기순 책방 불러오기 API 실행
-    fun tryGetPopular(){
+    fun tryGetPopular(page: Int){
 
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getPopular(0, 20)
+        homeRetrofitInterface.getPopular(page, HomeFragment.LIMIT)
             .enqueue(object : Callback<GetPopularResponse> {
 
                 override fun onResponse(call: Call<GetPopularResponse>,

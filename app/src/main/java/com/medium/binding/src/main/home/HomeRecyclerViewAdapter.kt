@@ -124,4 +124,18 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
         categoryFlag = flag
         notifyDataSetChanged()
     }
+
+    // 스크롤에 의해 아이템을 추가할 때
+    fun addNewest(toAddList: ArrayList<NewestResult>, insertedCnt: Int){
+        val startIdx = itemCount
+        newestList.addAll(toAddList)
+        notifyItemRangeInserted(startIdx, insertedCnt) // 추가될 시작 인덱스, 추가할 아이템 개수
+    }
+
+    // 스크롤에 의해 아이템을 추가할 때
+    fun addPopular(toAddList: ArrayList<PopularResult>, insertedCnt: Int){
+        val startIdx = itemCount
+        popularList.addAll(toAddList)
+        notifyItemRangeInserted(startIdx, insertedCnt) // 추가될 시작 인덱스, 추가할 아이템 개수
+    }
 }
