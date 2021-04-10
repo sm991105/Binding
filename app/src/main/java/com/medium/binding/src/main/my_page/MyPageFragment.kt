@@ -2,18 +2,16 @@ package com.medium.binding.src.main.my_page
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.SystemClock
-import android.util.Log
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.medium.binding.R
-import com.medium.binding.config.ApplicationClass
 import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentMyPageBinding
 import com.medium.binding.src.main.my_page.models.*
 import com.medium.binding.src.main.my_page.settings.SettingsFragment
+import com.medium.binding.util.General.isDoubledClicked
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -117,11 +115,8 @@ class MyPageFragment(): BaseFragment<FragmentMyPageBinding>(
     private val onClickSettings = View.OnClickListener {
 
         // 중복 클릭 방지
-        ApplicationClass.mLastClickTime.apply {
-            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                return@OnClickListener
-            }
-            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+        if(isDoubledClicked()){
+            return@OnClickListener
         }
 
         val settingsFragment = SettingsFragment(this)

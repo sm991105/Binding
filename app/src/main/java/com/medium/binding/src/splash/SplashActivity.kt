@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import android.view.View
 import android.view.animation.AnimationUtils
 import com.medium.binding.R
@@ -13,6 +12,7 @@ import com.medium.binding.config.BaseActivity
 import com.medium.binding.databinding.ActivityAfterSplashBinding
 import com.medium.binding.src.login.LoginActivity
 import com.medium.binding.src.main.MainActivity
+import com.medium.binding.util.General.isDoubledClicked
 
 class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSplashBinding::inflate) {
 
@@ -56,11 +56,9 @@ class SplashActivity : BaseActivity<ActivityAfterSplashBinding>(ActivityAfterSpl
     // 다음 아이콘을 클릭하면 로그인 화면으로 이동한다.
     private val onNextClick = View.OnClickListener {
 
-        ApplicationClass.mLastClickTime.apply{
-            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                return@OnClickListener
-            }
-            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+        // 중복 클릭 방지
+        if(isDoubledClicked()){
+            return@OnClickListener
         }
 
         val loginIntent = Intent(this, LoginActivity::class.java)

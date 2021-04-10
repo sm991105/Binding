@@ -26,6 +26,7 @@ import com.medium.binding.config.BaseResponse
 import com.medium.binding.databinding.ActivitySettingsProfileBinding
 import com.medium.binding.src.main.my_page.settings.models.GetProfileResponse
 import com.medium.binding.src.main.my_page.settings.models.PatchProfileBody
+import com.medium.binding.util.General
 import com.medium.binding.util.JoinClass
 import java.io.File
 
@@ -91,10 +92,9 @@ class SettingsProfileActivity : BaseActivity<ActivitySettingsProfileBinding>(
         showLoadingDialog(this)
 
         // 중복 클릭 방지
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+        if(General.isDoubledClicked()){
             return@OnClickListener
         }
-        mLastClickTime = SystemClock.elapsedRealtime()
 
         val nicknameTxt = binding.settingsProfileNickname.text.toString()
         // 닉네임 변경 x

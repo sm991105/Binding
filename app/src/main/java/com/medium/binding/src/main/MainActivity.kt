@@ -1,7 +1,6 @@
 package com.medium.binding.src.main
 
 import android.os.Bundle
-import android.os.SystemClock
 import com.medium.binding.R
 import com.medium.binding.config.BaseActivity
 import com.medium.binding.databinding.ActivityMainBinding
@@ -10,6 +9,7 @@ import com.medium.binding.src.main.menu.MenuFragment
 import com.medium.binding.src.main.my_page.MyPageFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.medium.binding.config.ApplicationClass
+import com.medium.binding.util.General.isDoubledClicked
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
@@ -74,11 +74,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
 
                     R.id.menu_main_btm_nav_my_page -> {
-                        ApplicationClass.mLastClickTime.apply{
-                            if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                                return@OnNavigationItemSelectedListener false
-                            }
-                            this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+
+                        // 중복 클릭 방지
+                        if(isDoubledClicked()){
+                            return@OnNavigationItemSelectedListener false
                         }
 
                         if (myPageFragment == null) {
@@ -108,7 +107,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
         when(binding.mainBtmNav.selectedItemId){
             R.id.menu_main_btm_nav_home -> {
-                finishOnBackPressed()
+
+                // 뒤로가기 -> 검색창이 열려있으면 닫는다
+                if(homeFragment?.mMenuItem?.isActionViewExpanded == true){
+                    homeFragment?.mMenuItem?.collapseActionView()
+                }else{
+                    finishOnBackPressed()
+                }
             }
 
             R.id.menu_main_btm_nav_menu -> {

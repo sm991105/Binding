@@ -1,7 +1,6 @@
 package com.medium.binding.src.main.menu
 
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,7 @@ import com.medium.binding.R
 import com.medium.binding.src.main.menu.models.StoresResult
 import com.medium.binding.src.main.menu.store_detail.StoreDetailFragment
 import com.makeramen.roundedimageview.RoundedImageView
-import com.medium.binding.config.ApplicationClass
+import com.medium.binding.util.General
 import kotlinx.android.synthetic.main.item_menu.view.*
 import java.util.*
 
@@ -59,13 +58,9 @@ class MenuRecyclerViewAdapter(fragment: MenuFragment):
             item.setOnClickListener{
 
                 // 중복 클릭 방지
-                ApplicationClass.mLastClickTime.apply{
-                    if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                        return@setOnClickListener
-                    }
-                    this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                if(General.isDoubledClicked()){
+                    return@setOnClickListener
                 }
-
 
                 val fragmentManager = menuFragment.childFragmentManager
                 val storeDetailFragment = StoreDetailFragment()

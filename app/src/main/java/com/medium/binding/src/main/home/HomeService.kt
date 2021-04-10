@@ -10,13 +10,15 @@ import retrofit2.Response
 
 class HomeService(val view: HomeFragmentView) {
 
+    val limit = HomeFragment.LIMIT
+
     // 최신순 책방 불러오기 API 실행 (네트워크 통신)
     fun tryGetNewest(page: Int){
 
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getNewest(page, HomeFragment.LIMIT)
+        homeRetrofitInterface.getNewest(page, limit)
             .enqueue(object : Callback<GetNewestResponse> {
 
                 override fun onResponse(call: Call<GetNewestResponse>,
@@ -37,7 +39,7 @@ class HomeService(val view: HomeFragmentView) {
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getPopular(page, HomeFragment.LIMIT)
+        homeRetrofitInterface.getPopular(page, limit)
             .enqueue(object : Callback<GetPopularResponse> {
 
                 override fun onResponse(call: Call<GetPopularResponse>,
@@ -53,12 +55,12 @@ class HomeService(val view: HomeFragmentView) {
     }
 
     // 책방 검색 API 실행 (네트워크 통신)
-    fun tryGetSearchBooks(bookName: String){
+    fun tryGetSearchBooks(bookName: String, page: Int){
 
         val homeRetrofitInterface = ApplicationClass.sRetrofit.create(
             HomeRetrofitInterface::class.java)
 
-        homeRetrofitInterface.getSearchBooks(bookName,0 , 100)
+        homeRetrofitInterface.getSearchBooks(bookName,page , limit)
             .enqueue(object : Callback<GetSearchResponse> {
 
                 override fun onResponse(call: Call<GetSearchResponse>,

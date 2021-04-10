@@ -1,7 +1,6 @@
 package com.medium.binding.src.main.home
 
 import android.content.Intent
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,8 @@ import com.medium.binding.R
 import com.medium.binding.src.main.home.models.NewestResult
 import com.medium.binding.src.main.home.models.PopularResult
 import com.makeramen.roundedimageview.RoundedImageView
-import com.medium.binding.config.ApplicationClass
 import com.medium.binding.src.main.home.room.HomeRoomActivity
+import com.medium.binding.util.General.isDoubledClicked
 import kotlinx.android.synthetic.main.item_book.view.*
 
 class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
@@ -71,12 +70,8 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
 
             view.setOnClickListener {
 
-                // 중복 클릭 방지
-                ApplicationClass.mLastClickTime.apply{
-                    if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                        return@setOnClickListener
-                    }
-                    this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                if(isDoubledClicked()) {
+                    return@setOnClickListener
                 }
 
                 val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)
@@ -99,11 +94,9 @@ class HomeRecyclerViewAdapter(private val homeFragment: HomeFragment,
 
             view.setOnClickListener {
 
-                ApplicationClass.mLastClickTime.apply{
-                    if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                        return@setOnClickListener
-                    }
-                    this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                // 중복 클릭 방지
+                if(isDoubledClicked()){
+                    return@setOnClickListener
                 }
 
                 val bookRoomIntent = Intent(homeFragment.context, HomeRoomActivity::class.java)

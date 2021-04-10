@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import com.makeramen.roundedimageview.RoundedImageView
 import com.medium.binding.R
 import com.medium.binding.config.ApplicationClass
-import com.medium.binding.src.main.home.models.CommentsBody
 import com.medium.binding.src.main.home.room.HomeRoomActivity
 import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.home.room.remove.RemoveDialog
@@ -20,6 +19,8 @@ import com.medium.binding.src.main.home.room.report.ReportDialog
 import com.medium.binding.src.main.my_page.MyPageFragment
 import com.medium.binding.src.main.my_page.models.CommentsWriting
 import com.medium.binding.util.Comments
+import com.medium.binding.util.General
+import com.medium.binding.util.General.isDoubledClicked
 import kotlinx.android.synthetic.main.item_post.view.*
 
 
@@ -99,11 +100,8 @@ class CommentsRecyclerAdapter(val fragment: MyPostFragment,
                 delete.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply {
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
-                            return@setOnClickListener
-                        }
-                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    if(isDoubledClicked()){
+                        return@setOnClickListener
                     }
 
                     contentsIdx = writing.contentsIdx ?: -1
@@ -120,11 +118,8 @@ class CommentsRecyclerAdapter(val fragment: MyPostFragment,
                 report.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply {
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
-                            return@setOnClickListener
-                        }
-                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    if(isDoubledClicked()){
+                        return@setOnClickListener
                     }
 
                     contentsIdx = writing.contentsIdx ?: -1

@@ -2,7 +2,6 @@ package com.medium.binding.src.main.home.room
 
 import android.content.Context
 import android.os.SystemClock
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,8 @@ import com.medium.binding.src.main.home.room.create.HomeCreateFragment
 import com.medium.binding.src.main.home.room.remove.RemoveDialog
 import com.medium.binding.src.main.home.room.report.ReportDialog
 import com.medium.binding.util.Comments
+import com.medium.binding.util.General
+import com.medium.binding.util.General.isDoubledClicked
 import kotlinx.android.synthetic.main.item_post.view.*
 
 class CommentsRecyclerAdapter(val context: Context,
@@ -95,11 +96,8 @@ class CommentsRecyclerAdapter(val context: Context,
                 edit.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply {
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
-                            return@setOnClickListener
-                        }
-                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    if(isDoubledClicked()){
+                        return@setOnClickListener
                     }
 
                     homeRoomActivity.supportFragmentManager.beginTransaction()
@@ -118,11 +116,8 @@ class CommentsRecyclerAdapter(val context: Context,
                 delete.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply {
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
-                            return@setOnClickListener
-                        }
-                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    if(isDoubledClicked()){
+                        return@setOnClickListener
                     }
 
                     // 삭제 다이얼로그
@@ -141,11 +136,8 @@ class CommentsRecyclerAdapter(val context: Context,
                 report.setOnClickListener {
 
                     // 중복 클릭 방지
-                    ApplicationClass.mLastClickTime.apply {
-                        if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000) {
-                            return@setOnClickListener
-                        }
-                        this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+                    if(isDoubledClicked()){
+                        return@setOnClickListener
                     }
 
                     contentIdx = commentsData.contentsIdx ?: -1

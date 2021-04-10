@@ -9,6 +9,7 @@ import com.medium.binding.config.BaseFragment
 import com.medium.binding.databinding.FragmentHomeCreateBinding
 import com.medium.binding.src.main.home.room.HomeRoomActivity
 import com.medium.binding.util.Comments
+import com.medium.binding.util.General
 
 class HomeCreateFragment(
     private val publishListener: Comments.ClickListener,
@@ -46,11 +47,8 @@ class HomeCreateFragment(
         binding.homeRoomCreatePublish.setOnClickListener{
 
             // 중복 클릭 방지
-            ApplicationClass.mLastClickTime.apply{
-                if (SystemClock.elapsedRealtime() - ApplicationClass.mLastClickTime.toInt() < 1000){
-                    return@setOnClickListener
-                }
-                this.compareAndSet(this.toLong(), SystemClock.elapsedRealtime())
+            if(General.isDoubledClicked()){
+                return@setOnClickListener
             }
 
             val contents = binding.homeRoomCreateContent.text.toString()
